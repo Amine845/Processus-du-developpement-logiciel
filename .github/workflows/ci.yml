@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main]
+    branches: [ main, pm, 'pm/**', 'qwantike/**' ]
   pull_request:
     branches: [ main, pm ]
 
@@ -23,8 +23,20 @@ jobs:
       - name: Installer les dépendances
         run: npm ci
 
-      - name: Typecheck TypeScript
+      - name: Audit de sécurité npm
+        run: npm audit --audit-level=high
+
+      - name: Vérification du formatage
+        run: npm run format:check
+
+      - name: Linter ESLint
+        run: npm run lint
+
+      - name: Vérification des types TypeScript
         run: npx tsc --noEmit
 
-      - name: Build Vite & Electron
+      - name: Tests unitaires
+        run: npm run test
+
+      - name: Build de l'application
         run: npm run build
