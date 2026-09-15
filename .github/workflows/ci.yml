@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, pm, 'pm/**', 'qwantike/**' ]
+    branches: [main, pm, 'pm/**', 'qwantike/**']
   pull_request:
-    branches: [ main, pm ]
+    branches: [main, pm]
 
 jobs:
   validate:
