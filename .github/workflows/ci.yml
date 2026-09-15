@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, pm, 'pm/**', 'qwantike/**']
+  pull_request:
+    branches: [main, pm]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Audit de sécurité npm
+        run: npm audit --audit-level=high
+
+      - name: Vérification du formatage
+        run: npm run format:check
+
+      - name: Linter ESLint
+        run: npm run lint
+
+      - name: Vérification des types TypeScript
+        run: npx tsc --noEmit
+
+      - name: Tests unitaires
+        run: npm run test
+
+      - name: Build de l'application
+        run: npm run build
