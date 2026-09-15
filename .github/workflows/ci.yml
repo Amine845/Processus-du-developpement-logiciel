@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main]
+  pull_request:
+    branches: [ main, pm ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Typecheck TypeScript
+        run: npx tsc --noEmit
+
+      - name: Build Vite & Electron
+        run: npm run build
