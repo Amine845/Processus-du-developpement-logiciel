@@ -1,95 +1,99 @@
-# Sprint 00 - Mise en place du socle
+# Sprint 00 - Alignement Web et socle de développement
 
 ## Informations
 
 - **Période :** `[à compléter]`
-- **Durée :** `[à compléter]`
 - **Product Owner :** professeur
-- **Scrum Master :** `[Votre nom]`
-- **Développeurs :** les quatre étudiants, Scrum Master compris
+- **Scrum Master :** `Titiplex`
+- **Développeurs :** Titiplex, Qwantike, Ahrizmo, Amine845
 
 ## Objectif du sprint
 
-> Disposer d'un dépôt partagé, sécurisé, documenté et vérifié automatiquement, dans lequel l'équipe peut développer une première tranche fonctionnelle sans contourner les règles de qualité.
+> Aligner le dépôt sur la vision Web mobile-first et établir un parcours vertical minimal, vérifié en CI, reliant interface, API et base de données.
 
 ## Résultat attendu
 
-À la fin du Sprint 0 :
-
-- le produit et le MVP sont compris ;
-- les rôles et événements sont planifiés ;
-- le backlog initial existe dans GitHub ;
-- le workflow Git est utilisé par tous ;
-- Electron possède une frontière main/preload/renderer sécurisée ;
-- l'architecture modulaire minimale est créée ;
-- la base de tests fonctionne ;
-- une Pull Request déclenche la CI ;
-- le build part d'un clone propre ;
-- une première fonctionnalité verticale très simple est démontrable.
+- les demandes du premier rendez-vous sont versionnées ;
+- Web responsive/PWA est clarifié avec le Product Owner ;
+- les anciens ADR restent visibles mais sont marqués comme remplacés ;
+- Electron n'est plus une dépendance de l'architecture cible ;
+- le framework API, la BDD et la session sont décidés ;
+- client, serveur et base peuvent démarrer localement ;
+- une migration de base fonctionne ;
+- un premier écran mobile-first appelle une API ;
+- la CI exécute lint, typecheck, tests et build ;
+- le backlog contient complexité, temps estimé et temps réel ;
+- l'import CIQUAL est préparé sur un petit fixture, sans import complet prématuré.
 
 ## Éléments proposés
 
-Les identifiants définitifs doivent devenir des numéros d'issues GitHub.
+| ID | Élément | Priorité | Complexité | Temps estimé |
+|---|---|---|---:|---:|
+| S0-01 | Valider responsive Web ou PWA avec le PO | Must | À estimer | À estimer |
+| S0-02 | Ajouter le compte rendu et réaligner la documentation | Must | À estimer | À estimer |
+| S0-03 | Choisir framework API, BDD et session | Must | À estimer | À estimer |
+| S0-04 | Créer la structure client/serveur/domaine | Must | À estimer | À estimer |
+| S0-05 | Migrer le démarrage Vite hors Electron | Must | À estimer | À estimer |
+| S0-06 | Créer la première migration de base | Must | À estimer | À estimer |
+| S0-07 | Installer les tests et un test de domaine | Must | À estimer | À estimer |
+| S0-08 | Configurer la CI Web | Must | À estimer | À estimer |
+| S0-09 | Créer un écran bibliothèque mobile-first minimal | Must | À estimer | À estimer |
+| S0-10 | Exposer une route de lecture de recettes | Must | À estimer | À estimer |
+| S0-11 | Prototyper l'import d'un fixture CIQUAL | Should | À estimer | À estimer |
+| S0-12 | Créer les epics et vues GitHub actualisés | Must | À estimer | À estimer |
 
-| ID provisoire | Élément | Priorité | Estimation à faire |
-|---|---|---|---|
-| S0-01 | Valider la vision et le périmètre avec le Product Owner | Must | Oui |
-| S0-02 | Créer GitHub Project, labels et milestones | Must | Oui |
-| S0-03 | Ajouter les documents initiaux | Must | Oui |
-| S0-04 | Configurer les règles de Pull Request | Must | Oui |
-| S0-05 | Corriger la sécurité Electron et créer le preload | Must | Oui |
-| S0-06 | Installer Vitest et un premier test | Must | Oui |
-| S0-07 | Créer la CI lint, typecheck, tests et build | Must | Oui |
-| S0-08 | Créer les dossiers de l'architecture cible | Must | Oui |
-| S0-09 | Choisir et initialiser SQLite | Should | Oui |
-| S0-10 | Afficher une première recette issue de données locales | Should | Oui |
+## Répartition initiale
 
-## Découpage recommandé entre les quatre étudiants
+- binôme A : squelette serveur, base et migration ;
+- binôme B : migration client Web, responsive et CI ;
+- travail collectif : choix techniques, backlog et critères ;
+- revue croisée entre binômes ;
+- le Scrum Master facilite les blocages et contribue au développement.
 
-Ce découpage sert au démarrage et ne crée pas de silos permanents.
-
-- binôme A : sécurité Electron, preload et contrats IPC ;
-- binôme B : Vitest, CI et rapport de tests ;
-- travail collectif : périmètre, backlog et architecture ;
-- première tranche verticale : réalisée ou relue par des membres des deux binômes.
-
-Chaque production doit recevoir une revue par une personne de l'autre binôme.
+Cette répartition ne crée pas de silos permanents.
 
 ## Questions au Product Owner
 
-- Le suivi des repas réellement consommés appartient-il au MVP ?
-- Le MVP gère-t-il un seul ensemble de contraintes par foyer ou plusieurs personnes distinctes ?
-- Le choix d'un magasin réel est-il obligatoire ?
-- Quels pays, devises et unités doivent être démontrés ?
-- Quels nutriments, en plus des quatre macros principales, sont attendus ?
-- Quelle est la durée attendue d'un sprint dans le cadre des TP ?
+- Responsive Web seul ou PWA installable ?
+- Qui crée les comptes ?
+- Les recettes sont-elles privées, publiques ou partagées ?
+- Quels rôles et droits sont nécessaires ?
+- Suppression définitive ou archivage ?
+- Tags libres ou liste administrée ?
+- Quels allergènes pour le MVP ?
+- Une liste regroupe-t-elle plusieurs recettes ?
+- Le planning, les objectifs et le budget sont-ils explicitement reportés ?
+- Quel niveau de macro doit être affiché au-delà de calories, protéines, glucides et lipides ?
 
-## Risques spécifiques
+## Risques
 
 | Risque | Réponse |
 |---|---|
-| Passer tout le sprint sur l'outillage | Limiter la configuration et conserver une tranche verticale simple |
-| Architecture trop abstraite | Créer uniquement les interfaces nécessaires au premier parcours |
-| CI différente des postes locaux | Utiliser `npm ci` et fixer une version commune de Node |
-| Product Owner non disponible avant la fin | Envoyer les questions groupées et documenter les hypothèses |
+| Migration trop large | Conserver une tranche verticale minimale |
+| Choix techniques interminables | Timebox et critères écrits |
+| Authentification commencée sans règles produit | Clarifier droits avant CRUD complet |
+| Import CIQUAL trop tôt | Fixture réduit et documentation d'abord |
+| CI différente du local | Mêmes scripts npm et version Node fixée |
 
-## Scénario de démonstration
+## Démonstration
 
-1. cloner le dépôt ;
-2. installer avec `npm ci` ;
-3. exécuter lint, tests et build ;
-4. lancer l'application ;
-5. afficher une recette locale ;
-6. montrer une Pull Request et son pipeline ;
-7. montrer la traçabilité issue, branche, PR et test.
+1. cloner et installer ;
+2. appliquer la migration ;
+3. lancer client et serveur ;
+4. ouvrir la bibliothèque sur un viewport mobile ;
+5. charger une recette via l'API ;
+6. exécuter lint, tests et build ;
+7. montrer issue, branche, PR et pipeline ;
+8. présenter le backlog avec complexité, temps estimé et réel.
 
 ## Critères de clôture
 
-- [ ] Objectif du sprint évalué.
-- [ ] CI fonctionnelle sur une Pull Request.
-- [ ] Aucun accès Node direct depuis React.
-- [ ] Au moins un test métier passe.
-- [ ] Documentation reliée depuis le README.
-- [ ] Backlog exportable.
+- [ ] Objectif évalué.
+- [ ] Architecture Web décidée et documentée.
+- [ ] Build Electron non présenté comme cible.
+- [ ] Client, API et migration fonctionnent.
+- [ ] CI verte.
+- [ ] Au moins un test métier et un test API passent.
+- [ ] Un écran mobile est démontrable.
 - [ ] Review et rétrospective produites.
 

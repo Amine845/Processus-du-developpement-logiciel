@@ -1,52 +1,65 @@
 # Definition of Done
 
-Un élément du backlog est terminé seulement lorsque toutes les conditions applicables suivantes sont satisfaites.
+Un élément est terminé seulement lorsque toutes les conditions applicables sont satisfaites.
 
 ## Fonctionnement
 
 - [ ] Les critères d'acceptation sont satisfaits.
-- [ ] Le comportement a été démontré localement.
+- [ ] Le comportement a été démontré dans l'application Web.
 - [ ] Les cas d'erreur pertinents sont gérés.
-- [ ] Aucune régression connue critique n'est introduite.
+- [ ] Aucune régression critique connue n'est introduite.
+
+## Web et mobile-first
+
+- [ ] Le parcours principal est utilisable au viewport mobile retenu.
+- [ ] Aucun défilement horizontal involontaire n'apparaît.
+- [ ] Les contrôles essentiels fonctionnent au clavier et au tactile.
+- [ ] Les états chargement, vide, erreur et succès sont traités.
+- [ ] Le viewport desktop ne régresse pas.
+
+## Sécurité et données
+
+- [ ] Authentification et autorisation sont vérifiées côté serveur si concernées.
+- [ ] Aucun mot de passe, secret ou donnée sensible n'est journalisé ou envoyé au client.
+- [ ] Les entrées sont validées côté serveur.
+- [ ] Les migrations nécessaires existent et sont testées.
+- [ ] La provenance CIQUAL est conservée si des données nutritionnelles changent.
+- [ ] Une information d'allergène inconnue n'est pas présentée comme sûre.
 
 ## Code
 
 - [ ] Le code est intégré sur `main`.
-- [ ] La structure modulaire et les règles de dépendance sont respectées.
-- [ ] Aucun secret, mot de passe ou jeton n'est présent dans le dépôt.
-- [ ] Les noms et responsabilités sont compréhensibles.
-- [ ] Le code mort et les traces temporaires ont été retirés.
+- [ ] Les frontières modulaires sont respectées.
+- [ ] Aucun secret n'est présent dans le dépôt.
+- [ ] Le code mort et les traces temporaires sont retirés.
+- [ ] Les contrats client/API sont cohérents.
 
 ## Vérifications automatiques
 
-- [ ] Le lint réussit.
-- [ ] Le typecheck réussit.
-- [ ] Les tests automatisés réussissent.
-- [ ] Le build réussit.
-- [ ] La couverture des règles modifiées est jugée suffisante.
-- [ ] La CI GitHub est verte.
+- [ ] Formatage et lint réussissent.
+- [ ] Typecheck réussit.
+- [ ] Tests pertinents réussissent.
+- [ ] Build client et serveur réussit.
+- [ ] La couverture des règles modifiées est suffisante.
+- [ ] La CI est verte.
 
-## Revue
+## Revue et traçabilité
 
 - [ ] Une Pull Request est liée à l'issue.
-- [ ] Au moins un autre étudiant a effectué une revue.
-- [ ] Les discussions de revue sont résolues.
+- [ ] Au moins un autre étudiant a relu.
+- [ ] Les discussions sont résolues.
 - [ ] L'auteur a vérifié le diff final.
+- [ ] Complexité, temps estimé et temps réel sont renseignés.
 
-## Documentation
+## Documentation et produit
 
-- [ ] Le README ou les guides sont mis à jour si nécessaire.
-- [ ] Les décisions architecturales durables sont consignées dans un ADR.
-- [ ] Les nouveaux paramètres ou commandes sont documentés.
-- [ ] Les preuves de test nécessaires au rendu sont accessibles.
-
-## Produit
-
-- [ ] Le comportement est accessible dans l'application, sans manipulation cachée.
-- [ ] Le résultat est présentable pendant la Sprint Review.
-- [ ] Le Product Owner peut vérifier les critères d'acceptation.
+- [ ] README, guides et ADR sont mis à jour si nécessaire.
+- [ ] Les nouvelles commandes ou variables sont documentées.
+- [ ] Les preuves de test sont accessibles.
+- [ ] Le résultat est présentable pendant la séance.
+- [ ] Le Product Owner peut vérifier les critères.
 
 ## Règle
 
-Si une condition applicable n'est pas remplie, l'élément n'est pas terminé. Il reste en cours ou retourne dans le Product Backlog. Une fonctionnalité presque terminée ne contribue pas à l'incrément.
+Un élément qui ne satisfait pas une condition applicable n'appartient pas à l'incrément. Il reste en cours ou retourne au Product Backlog.
 

@@ -40,7 +40,9 @@ Décrire le besoin, sa source et les informations données par le Product Owner.
 
 ## Estimation
 
-- **Story points :** à estimer
+- **Complexité (story points) :** à estimer collectivement
+- **Temps estimé (heures) :** à estimer
+- **Temps réel (heures) :** à renseigner à la clôture sans modifier l'estimation initiale
 - **Sprint :** non affecté
 
 ## Definition of Ready
@@ -50,4 +52,5 @@ Décrire le besoin, sa source et les informations données par le Product Owner.
 - [ ] Priorité connue
 - [ ] Dépendances identifiées
 - [ ] Estimation collective réalisée
-
+- [ ] Comportement mobile précisé si une interface est concernée
+- [ ] Règles d'accès précisées si l'authentification est concernée

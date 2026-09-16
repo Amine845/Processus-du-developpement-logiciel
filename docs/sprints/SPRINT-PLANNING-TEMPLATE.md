@@ -30,11 +30,11 @@
 
 ## Éléments sélectionnés
 
-| Issue | Intitulé | Points | Responsable initial | Dépendances |
-|---|---|---:|---|---|
-| # | | | | |
+| Issue | Intitulé | Complexité | Temps estimé | Responsable initial | Dépendances |
+|---|---|---:|---:|---|---|
+| # | | | | | |
 
-**Total prévu :** `X points`
+**Total prévu :** `X points / Y heures estimées`
 
 ## Plan technique
 
@@ -43,6 +43,9 @@
 - Tests nécessaires :
 - Documentation à mettre à jour :
 - Démonstration prévue :
+- Viewport mobile à vérifier :
+- Authentification ou autorisation concernée :
+- Migration ou import CIQUAL concerné :
 
 ## Responsabilités tournantes
 
@@ -67,4 +70,3 @@ La [Definition of Done](../organisation/definition-of-done.md) générale s'appl
 - [ ] Charge compatible avec la capacité.
 - [ ] Méthode de démonstration connue.
 - [ ] Risques visibles.
-

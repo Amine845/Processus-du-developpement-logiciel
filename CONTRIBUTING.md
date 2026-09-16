@@ -19,7 +19,7 @@ Vérifier que l'issue satisfait la [Definition of Ready](docs/organisation/defin
 - objectif compris ;
 - critères d'acceptation testables ;
 - priorité connue ;
-- estimation réalisée ;
+- complexité et temps estimé renseignés séparément ;
 - dépendances identifiées ;
 - tâche suffisamment petite pour le sprint.
 
@@ -66,9 +66,9 @@ Format recommandé :
 Exemples :
 
 ```text
-feat(recipes): add equipment compatibility filter
+feat(recipes): add tag search
 fix(nutrition): correct per-serving protein calculation
-test(planning): cover empty meal plan generation
+test(shopping): cover checked ingredient count
 docs(scrum): add sprint review template
 ```
 
@@ -112,6 +112,8 @@ Une Pull Request doit :
 - signaler les limites et risques connus ;
 - rester suffisamment petite pour être relue ;
 - inclure des captures si l'interface change ;
+- vérifier les largeurs mobile et bureau si l'interface change ;
+- renseigner le temps réel dans l'issue sans écraser l'estimation ;
 - mettre à jour la documentation si nécessaire.
 
 L'auteur relit lui-même son diff avant de demander une revue.
@@ -125,7 +127,8 @@ Le reviewer vérifie au minimum :
 - absence de logique métier dans les composants React ;
 - gestion des erreurs et entrées invalides ;
 - présence et pertinence des tests ;
-- impact sécurité, notamment pour Electron et IPC ;
+- impact sécurité, notamment pour l'authentification, les autorisations, l'API et les données utilisateur ;
+- comportement responsive sur les parcours concernés ;
 - mise à jour de la documentation ;
 - absence de secret ou donnée sensible.
 
@@ -150,4 +153,3 @@ Utiliser de préférence **Squash and merge** pour conserver un historique lisib
 3. demander au Scrum Master de faciliter la résolution ;
 4. solliciter le Product Owner uniquement si le désaccord concerne le besoin, la valeur ou la priorité ;
 5. consigner toute décision architecturale significative dans un ADR.
-

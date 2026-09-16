@@ -2,22 +2,26 @@
 
 ## Objectif
 
-GitHub Projects est la source de vérité pour le Product Backlog et le Sprint Backlog. Les documents Markdown conservent les décisions et synthèses ; ils ne dupliquent pas quotidiennement l'état de chaque tâche.
+GitHub Projects est la source de vérité du Product Backlog et du Sprint Backlog. À chaque séance, le tableau doit permettre de montrer les avancées, les écarts et le sprint suivant.
 
 ## Champs
 
-| Champ | Type | Valeurs |
+| Champ | Type | Valeurs / usage |
 |---|---|---|
 | Status | Sélection | Backlog, To refine, Ready, In progress, In review, Done |
 | Type | Sélection | Epic, Story, Bug, Technical task, Documentation |
 | Priority | Sélection | Must, Should, Could, Won't now |
 | Sprint | Itération | Sprint 0, Sprint 1, Sprint 2, etc. |
-| Estimate | Nombre | 1, 2, 3, 5 ou 8 |
-| Actual effort | Nombre | Heures constatées, sans écraser l'estimation |
+| Complexity | Nombre | Story points `1, 2, 3, 5, 8` |
+| Estimated time | Nombre | Heures prévues avant réalisation |
+| Actual time | Nombre | Heures réellement constatées |
 | Risk | Sélection | Low, Medium, High, Critical |
-| Assignee | Personne | Étudiant responsable du prochain travail |
+| Assignee | Personne | Responsable du prochain travail |
+| PO validation | Sélection | Pending, Accepted, Changes requested |
 
-## Labels d'issues
+Complexité, temps estimé et temps réel ne sont pas interchangeables. Ne pas modifier l'estimation initiale après réalisation.
+
+## Labels
 
 ### Type
 
@@ -29,14 +33,19 @@ GitHub Projects est la source de vérité pour le Product Backlog et le Sprint B
 
 ### Domaine
 
-- `area:profile`
+- `area:auth`
 - `area:recipes`
+- `area:ingredients`
 - `area:nutrition`
-- `area:planning`
+- `area:tags`
 - `area:shopping`
-- `area:electron`
+- `area:responsive`
+- `area:api`
 - `area:database`
+- `area:ciqual`
 - `area:ci`
+
+Le label `area:electron` peut être conservé uniquement pour les tâches de migration, puis archivé.
 
 ### État particulier
 
@@ -45,42 +54,41 @@ GitHub Projects est la source de vérité pour le Product Backlog et le Sprint B
 - `blocked`
 - `question-product-owner`
 - `security`
-
-Éviter de représenter deux fois exactement la même information dans un champ et un label.
+- `migration`
 
 ## Vues
 
-Créer au minimum :
-
-1. **Product Backlog** : tableau trié par priorité ;
-2. **Current Sprint** : Kanban filtré sur le sprint courant ;
-3. **Roadmap** : regroupement par epic ou itération ;
-4. **Review Queue** : éléments au statut `In review` ;
-5. **Risks and Blocks** : filtre sur `blocked`, `security` ou risque élevé ;
-6. **Done by Sprint** : historique pour le rendu.
+1. **Product Backlog** : priorité puis ordre du PO ;
+2. **Current Sprint** : Kanban du sprint ;
+3. **PO Questions** : label `question-product-owner` ;
+4. **Review Queue** : statut `In review` ;
+5. **Risks and Blocks** : risques élevés, critiques ou `blocked` ;
+6. **Mobile-first** : domaine responsive ;
+7. **Done by Sprint** : historique et validation PO ;
+8. **Estimates** : complexité, temps estimé et réel.
 
 ## Limites de travail en cours
 
-Règle initiale :
-
 - au plus une tâche principale `In progress` par développeur ;
-- priorité à la revue et à la finalisation avant de démarrer une nouvelle tâche ;
-- un élément bloqué reste visible et reçoit une prochaine action.
+- priorité à la revue et à la finalisation ;
+- un blocage conserve une prochaine action visible.
 
-## Automatisations utiles
+## Automatisations
 
-- issue ajoutée au projet -> `Backlog` ;
-- Pull Request ouverte et liée -> `In review` ;
-- Pull Request fusionnée -> `Done` ;
-- issue fermée sans PR -> vérification manuelle de la Definition of Done.
+- issue ajoutée -> `Backlog` ;
+- PR ouverte et liée -> `In review` ;
+- PR fusionnée -> vérifier DoD puis `Done` ;
+- issue fermée sans PR -> vérification manuelle ;
+- validation du PO renseignée pendant la séance.
 
-## Export pour l'enseignant
+## Préparation de chaque séance
 
-À chaque fin de sprint :
-
-- exporter le projet en CSV ;
-- conserver le document de planning, review et rétrospective ;
-- noter le tag ou commit correspondant à l'incrément ;
-- conserver les rapports de tests significatifs ;
-- vérifier que le professeur dispose d'un accès en lecture au dépôt et au projet.
+- mettre les statuts à jour ;
+- compléter temps réel et liens PR ;
+- vérifier les éléments réellement Done ;
+- préparer la vue de démonstration ;
+- exporter le backlog en CSV ;
+- conserver le document de review et rétrospective ;
+- noter le commit ou tag démontré ;
+- vérifier l'accès du professeur.
 

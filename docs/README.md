@@ -16,6 +16,12 @@ La documentation fait partie du produit. Elle est versionnée avec le code et mi
 - [`architecture/decisions/ADR-001-electron-react-typescript.md`](architecture/decisions/ADR-001-electron-react-typescript.md).
 - [`architecture/decisions/ADR-002-local-first-sqlite.md`](architecture/decisions/ADR-002-local-first-sqlite.md).
 - [`architecture/decisions/ADR-003-modular-monolith.md`](architecture/decisions/ADR-003-modular-monolith.md).
+- [`architecture/decisions/ADR-004-responsive-web-mobile-first.md`](architecture/decisions/ADR-004-responsive-web-mobile-first.md).
+- [`architecture/decisions/ADR-005-server-persistence-auth.md`](architecture/decisions/ADR-005-server-persistence-auth.md).
+
+## Données
+
+- [`data/ciqual.md`](data/ciqual.md) : source, version, import et limites de CIQUAL.
 
 ## Organisation
 
@@ -36,6 +42,7 @@ La documentation fait partie du produit. Elle est versionnée avec le code et mi
 ## Modèles de travail
 
 - [`meetings/MEETING-TEMPLATE.md`](meetings/MEETING-TEMPLATE.md).
+- [`meetings/001-first-product-owner-meeting.md`](meetings/001-first-product-owner-meeting.md).
 - [`sprints/SPRINT-PLANNING-TEMPLATE.md`](sprints/SPRINT-PLANNING-TEMPLATE.md).
 - [`sprints/SPRINT-REVIEW-TEMPLATE.md`](sprints/SPRINT-REVIEW-TEMPLATE.md).
 - [`sprints/SPRINT-RETROSPECTIVE-TEMPLATE.md`](sprints/SPRINT-RETROSPECTIVE-TEMPLATE.md).

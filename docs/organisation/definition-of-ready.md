@@ -15,6 +15,11 @@ Une user story est considérée prête pour un Sprint Planning lorsque les élé
 - [ ] Les développeurs ont produit une estimation collective.
 - [ ] La story semble réalisable dans un sprint.
 - [ ] La méthode de démonstration est connue.
+- [ ] La complexité en story points est estimée.
+- [ ] Le temps estimé en heures est renseigné séparément.
+- [ ] Les critères responsive mobile sont précisés si l'interface change.
+- [ ] Les règles d'autorisation sont précisées si une donnée est créée ou modifiée.
+- [ ] La source et les valeurs inconnues sont définies si des données CIQUAL sont utilisées.
 
 ## Exceptions
 
@@ -26,4 +31,3 @@ Une story non prête peut être sélectionnée uniquement si :
 - le risque est consigné dans le document du sprint.
 
 La Definition of Ready aide la préparation, mais ne doit pas devenir une barrière bureaucratique empêchant tout apprentissage.
-

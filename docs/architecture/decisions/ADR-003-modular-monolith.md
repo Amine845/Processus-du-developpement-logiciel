@@ -1,6 +1,6 @@
 # ADR-003 - Monolithe modulaire
 
-- **Statut :** proposé
+- **Statut :** accepté et amendé
 - **Date :** 2026-09-15
 - **Décideurs :** équipe de réalisation
 
@@ -16,14 +16,14 @@ Construire un monolithe modulaire séparant :
 - application ;
 - domaine ;
 - infrastructure ;
-- intégration Electron.
+- interface Web et API serveur.
 
 ## Raisons
 
 - frontières explicites ;
 - tests du domaine sans interface ;
 - travail parallèle plus simple ;
-- déploiement unique ;
+- déploiement cohérent du client et du serveur ;
 - complexité opérationnelle limitée.
 
 ## Conséquences positives
@@ -45,4 +45,3 @@ Construire un monolithe modulaire séparant :
 - vérifier les dépendances pendant les revues ;
 - refuser les imports circulaires ;
 - ajuster l'architecture par ADR lorsque les besoins l'exigent.
-

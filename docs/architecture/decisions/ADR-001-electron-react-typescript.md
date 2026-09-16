@@ -1,8 +1,11 @@
 # ADR-001 - Electron, React et TypeScript
 
-- **Statut :** accepté provisoirement
+- **Statut :** remplacé par ADR-004
 - **Date :** 2026-09-15
+- **Date de remplacement :** `2026-09-16`
 - **Décideurs :** équipe de réalisation
+
+> Le premier rendez-vous avec le Product Owner a réorienté le produit vers une application Web mobile-first. React, TypeScript et Vite sont conservés ; Electron ne fait plus partie de l'architecture cible.
 
 ## Contexte
 
@@ -43,4 +46,3 @@ Conserver :
 - activer `contextIsolation` et le sandbox ;
 - exposer une API preload limitée ;
 - valider tous les messages IPC.
-

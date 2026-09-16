@@ -29,6 +29,12 @@ Ajouter les étapes manuelles spécifiques :
 
 Captures, résultats de tests ou rapport pertinent.
 
+## Suivi du temps
+
+- **Temps estimé dans l'issue :**
+- **Temps réel :**
+- **Écart expliqué si significatif :**
+
 ## Risques et limites
 
 -
@@ -43,6 +49,10 @@ Captures, résultats de tests ou rapport pertinent.
 - [ ] La documentation est à jour.
 - [ ] Aucun secret ni donnée personnelle n'est inclus.
 - [ ] Une capture est fournie si l'interface change.
+- [ ] L'interface a été vérifiée sur une largeur mobile et une largeur bureau si elle change.
+- [ ] Les règles d'authentification et d'autorisation ont été vérifiées si elles sont concernées.
+- [ ] Les migrations de base de données sont versionnées et testées si le schéma change.
+- [ ] Aucune donnée sensible ni secret n'est exposé dans le bundle client.
 - [ ] Un ADR est ajouté si une décision structurante a été prise.
 
 ## Checklist reviewer
@@ -51,5 +61,5 @@ Captures, résultats de tests ou rapport pertinent.
 - [ ] Les frontières d'architecture sont respectées.
 - [ ] Les tests couvrent les règles importantes et les erreurs.
 - [ ] Les impacts sécurité et données ont été vérifiés.
+- [ ] Le comportement responsive et les états non connecté/interdit ont été contrôlés si nécessaire.
 - [ ] La documentation et les preuves sont suffisantes.
-

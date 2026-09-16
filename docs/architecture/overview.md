@@ -2,125 +2,132 @@
 
 ## Statut
 
-Proposition initiale à valider par l'équipe pendant le Sprint 0.
+Architecture cible issue du premier rendez-vous avec le Product Owner. Les frameworks serveur et base de données précis doivent être sélectionnés pendant le Sprint 0 et consignés dans des ADR complémentaires.
 
 ## Style retenu
 
-L'application suit une architecture de **monolithe modulaire local-first** :
+L'application suit une architecture de **monolithe modulaire client-serveur** :
 
-- une seule application Electron est construite et distribuée ;
-- le code est séparé par responsabilités ;
-- le domaine métier reste indépendant de React, Electron et SQLite ;
-- les dépendances techniques sont accessibles par des interfaces ;
-- les données du MVP sont stockées localement.
+- une interface Web React conçue mobile-first ;
+- une API TypeScript côté serveur ;
+- un domaine métier indépendant des frameworks ;
+- une base relationnelle côté serveur ;
+- une authentification gérée côté serveur ;
+- un module d'import versionné pour CIQUAL.
 
 ```mermaid
 flowchart LR
-    UI[Interface React] --> PRELOAD[API preload]
-    PRELOAD --> USECASES[Cas d'utilisation]
-    USECASES --> DOMAIN[Domaine métier]
-    USECASES --> PORTS[Ports]
-    INFRA[Infrastructure] --> PORTS
-    MAIN[Electron main] --> USECASES
+    UI[Client React responsive] --> API[API Web]
+    API --> APP[Cas d'utilisation]
+    APP --> DOMAIN[Domaine métier]
+    APP --> PORTS[Ports]
+    INFRA[BDD, auth et CIQUAL] --> PORTS
 ```
 
-## Responsabilités des couches
+## Responsabilités
 
-### `src/renderer`
+### `src/client`
 
 - pages et composants React ;
-- formulaires et interactions ;
-- navigation ;
+- routage et formulaires ;
+- conception mobile-first ;
 - affichage des erreurs ;
-- état temporaire de l'interface.
+- appels vers l'API par un client centralisé.
 
-Le renderer ne doit pas importer directement SQLite, `fs`, les repositories concrets ou les modules Node sensibles.
+Le client ne contient pas les règles de calcul métier et n'accède jamais directement à la base.
+
+### `src/server`
+
+- démarrage du serveur ;
+- routes HTTP ;
+- validation des entrées ;
+- authentification et autorisation ;
+- traduction entre HTTP et cas d'utilisation ;
+- gestion contrôlée des erreurs.
+
+Une route ne doit pas contenir à elle seule la logique complète d'un cas d'utilisation.
 
 ### `src/domain`
 
-- entités et value objects ;
-- règles nutritionnelles ;
-- vérification des restrictions ;
-- adaptation des portions ;
-- agrégation des courses ;
-- règles de sélection et de classement.
+- utilisateurs et autorisations métier ;
+- recettes, ingrédients et tags ;
+- portions et quantités ;
+- données nutritionnelles ;
+- allergènes ;
+- listes de courses et progression.
 
-Cette couche doit pouvoir être testée sans Electron et sans base de données.
+Cette couche doit être testable sans React, serveur HTTP ou base de données.
 
 ### `src/application`
 
 - cas d'utilisation ;
 - orchestration du domaine ;
+- interfaces des repositories et services externes ;
 - transactions applicatives ;
-- interfaces de repositories et de fournisseurs ;
-- conversion entre modèles d'entrée et résultats.
+- résultats indépendants du protocole HTTP.
 
 Exemples :
 
-- `CreateHouseholdProfile` ;
-- `SearchCompatibleRecipes` ;
-- `CalculateRecipeNutrition` ;
-- `CreateMealPlan` ;
-- `GenerateShoppingList`.
+- `AuthenticateUser` ;
+- `CreateRecipe` ;
+- `SearchRecipes` ;
+- `ScaleRecipeServings` ;
+- `ImportCiqualDataset` ;
+- `GenerateShoppingList` ;
+- `ToggleShoppingItem`.
 
 ### `src/infrastructure`
 
-- connexion SQLite ;
-- migrations ;
+- base de données et migrations ;
 - repositories concrets ;
-- import de jeux de données ;
-- fournisseurs de données nutritionnelles ;
-- fournisseurs de prix ou catalogues.
-
-### `electron`
-
-- cycle de vie de l'application ;
-- création des fenêtres ;
-- preload ;
-- handlers IPC ;
-- assemblage des implémentations.
+- hachage des mots de passe et sessions ;
+- import CIQUAL ;
+- journalisation technique ;
+- adaptateurs externes.
 
 ### `src/shared`
 
-Uniquement les éléments véritablement transverses :
-
-- contrats IPC ;
-- schémas de validation ;
-- types d'erreurs ;
-- unités et primitives partagées.
-
-Ce dossier ne doit pas devenir un emplacement indifférencié pour le code métier.
+- contrats d'échange ;
+- schémas de validation réellement partagés ;
+- erreurs transverses ;
+- unités et primitives communes.
 
 ## Structure cible
 
 ```text
-electron/
-  main.ts
-  preload.ts
-  ipc/
-  bootstrap/
 src/
-  renderer/
+  client/
     app/
     pages/
     features/
+      auth/
+      recipes/
+      ingredients/
+      shopping/
     components/
+  server/
+    api/
+    auth/
+    middleware/
+    bootstrap/
   domain/
-    profile/
-    recipe/
+    users/
+    recipes/
+    ingredients/
     nutrition/
-    planning/
+    tags/
     shopping/
   application/
-    profiles/
+    auth/
     recipes/
-    planning/
+    ingredients/
     shopping/
     ports/
   infrastructure/
     database/
     repositories/
-    providers/
+    authentication/
+    ciqual/
   shared/
     contracts/
     validation/
@@ -130,17 +137,18 @@ tests/
   unit/
   integration/
   component/
+  api/
   e2e/
   fixtures/
 ```
 
+La structure exacte peut être adaptée au framework choisi, mais les frontières doivent rester reconnaissables.
+
 ## Règles de dépendance
 
-Les dépendances autorisées sont :
-
 ```text
-renderer -> contrats applicatifs
-electron -> application
+client -> API / contrats partagés
+server -> application
 application -> domaine
 infrastructure -> ports applicatifs + domaine
 domaine -> aucune couche technique
@@ -148,49 +156,59 @@ domaine -> aucune couche technique
 
 Interdictions :
 
-- `domain` ne dépend pas de React, Electron ou SQLite ;
-- `renderer` n'accède pas directement à la base ;
-- un composant React ne calcule pas les macros ;
-- un handler IPC ne contient pas toute la logique d'un cas d'utilisation ;
-- un repository ne décide pas si une recette respecte un régime ;
-- les modules ne se contournent pas par des imports circulaires.
+- `domain` ne dépend pas de React, du serveur HTTP ou de la BDD ;
+- le navigateur ne reçoit jamais un hash de mot de passe ;
+- le client ne décide pas seul si une action est autorisée ;
+- un composant React ne calcule pas directement les macros ;
+- un repository ne décide pas si une recette contient un allergène ;
+- l'import CIQUAL ne remplit pas les allergènes par supposition ;
+- aucun import circulaire entre modules métier.
 
-## Sécurité Electron
+## Authentification et autorisation
 
-Configuration cible :
+- les mots de passe sont hachés par un algorithme adapté, jamais chiffrés ou stockés en clair ;
+- les erreurs de connexion ne révèlent pas si un compte existe ;
+- les sessions ou jetons sont invalidables ;
+- les opérations de modification vérifient l'autorisation côté serveur ;
+- les secrets ne sont jamais inclus dans le bundle Vite ;
+- les cookies de session, si retenus, sont `HttpOnly`, `Secure` en production et configurés avec une politique `SameSite` appropriée ;
+- la protection CSRF est évaluée selon le mécanisme de session choisi.
 
-```ts
-webPreferences: {
-  preload: path.join(__dirname, 'preload.js'),
-  nodeIntegration: false,
-  contextIsolation: true,
-  sandbox: true,
-}
-```
+## Responsive mobile-first
 
-Le preload expose une API minimale au renderer. Toutes les entrées IPC sont validées. Les noms de canaux autorisés sont centralisés et les erreurs internes ne sont pas exposées telles quelles à l'interface.
+- concevoir d'abord la largeur mobile cible ;
+- éviter le défilement horizontal ;
+- dimensionner les contrôles pour l'interaction tactile ;
+- tester au moins un viewport mobile et un viewport desktop ;
+- conserver les fonctionnalités essentielles sans dépendre du survol ;
+- rendre visibles les erreurs et états de chargement.
 
-La configuration initiale du dépôt utilise actuellement `nodeIntegration: true` et `contextIsolation: false`. Sa correction est une tâche bloquante du Sprint 0.
-
-## Flux d'une action
-
-Exemple : générer une liste de courses.
+## Flux d'une création de recette
 
 ```mermaid
 sequenceDiagram
-    participant UI as Interface React
-    participant IPC as Preload et IPC
-    participant UC as GenerateShoppingList
-    participant DB as Repositories SQLite
-    UI->>IPC: generateShoppingList(planId)
-    IPC->>UC: execute(planId)
-    UC->>DB: charger planning et recettes
-    DB-->>UC: données métier
-    UC-->>IPC: liste agrégée
-    IPC-->>UI: résultat sérialisé
+    participant UI as Client React
+    participant API as API Web
+    participant UC as CreateRecipe
+    participant DB as Repository
+    UI->>API: POST /recipes
+    API->>API: valider session et entrée
+    API->>UC: exécuter la commande
+    UC->>DB: sauvegarder la recette
+    DB-->>UC: recette créée
+    UC-->>API: résultat
+    API-->>UI: 201 + représentation
 ```
 
-## Évolution
+## Migration depuis le prototype Electron
 
-Une future API distante pourra implémenter les mêmes ports que SQLite. Cette possibilité ne justifie pas d'introduire un backend ou des microservices dans le MVP.
+La migration doit être explicite :
+
+1. conserver React, TypeScript et Vite ;
+2. isoler ou retirer le plugin Electron ;
+3. créer le serveur et un contrat d'API minimal ;
+4. remplacer les accès desktop par des appels HTTP ;
+5. supprimer Electron seulement lorsque le build Web, les tests et la CI sont opérationnels.
+
+Le code existant et la documentation peuvent diverger pendant une courte branche de migration, jamais durablement sur `main`.
 

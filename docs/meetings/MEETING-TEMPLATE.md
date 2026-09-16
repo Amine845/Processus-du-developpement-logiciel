@@ -8,55 +8,77 @@
 - **Animateur :**
 - **Rédacteur :**
 - **Participants :**
-- **Absents :**
-- **Type :** coordination / refinement / technique / Product Owner / autre
+- **Product Owner présent :** oui / non
+- **Type :** séance PO / coordination / refinement / technique / autre
 
 ## Objectif
 
-Décrire en une phrase le résultat attendu de la réunion.
+Décrire en une phrase le résultat attendu.
 
-## Ordre du jour
+## Démonstration
 
-1. Sujet 1
-2. Sujet 2
-3. Sujet 3
+- **Commit ou tag démontré :**
+- **Environnement :**
+- **Scénario exécuté :**
+- **Éléments terminés :**
+- **Travaux montrés mais non terminés :**
+- **Écarts avec l'objectif :**
 
-## Éléments discutés
+## Retour du Product Owner
 
-### Sujet 1
+| Élément | Retour | Accepté / changement demandé | Issue liée |
+|---|---|---|---|
+| | | | |
 
-- Faits :
-- Options considérées :
-- Points de désaccord :
+## Rétrospective synthétique
+
+### Ce qui a bien fonctionné
+
+-
+
+### Ce qui doit changer
+
+-
+
+### Actions d'amélioration
+
+| Action | Responsable du suivi | Échéance | Mesure de réussite |
+|---|---|---|---|
+| | | | |
 
 ## Décisions
 
-| ID | Décision | Justification | Décideur | Impact |
+| ID | Décision | Justification | Décideur | Impact / ADR |
 |---|---|---|---|---|
 | D-01 | | | | |
 
-Une décision architecturale durable doit aussi être consignée dans un ADR.
+## Changements du backlog
 
-## Actions
-
-| Action | Responsable | Échéance | Issue liée |
+| Élément | Ajouté / modifié / retiré | Priorité | Motif PO |
 |---|---|---|---|
 | | | | |
 
-## Questions ouvertes
+## Sprint suivant
 
-| Question | Destinataire | Date attendue | Hypothèse temporaire |
+- **Objectif proposé :**
+- **Capacité :**
+- **Complexité totale :**
+- **Temps total estimé :**
+- **Risques principaux :**
+- **Démonstration prévue :**
+
+## Actions et questions
+
+| Action ou question | Destinataire | Échéance | Issue / hypothèse temporaire |
 |---|---|---|---|
 | | | | |
 
-## Risques ou obstacles
+## Preuves à conserver
 
-| Risque / obstacle | Impact | Prochaine action | Responsable |
-|---|---|---|---|
-| | | | |
-
-## Prochaine réunion
-
-- **Date envisagée :**
-- **Objectif :**
+- [ ] Export CSV du backlog
+- [ ] Rapport CI/tests
+- [ ] Compte rendu
+- [ ] Review
+- [ ] Rétrospective
+- [ ] Commit ou tag démontré
 

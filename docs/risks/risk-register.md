@@ -4,46 +4,44 @@
 
 - Probabilité : faible, moyenne ou élevée.
 - Impact : faible, moyen, élevé ou critique.
-- Le propriétaire suit le risque ; il n'est pas seul responsable de sa résolution.
+- Le propriétaire suit le risque ; l'équipe reste collectivement responsable de la réponse.
 
-## Registre initial
+## Registre initial actualisé
 
 | ID | Risque | Probabilité | Impact | Réponse prévue | Propriétaire | État |
 |---|---|---|---|---|---|---|
-| R-01 | Périmètre trop large pour le temps disponible | Élevée | Élevé | Verrouiller le MVP et reporter explicitement les extensions | Scrum Master | Ouvert |
-| R-02 | Données nutritionnelles inexactes ou incomplètes | Moyenne | Élevé | Conserver source, unité et date ; tester les calculs | Référent qualité | Ouvert |
-| R-03 | Allergènes incomplets dans les données | Moyenne | Critique | Exclusion stricte, état inconnu visible et avertissement | Équipe | Ouvert |
-| R-04 | Prix réels difficiles à obtenir | Élevée | Moyen | Saisie locale et interface de fournisseur ; hors MVP si nécessaire | Référent architecture | Ouvert |
-| R-05 | Erreurs de conversion d'unités | Moyenne | Élevé | Unités canoniques, conversions limitées et tests paramétrés | Référent qualité | Ouvert |
-| R-06 | Conflits Git fréquents | Moyenne | Moyen | Branches courtes, petites PR et coordination avant refactoring | Scrum Master | Ouvert |
-| R-07 | Pull Requests non relues à temps | Moyenne | Moyen | Créneau quotidien de revue et limite de travail en cours | Scrum Master | Ouvert |
-| R-08 | Logique métier dispersée dans React | Moyenne | Élevé | Architecture modulaire et checklist de revue | Référent architecture | Ouvert |
-| R-09 | Configuration Electron non sécurisée | Élevée au départ | Élevé | Corriger le preload et les options pendant le Sprint 0 | Référent architecture | Ouvert |
-| R-10 | CI lente ou instable | Faible | Moyen | Cache contrôlé, tests déterministes et séparation des jobs | Référent qualité | Ouvert |
-| R-11 | Product Owner peu disponible | Moyenne | Élevé | Regrouper les questions, écrire les hypothèses et planifier les validations | Scrum Master | Ouvert |
-| R-12 | Répartition déséquilibrée du travail | Moyenne | Élevé | Visualiser le WIP, rotation des responsabilités et entraide | Scrum Master | Ouvert |
-| R-13 | Données de santé ou préférences exposées | Faible dans le MVP | Élevé | Stockage local, aucune donnée réelle dans les tests, pas de télémétrie par défaut | Équipe | Ouvert |
-| R-14 | Packaging différent selon les systèmes | Moyenne | Moyen | Choisir les plateformes cibles et tester tôt un build propre | Référent qualité | Ouvert |
+| R-01 | Périmètre trop large | Élevée | Élevé | Recentrer sur recettes, ingrédients, auth et courses | Scrum Master | Ouvert |
+| R-02 | Sens ambigu de « mobile-first » | Moyenne | Élevé | Confirmer responsive Web, PWA ou natif avec le PO | Scrum Master | Ouvert |
+| R-03 | Migration Electron vers Web incomplète | Moyenne | Élevé | Branche dédiée, critères de sortie et suppression progressive | Référent architecture | Ouvert |
+| R-04 | Failles d'authentification ou d'autorisation | Moyenne | Critique | Hachage, sessions sûres, contrôles serveur et tests négatifs | Référent qualité | Ouvert |
+| R-05 | Secrets exposés dans le bundle ou Git | Moyenne | Critique | `.env.example`, scan secrets et revue de configuration | Référent qualité | Ouvert |
+| R-06 | Données CIQUAL obsolètes ou sans provenance | Moyenne | Élevé | DOI, version, date, licence, empreinte et rapport d'import | Référent documentation | Ouvert |
+| R-07 | Valeurs CIQUAL manquantes converties en zéro | Moyenne | Élevé | Modèle nullable, validation et fixtures de cas particuliers | Référent qualité | Ouvert |
+| R-08 | CIQUAL utilisé à tort pour les allergènes | Moyenne | Critique | Référentiel séparé et avertissement explicite | Référent architecture | Ouvert |
+| R-09 | Erreurs de conversion d'unités | Moyenne | Élevé | Unités canoniques et tests paramétrés | Référent qualité | Ouvert |
+| R-10 | Interface inutilisable sur téléphone | Moyenne | Élevé | Design mobile-first et tests de viewport | Référent qualité | Ouvert |
+| R-11 | Questions produit non résolues | Moyenne | Élevé | Questions groupées et hypothèses écrites | Scrum Master | Ouvert |
+| R-12 | Temps estimé confondu avec complexité | Élevée | Moyen | Champs séparés et comparaison en review | Scrum Master | Ouvert |
+| R-13 | Pull Requests non relues à temps | Moyenne | Moyen | Créneau de revue et limite WIP | Scrum Master | Ouvert |
+| R-14 | Conflits Git pendant la migration | Moyenne | Moyen | Branches courtes et coordination avant déplacement | Scrum Master | Ouvert |
+| R-15 | Migrations détruisant des données | Faible | Critique | Tests, sauvegarde et absence de reset production | Référent architecture | Ouvert |
+| R-16 | Données personnelles de démonstration | Faible | Élevé | Comptes fictifs et aucune donnée réelle | Équipe | Ouvert |
+| R-17 | CI lente ou instable | Faible | Moyen | Tests déterministes, cache contrôlé et jobs séparés | Référent qualité | Ouvert |
 
 ## Suivi
 
-Le registre est revu :
+Le registre est revu à chaque séance :
 
-- pendant le Sprint Planning ;
-- lorsqu'un nouveau risque est découvert ;
-- avant la Sprint Review ;
-- avant chaque release.
+- avant la démonstration pour signaler les risques matérialisés ;
+- pendant l'organisation du sprint suivant ;
+- avant une release ou migration de données.
 
-Chaque mise à jour conserve :
-
-- la date ;
-- l'évolution de la probabilité ou de l'impact ;
-- la prochaine action ;
-- la personne responsable du suivi.
+Chaque mise à jour indique date, évolution, prochaine action et responsable du suivi.
 
 ## Historique
 
 | Date | Risque | Changement | Auteur |
 |---|---|---|---|
 | 2026-09-15 | Tous | Création du registre initial | `[Nom]` |
+| `[date du premier rendez-vous]` | Tous | Alignement Web mobile-first, connexion et CIQUAL | `[Nom]` |
 

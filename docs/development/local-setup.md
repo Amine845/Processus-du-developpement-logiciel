@@ -1,43 +1,36 @@
 # Environnement de développement local
 
+## État de transition
+
+Le dépôt contient encore le prototype Electron. L'architecture cible est désormais une application Web responsive avec API et base côté serveur. Le Sprint 0 doit établir les commandes finales sans casser durablement `main`.
+
 ## Prérequis
 
 - Git ;
-- Node.js dans une version compatible avec `package.json` ;
+- Node.js dans une version commune à l'équipe ;
 - npm ;
-- un éditeur ou IDE prenant en charge TypeScript.
+- le moteur de base de données retenu ;
+- éventuellement Docker si l'équipe le décide, sans en faire une obligation non documentée.
 
-L'équipe doit choisir et documenter une version commune de Node pendant le Sprint 0, idéalement dans un fichier `.nvmrc` ou `.node-version`.
+La version Node doit être fixée dans `.nvmrc`, `.node-version` ou le champ `engines` de `package.json`.
 
-## Installation
+## Installation actuelle
 
 ```bash
 git clone <URL_DU_DEPOT>
 cd <NOM_DU_DEPOT>
 npm ci
-```
-
-`npm ci` est privilégié lorsque `package-lock.json` existe, car il installe exactement les versions verrouillées.
-
-## Développement
-
-```bash
 npm run dev
 ```
 
-## Contrôles disponibles dans le squelette initial
+## Contrat de commandes cible
+
+Après la migration Web, les développeurs et la CI doivent disposer de commandes stables :
 
 ```bash
-npm run lint
-npm run build
-npm run preview
-```
-
-## Scripts cibles du Sprint 0
-
-Les noms suivants constituent le contrat souhaité pour les développeurs et la CI :
-
-```bash
+npm run dev
+npm run dev:client
+npm run dev:server
 npm run format:check
 npm run lint
 npm run typecheck
@@ -45,46 +38,58 @@ npm run test
 npm run test:coverage
 npm run test:e2e
 npm run build
+npm run db:migrate
 ```
 
-Ils ne doivent être ajoutés au README principal qu'une fois fonctionnels.
+Le nom exact peut varier selon l'organisation retenue, mais une même opération doit utiliser la même commande en local et en CI.
 
-## Variables d'environnement
+## Configuration
 
-- Les valeurs non secrètes par défaut sont documentées dans `.env.example`.
-- Les fichiers `.env` réels ne sont pas commités.
-- Aucun secret ne doit commencer par `VITE_`, car les variables exposées au renderer sont publiques dans le bundle.
-- Le MVP local-first ne devrait pas nécessiter de secret applicatif.
-
-Exemple futur :
+Créer un `.env.example` ne contenant aucun secret :
 
 ```dotenv
-VITE_APP_NAME=Gestion Recette
-LOG_LEVEL=info
+APP_BASE_URL=http://localhost:5173
+API_PORT=3000
+DATABASE_URL=<local-development-url>
+SESSION_SECRET=<replace-locally>
 ```
 
-## Base locale
+Règles :
 
-La base SQLite doit être créée dans le dossier de données utilisateur fourni par Electron, jamais dans le dossier source du dépôt.
+- `.env` réel ignoré par Git ;
+- aucun secret préfixé `VITE_` ;
+- aucune valeur de production dans le dépôt ;
+- validation de configuration au démarrage ;
+- secrets CI gérés par la plateforme.
 
-En développement, une commande de réinitialisation contrôlée pourra être ajoutée :
+## Base de données
 
 ```bash
-npm run db:reset:dev
+npm run db:migrate
 npm run db:seed
 ```
 
-Cette commande doit refuser de supprimer une base qui n'est pas explicitement identifiée comme base de développement.
+Les commandes de reset doivent :
+
+- être réservées au développement ou aux tests ;
+- vérifier l'environnement ciblé ;
+- refuser une cible de production ;
+- afficher clairement les données supprimées.
+
+## CIQUAL
+
+Le fichier CIQUAL officiel n'est pas téléchargé au démarrage de l'application. La procédure est décrite dans [`../data/ciqual.md`](../data/ciqual.md).
+
+Le dépôt peut contenir un petit fixture synthétique pour les tests. Le fichier officiel complet est géré selon sa taille et sa licence.
 
 ## Données de démonstration
 
-Les fixtures ou seeds doivent :
-
-- contenir des recettes fictives ou correctement licenciées ;
-- couvrir plusieurs régimes, allergènes et équipements ;
-- inclure des valeurs nutritionnelles connues ;
-- rester déterministes pour les tests ;
-- ne contenir aucune donnée personnelle réelle.
+- comptes fictifs uniquement ;
+- mots de passe de démonstration non réutilisés ailleurs ;
+- recettes et ingrédients fictifs ou correctement licenciés ;
+- données déterministes ;
+- allergènes connus, absents et inconnus couverts ;
+- aucun renseignement personnel réel.
 
 ## Résolution des problèmes
 
@@ -92,7 +97,8 @@ Avant d'ouvrir une issue :
 
 1. vérifier la version de Node ;
 2. exécuter `npm ci` ;
-3. reproduire depuis `main` à jour ;
-4. conserver le message d'erreur complet ;
-5. indiquer le système d'exploitation et les étapes de reproduction.
+3. appliquer les migrations ;
+4. reproduire depuis `main` à jour ;
+5. conserver le message d'erreur complet sans secret ;
+6. préciser navigateur, système, viewport et étapes de reproduction.
 

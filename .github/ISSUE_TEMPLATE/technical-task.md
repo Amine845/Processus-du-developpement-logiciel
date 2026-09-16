@@ -34,6 +34,7 @@ Indiquer les commandes, tests, mesures ou documents permettant de vérifier la t
 
 ## Estimation
 
-- **Story points :** à estimer
+- **Complexité (story points) :** à estimer collectivement
+- **Temps estimé (heures) :** à estimer
+- **Temps réel (heures) :** à renseigner à la clôture sans modifier l'estimation initiale
 - **Sprint :** non affecté
-

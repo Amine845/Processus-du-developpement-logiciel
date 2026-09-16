@@ -2,93 +2,113 @@
 
 ## Objectif du MVP
 
-Le MVP doit démontrer un parcours complet et fiable :
-
-> Créer un profil de foyer, trouver des recettes compatibles, calculer les portions et macros, construire une semaine de repas et générer la liste de courses correspondante.
+> Permettre à un utilisateur connecté de gérer des recettes et leurs ingrédients depuis une interface Web mobile-first, de les rechercher et filtrer, d'en calculer les macros et de générer une checklist de courses.
 
 ## Inclus dans le MVP
 
-### Profil et foyer
+### Authentification
 
-- nombre de personnes ;
-- pays, devise et système d'unités ;
-- allergies et exclusions déclarées ;
-- régime alimentaire ;
-- préférences et aliments non souhaités ;
-- équipements disponibles ;
-- budget indicatif.
+- connexion ;
+- déconnexion ;
+- maintien sécurisé de la session ;
+- protection des opérations réservées à un utilisateur authentifié ;
+- gestion minimale des autorisations selon les décisions du Product Owner.
 
-### Recettes
+Les modalités d'inscription, de récupération de mot de passe et de rôles restent à confirmer.
 
-- catalogue local ;
-- fiche recette ;
-- ingrédients, quantités, instructions et équipements ;
-- filtres par restriction, régime et équipement ;
-- adaptation du nombre de portions.
+### Gestion des recettes
 
-### Nutrition
+- créer une recette ;
+- consulter une recette ;
+- modifier une recette ;
+- archiver ou supprimer une recette selon la politique retenue ;
+- renseigner titre, description, nombre de personnes et étapes ;
+- ajouter des ingrédients avec quantité et unité ;
+- associer des tags ;
+- afficher les macros totales et par portion.
 
-- calories ;
-- protéines ;
-- glucides ;
-- lipides ;
-- valeurs totales et par portion ;
-- agrégation quotidienne simple.
+### Bibliothèque et recherche
 
-### Planification
+- afficher la bibliothèque de recettes ;
+- rechercher par nom ;
+- rechercher ou filtrer par tag ;
+- filtrer par allergène ;
+- consulter une fiche recette depuis les résultats.
+
+### Gestion des ingrédients
+
+- créer, consulter et modifier un ingrédient ;
+- stocker ses caractéristiques utiles ;
+- associer un ingrédient à un aliment CIQUAL lorsque possible ;
+- gérer ses allergènes séparément ;
+- utiliser un même ingrédient dans plusieurs recettes.
+
+### Portions et nutrition
+
+- définir le nombre de personnes de référence ;
+- recalculer les quantités pour un nombre de personnes choisi ;
+- calculer calories, protéines, glucides et lipides ;
+- distinguer valeurs totales et par portion ;
+- rendre visibles les données inconnues ou incomplètes.
+
+### Liste de courses
+
+- générer une liste depuis une ou plusieurs recettes ;
+- regrouper les ingrédients identiques lorsque leurs unités sont compatibles ;
+- adapter les quantités aux portions ;
+- cocher et décocher un article ;
+- afficher la progression `articles cochés / articles totaux`.
+
+### Interface Web mobile-first
+
+- parcours utilisables sur téléphone ;
+- formulaires adaptés au tactile ;
+- affichage responsive sur tablette et ordinateur ;
+- navigation clavier et libellés accessibles pour les actions principales.
+
+## Fonctionnalités antérieurement envisagées, à confirmer
+
+Ces éléments ne sont pas inclus dans le MVP tant que le Product Owner ne les a pas explicitement priorisés :
 
 - planning hebdomadaire ;
-- ajout, retrait et remplacement d'une recette ;
-- petit-déjeuner, déjeuner et dîner, selon les données disponibles ;
-- vérification de la compatibilité des recettes.
+- objectifs caloriques ou protéiques personnalisés ;
+- recommandations automatiques ;
+- suivi des repas consommés ;
+- budget ;
+- pays et devise ;
+- choix d'un magasin ;
+- équipement de cuisine ;
+- préférences avancées ;
+- gestion du placard ;
+- optimisation nutritionnelle.
 
-### Courses
-
-- agrégation des ingrédients ;
-- multiplication par le nombre de portions ;
-- normalisation des unités compatibles ;
-- possibilité de cocher un article ;
-- estimation simple du coût lorsque des prix sont disponibles.
-
-## Extensions après le MVP
-
-- recommandations automatiques pondérées ;
-- comparaison entre planifié et consommé ;
-- suivi longitudinal des objectifs ;
-- gestion du contenu du placard ;
-- optimisation combinée nutrition, variété et budget ;
-- plusieurs magasins ;
-- import de données nutritionnelles ;
-- synchronisation entre appareils ;
-- comptes utilisateur.
+Ils restent visibles dans le Product Backlog avec le statut `Won't now` ou `À confirmer`.
 
 ## Hors périmètre initial
 
+- application mobile native distincte ;
+- microservices ;
+- commande ou paiement de courses ;
+- scraping de supermarchés ;
 - diagnostic ou prescription médicale ;
-- garantie qu'un repas est sans allergène ;
-- scraping automatique de supermarchés ;
-- paiement ou commande de courses ;
-- réseau social ;
+- garantie qu'une recette est médicalement sans allergène ;
 - génération de recettes par intelligence artificielle ;
-- application mobile native ;
-- backend distribué ou microservices ;
-- modification automatique arbitraire des proportions internes d'une recette.
+- calcul automatique de besoins médicaux personnalisés.
 
-## Hypothèses
+## Hypothèses à valider
 
-- le premier catalogue est fourni localement ;
-- les valeurs nutritionnelles sont exprimées dans une unité canonique, idéalement pour 100 g ;
-- les prix, s'ils existent, sont datés et peuvent être incomplets ;
-- le pays influence principalement la devise, les unités et les données disponibles ;
-- les restrictions sont déclarées par l'utilisateur et dépendent de la qualité des données.
+- `mobile-first` signifie application Web responsive et non application native ;
+- un utilisateur ne modifie que les recettes qu'il est autorisé à gérer ;
+- l'archivage est préféré à une suppression définitive lorsque des listes utilisent encore une recette ;
+- CIQUAL est importé comme source nutritionnelle versionnée ;
+- les allergènes proviennent d'un référentiel distinct ;
+- le temps de préparation peut être affiché plus tard mais n'est pas un critère prioritaire du MVP.
 
-## Gestion des changements de périmètre
+## Gestion des changements
 
-Une demande nouvelle suit ce processus :
-
-1. le Product Owner décrit la valeur recherchée ;
-2. les développeurs identifient l'impact, les risques et une estimation ;
-3. le Product Owner ordonne la demande dans le Product Backlog ;
-4. une demande n'est pas ajoutée silencieusement à un sprint en cours ;
-5. si l'objectif du sprint devient obsolète, le Product Owner et l'équipe réévaluent explicitement le sprint.
+1. le Product Owner décrit la valeur attendue ;
+2. les développeurs analysent impact, complexité, temps et risques ;
+3. le Product Owner ordonne l'élément dans le backlog ;
+4. l'élément n'est pas ajouté silencieusement au sprint en cours ;
+5. toute modification de périmètre est consignée dans le compte rendu de séance.
 

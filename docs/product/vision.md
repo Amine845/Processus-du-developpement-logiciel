@@ -2,66 +2,65 @@
 
 ## Problème
 
-Planifier des repas demande de concilier plusieurs contraintes : besoins nutritionnels, nombre de personnes, allergies, régimes, préférences, équipement disponible, budget et organisation des courses. Les solutions manuelles nécessitent des calculs répétés et rendent difficile la traçabilité entre objectifs, recettes choisies et achats.
+Construire et réutiliser une recette demande de gérer des ingrédients, des quantités, des portions, des caractéristiques nutritionnelles et des contraintes comme les allergènes. Lorsque ces informations sont dispersées, la recherche et la préparation des courses deviennent longues et incohérentes.
 
 ## Vision
 
-**Pour** les personnes et foyers qui souhaitent organiser leurs repas,
-**Gestion Recette** est une application desktop de planification alimentaire
-**qui** sélectionne des recettes compatibles, calcule leurs apports, construit un planning et prépare les courses.
-**Contrairement à** une simple collection de recettes,
-**elle** relie les profils, les objectifs, les repas et les achats dans un parcours cohérent et explicable.
-
-## Utilisateurs cibles
-
-- personne seule souhaitant suivre ses apports ;
-- foyer de plusieurs personnes avec préférences différentes ;
-- utilisateur soumis à des restrictions alimentaires déclarées ;
-- utilisateur disposant d'un budget ou d'un équipement limité.
+**Pour** les personnes qui veulent organiser leurs recettes depuis un téléphone ou un navigateur,
+**Gestion Recette** est une application Web mobile-first
+**qui** centralise recettes, ingrédients, tags, allergènes, portions, macros et listes de courses.
+**Contrairement à** une collection de recettes statique,
+**elle** permet de créer, rechercher, adapter et exploiter les recettes dans un parcours cohérent.
 
 ## Proposition de valeur
 
-L'utilisateur renseigne son contexte une fois, puis obtient :
+L'utilisateur peut :
 
-- des recettes compatibles avec ses contraintes ;
-- des quantités adaptées au nombre de portions ;
-- des indicateurs nutritionnels compréhensibles ;
-- un menu hebdomadaire modifiable ;
-- une liste de courses consolidée ;
-- une justification des recommandations et exclusions.
+- se connecter à son espace ;
+- créer et maintenir ses recettes ;
+- gérer un référentiel cohérent d'ingrédients ;
+- retrouver une recette par nom ou par tag ;
+- filtrer selon des allergènes déclarés ;
+- adapter les quantités au nombre de personnes ;
+- consulter les macronutriments calculés ;
+- transformer des recettes en checklist de courses ;
+- suivre l'avancement des courses sous la forme `X/Y`.
 
 ## Principes produit
 
-### Sécurité avant préférence
+### Mobile-first
 
-Les allergies et incompatibilités déclarées sont traitées comme des contraintes strictes. Une préférence n'autorise jamais à contourner une restriction.
+Les parcours sont d'abord conçus pour un écran étroit et une interaction tactile. L'affichage est ensuite enrichi pour tablette et ordinateur sans créer un second produit.
 
-### Explicabilité
+### Gestion explicite
 
-Une recommandation doit pouvoir indiquer pourquoi elle a été proposée : compatibilité, proximité avec les objectifs, budget ou variété.
+Les recettes, ingrédients et tags sont des objets identifiables et modifiables. Une recette ne doit pas dupliquer silencieusement les informations nutritionnelles de ses ingrédients.
 
-### Transparence des données
+### Séparation nutrition et allergènes
 
-Les données nutritionnelles et tarifaires possèdent une source et, lorsque pertinent, une date. Un prix est présenté comme une estimation.
+CIQUAL fournit des données de composition nutritionnelle. Les allergènes sont gérés par un modèle distinct. Une valeur manquante n'est jamais interprétée comme une absence de risque.
 
 ### Calcul plutôt que duplication
 
-Les valeurs dérivées, comme les macros d'une portion, sont calculées depuis les ingrédients et quantités de référence afin d'éviter des données contradictoires.
+Les macros d'une recette et la progression d'une checklist sont dérivées des données sources : ingrédients, quantités, portions et articles cochés.
 
-### Local-first
+### Traçabilité
 
-Le MVP conserve les données sur l'appareil. Cela réduit la complexité, les risques de confidentialité et la dépendance à un service distant.
+Les besoins sont reliés au backlog, aux Pull Requests, aux tests et aux démonstrations. Les changements demandés par le Product Owner restent visibles dans les comptes rendus et ADR.
 
 ## Indicateurs de réussite du MVP
 
-- un utilisateur peut aller du profil à une liste de courses sans manipulation externe ;
-- toutes les recettes proposées satisfont les contraintes strictes déclarées dans le jeu de données ;
-- les quantités et macros évoluent correctement avec le nombre de portions ;
-- un planning hebdomadaire peut être créé et modifié ;
-- les règles métier critiques disposent de tests automatisés ;
-- le processus de développement est traçable depuis le backlog jusqu'aux tests.
+- un utilisateur peut se connecter et fermer sa session ;
+- une recette peut être créée depuis un téléphone sans affichage cassé ;
+- la recette indique ses ingrédients, étapes, tags et nombre de personnes ;
+- la recherche par nom et par tag renvoie les résultats attendus ;
+- le filtre d'allergènes exclut les recettes explicitement incompatibles ;
+- les quantités et macros évoluent correctement avec les portions ;
+- une liste de courses est générée et sa progression `X/Y` est correcte ;
+- chaque séance présente un backlog à jour avec complexité, temps estimé et temps réel ;
+- les règles critiques sont protégées par des tests automatisés.
 
 ## Limite importante
 
-L'application constitue une aide à la planification. Elle ne produit pas de diagnostic, ne remplace pas un professionnel de santé et ne peut pas garantir l'absence de contamination croisée ou l'exhaustivité des informations d'allergènes.
+L'application ne produit pas de diagnostic et ne garantit pas l'absence de contamination croisée. Les informations affichées dépendent des sources et des données renseignées.
 

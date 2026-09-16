@@ -1,75 +1,75 @@
 # Personas initiaux
 
-Les personas servent à guider les décisions. Ils ne remplacent pas des retours réels d'utilisateurs.
+Les personas guident la conception mobile-first. Ils devront être ajustés à partir des retours du Product Owner et des démonstrations.
 
-## Persona 1 - Camille, personne seule
-
-### Contexte
-
-- cuisine pour une personne ;
-- souhaite augmenter son apport en protéines ;
-- dispose de peu de temps en semaine ;
-- utilise des plaques et un micro-ondes ;
-- possède un budget hebdomadaire limité.
-
-### Besoins
-
-- recettes rapides et adaptées à une portion ;
-- affichage clair des calories et protéines ;
-- réutilisation d'ingrédients entre plusieurs repas ;
-- liste de courses sans doublons.
-
-### Critère de succès
-
-Camille planifie cinq jours de repas et obtient une liste de courses cohérente en moins de dix minutes.
-
-## Persona 2 - Alex et Sam, foyer avec contraintes
+## Persona 1 - Camille, utilisateur mobile
 
 ### Contexte
 
-- deux personnes ;
-- une personne est végétarienne ;
-- l'autre évite le lactose ;
-- équipement : plaques, four et air fryer ;
-- préférences partiellement différentes.
+- consulte principalement l'application sur téléphone ;
+- possède plusieurs recettes personnelles ;
+- veut retrouver rapidement une recette au moment de cuisiner ou de faire les courses.
 
 ### Besoins
 
-- ne jamais proposer une recette incompatible avec les restrictions communes ;
-- comprendre pourquoi une recette est exclue ;
-- ajuster automatiquement les portions ;
-- remplacer un repas sans reconstruire toute la semaine.
+- connexion simple ;
+- bibliothèque lisible sur petit écran ;
+- recherche par nom et par tag ;
+- fiche recette accessible avec peu d'actions ;
+- checklist de courses manipulable d'une main.
 
 ### Critère de succès
 
-Le foyer obtient un menu commun compatible et peut remplacer une recette tout en conservant une liste de courses correcte.
+Camille retrouve une recette, adapte les portions et coche ses achats sans zoomer ni faire défiler horizontalement.
 
-## Persona 3 - Morgan, planification familiale
+## Persona 2 - Alex, créateur de recettes
 
 ### Contexte
 
-- quatre personnes ;
-- souhaite respecter un budget ;
-- cuisine plusieurs portions à l'avance ;
-- ne cherche pas un suivi médical précis.
+- ajoute et corrige régulièrement des recettes ;
+- réutilise les mêmes ingrédients ;
+- souhaite classer ses recettes avec des tags comme `gourmand` ou `végétarien`.
 
 ### Besoins
 
-- quantités recalculées pour quatre personnes ;
-- recettes simples et répétables ;
-- coût approximatif du planning ;
-- regroupement des quantités d'un même ingrédient.
+- formulaire de création clair ;
+- gestion des ingrédients sans duplication ;
+- ajout d'étapes, quantités, unités et portions ;
+- modification ou archivage ;
+- prévisualisation des macros calculées.
 
 ### Critère de succès
 
-Morgan peut évaluer si le planning respecte approximativement le budget et préparer les courses pour la semaine.
+Alex crée une recette complète, la retrouve par tag et la modifie sans créer de doublon d'ingrédient.
+
+## Persona 3 - Sam, utilisateur avec restriction
+
+### Contexte
+
+- déclare un ou plusieurs allergènes ;
+- veut éviter les recettes explicitement incompatibles ;
+- sait que l'application ne remplace pas une vérification médicale ou l'étiquetage du produit.
+
+### Besoins
+
+- filtres compréhensibles ;
+- raison d'exclusion visible ;
+- distinction entre allergène connu et information inconnue ;
+- avertissement sur les limites des données.
+
+### Critère de succès
+
+Sam peut filtrer la bibliothèque et comprendre pourquoi une recette est exclue ou pourquoi sa compatibilité reste incertaine.
 
 ## Questions à valider auprès du Product Owner
 
-- Le MVP doit-il gérer plusieurs profils individuels dans un même foyer ou seulement des contraintes communes ?
-- Quelles catégories de repas sont obligatoires ?
-- Quels pays et systèmes d'unités sont prioritaires ?
-- Le budget est-il journalier, hebdomadaire ou mensuel ?
-- Les objectifs nutritionnels sont-ils saisis manuellement ou calculés ?
-- Le suivi du consommé fait-il partie du MVP ou d'une extension ?
+- Qui peut créer un compte ?
+- Chaque utilisateur possède-t-il ses propres recettes ?
+- Existe-t-il un rôle administrateur pour les ingrédients et tags ?
+- Une recette est-elle privée, publique ou partageable ?
+- La suppression est-elle définitive ou remplacée par un archivage ?
+- Quels tags sont prédéfinis et lesquels peuvent être créés librement ?
+- Quels allergènes doivent être gérés dans le MVP ?
+- Une liste de courses peut-elle regrouper plusieurs recettes ?
+- Une PWA installable est-elle attendue ou le responsive Web suffit-il ?
 

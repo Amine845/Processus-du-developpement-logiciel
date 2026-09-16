@@ -2,123 +2,143 @@
 
 ## Objectif
 
-Ce document définit un vocabulaire commun. Il sera affiné par les user stories et les retours du Product Owner.
+Ce modèle couvre le MVP validé : comptes, recettes, ingrédients, tags, nutrition, allergènes et listes de courses.
 
 ## Entités principales
 
-| Entité | Responsabilité | Identité propre |
-|---|---|---|
-| `Household` | Contexte commun du foyer | Oui |
-| `PersonProfile` | Contraintes, préférences et objectifs individuels | Oui |
-| `Ingredient` | Aliment de référence et données nutritionnelles | Oui |
-| `Recipe` | Composition, préparation et portions | Oui |
-| `MealPlan` | Organisation des repas sur une période | Oui |
-| `MealEntry` | Recette et portions pour un créneau | Oui |
-| `ShoppingList` | Besoins agrégés d'un planning | Oui |
-| `Store` | Enseigne et contexte géographique | Oui |
-| `StoreProduct` | Conditionnement et prix observé | Oui |
-| `ConsumedMeal` | Repas réellement consommé | Oui, extension |
-
-## Value objects
-
-| Type | Exemple | Invariant |
-|---|---|---|
-| `Quantity` | `250 g` | Valeur positive ou nulle, unité connue |
-| `ServingCount` | `4 portions` | Entier strictement positif |
-| `Money` | `12.50 EUR` | Montant et devise indissociables |
-| `NutritionFacts` | kcal, protéines, glucides, lipides | Valeurs non négatives ou inconnues |
-| `DateRange` | semaine du 15 au 21 septembre | Début antérieur ou égal à la fin |
-| `Allergen` | lait, arachide | Valeur issue d'une liste contrôlée |
-| `Equipment` | four, plaques, air fryer | Valeur normalisée |
+| Entité | Responsabilité |
+|---|---|
+| `User` | Compte, identité et autorisations |
+| `Session` | Session authentifiée et révocable |
+| `Recipe` | Titre, description, portions, étapes et état |
+| `RecipeIngredient` | Ingrédient, quantité, unité et ordre dans une recette |
+| `Ingredient` | Aliment canonique et caractéristiques |
+| `CiqualFood` | Entrée importée d'une version de CIQUAL |
+| `NutritionFacts` | Énergie et nutriments pour une quantité de référence |
+| `Allergen` | Référentiel séparé des allergènes |
+| `Tag` | Classification éditoriale d'une recette |
+| `ShoppingList` | Liste issue d'une ou plusieurs recettes |
+| `ShoppingItem` | Ingrédient, quantité, unité et état coché |
 
 ## Relations
 
 ```mermaid
 erDiagram
-    HOUSEHOLD ||--o{ PERSON_PROFILE : contient
-    PERSON_PROFILE ||--o{ GOAL : possede
-    RECIPE ||--|{ RECIPE_INGREDIENT : contient
-    INGREDIENT ||--o{ RECIPE_INGREDIENT : compose
-    MEAL_PLAN ||--o{ MEAL_ENTRY : contient
-    RECIPE ||--o{ MEAL_ENTRY : planifiee
-    SHOPPING_LIST ||--o{ SHOPPING_ITEM : contient
-    STORE ||--o{ STORE_PRODUCT : propose
-    INGREDIENT ||--o{ STORE_PRODUCT : correspond
+    USER ||--o{ SESSION : owns
+    USER ||--o{ RECIPE : creates
+    RECIPE ||--|{ RECIPE_INGREDIENT : contains
+    INGREDIENT ||--o{ RECIPE_INGREDIENT : used_in
+    RECIPE }o--o{ TAG : classified_by
+    INGREDIENT }o--o{ ALLERGEN : may_contain
+    INGREDIENT ||--o| CIQUAL_FOOD : maps_to
+    CIQUAL_FOOD ||--|| NUTRITION_FACTS : provides
+    USER ||--o{ SHOPPING_LIST : owns
+    SHOPPING_LIST ||--o{ SHOPPING_ITEM : contains
+    INGREDIENT ||--o{ SHOPPING_ITEM : requested_as
 ```
 
-## Règles métier initiales
+## Value objects
+
+| Type | Exemple | Invariant |
+|---|---|---|
+| `Quantity` | `250 g` | Valeur positive, unité connue |
+| `ServingCount` | `4 personnes` | Entier strictement positif |
+| `NutritionFacts` | kcal, protéines, glucides, lipides | Valeurs non négatives ou inconnues |
+| `EmailAddress` | `user@example.test` | Format normalisé |
+| `RecipeTitle` | `Curry de pois chiches` | Non vide, longueur bornée |
+| `TagName` | `gourmand` | Normalisé, unicité insensible à la casse |
+
+## Règles métier
+
+### Propriété et autorisation
+
+- une action de modification nécessite un utilisateur authentifié ;
+- un utilisateur ne modifie qu'une recette pour laquelle il possède l'autorisation requise ;
+- une vérification côté client ne remplace jamais la vérification serveur ;
+- la politique exacte de propriété et de rôles reste à confirmer avec le Product Owner.
+
+### Recette
+
+- un titre et un nombre de personnes sont obligatoires ;
+- une recette contient des étapes ordonnées ;
+- un ingrédient apparaît avec une quantité et une unité ;
+- un tag éditorial n'est pas un allergène ;
+- l'archivage est réversible tant que le Product Owner n'a pas demandé une suppression définitive.
 
 ### Portions
 
-Pour une recette de référence de (p_r) portions et une quantité (q_r), la quantité pour (p_c) portions est :
+Pour une recette de référence de `p_reference` portions :
 
 ```text
-q_cible = q_reference * p_cible / p_reference
+quantite_cible = quantite_reference * portions_cibles / portions_reference
 ```
 
-Les conversions ne sont autorisées qu'entre unités compatibles.
+Les conversions ne sont autorisées qu'entre unités compatibles. La politique d'arrondi est centralisée et testée.
 
 ### Nutrition
 
-Les données d'un ingrédient sont conservées pour une quantité de référence, généralement 100 g. Les valeurs d'une recette sont la somme des contributions de ses ingrédients.
+- les données CIQUAL sont conservées pour leur quantité de référence ;
+- les macros d'une recette sont la somme des contributions de ses ingrédients ;
+- les valeurs totales et par portion sont calculées ;
+- une donnée inconnue reste inconnue et n'est pas remplacée par zéro ;
+- chaque résultat conserve la provenance et la version du jeu de données.
 
-Une donnée inconnue reste inconnue. Elle ne doit pas être remplacée silencieusement par zéro.
+### Allergènes
 
-### Restrictions strictes
+- les allergènes sont associés explicitement aux ingrédients ;
+- l'absence d'association n'implique pas automatiquement l'absence d'allergène ;
+- le filtre exclut les incompatibilités connues ;
+- une recette avec information incomplète peut être signalée comme incertaine ;
+- aucune conclusion médicale n'est produite.
 
-Une recette est incompatible si au moins une contrainte stricte vérifiable est violée :
+### Recherche et tags
 
-- allergène déclaré ;
-- régime incompatible ;
-- équipement indispensable absent.
-
-Les préférences ne sont pas des restrictions strictes sauf choix explicite de l'utilisateur.
+- recherche par nom insensible à la casse ;
+- recherche ou filtre par un ou plusieurs tags ;
+- normalisation des espaces et de la casse ;
+- les tags subjectifs comme `gourmand` restent séparés des données factuelles.
 
 ### Liste de courses
 
-Les besoins sont calculés depuis les repas et portions planifiés. Deux lignes sont fusionnées uniquement si :
-
-- elles désignent le même ingrédient canonique ;
-- leurs unités sont identiques ou convertibles ;
-- leur préparation ne rend pas les produits incompatibles.
-
-### Prix
-
-Un prix est associé à :
-
-- un produit et son conditionnement ;
-- un magasin ;
-- une devise ;
-- une date d'observation.
-
-Le coût calculé est une estimation, notamment lorsque les conditionnements imposent d'acheter davantage que la quantité consommée.
-
-## Moteur de recommandation
-
-Le moteur suit trois étapes :
-
-1. éliminer les recettes incompatibles ;
-2. classer les recettes restantes ;
-3. ajuster portions et composition du planning.
-
-Score initial possible :
+- les quantités proviennent des recettes et portions sélectionnées ;
+- deux lignes sont regroupées seulement pour le même ingrédient canonique et des unités compatibles ;
+- l'état coché appartient à chaque article ;
+- la progression est dérivée :
 
 ```text
-score =
-  poidsPreference * correspondancePreference
-  + poidsNutrition * proximiteObjectif
-  + poidsBudget * respectBudget
-  + poidsVariete * variete
-  - poidsRepetition * repetition
+progression = nombre_articles_coches / nombre_total_articles
 ```
 
-Les poids et facteurs doivent être documentés et testés. L'algorithme doit pouvoir expliquer les principales raisons du classement.
+Une liste vide affiche `0/0`.
+
+## Données CIQUAL minimales
+
+```text
+CiqualFood
+  code
+  name
+  datasetVersion
+  importedAt
+  sourceUrl
+  nutritionFacts
+
+Ingredient
+  id
+  canonicalName
+  ciqualCode?
+  allergens[]
+```
+
+Le fichier CIQUAL brut est une source importée, pas le modèle applicatif directement exposé aux composants.
 
 ## Questions ouvertes
 
-- Les contraintes sont-elles communes au foyer ou attachées à chaque personne ?
-- Comment répartir les portions si les objectifs diffèrent entre personnes ?
-- Quelles unités doivent être supportées dans le MVP ?
-- Un ingrédient et un produit de magasin sont-ils liés manuellement ?
-- Les restes et stocks du placard sont-ils pris en compte ?
+- inscription libre ou comptes préparés par l'équipe ;
+- rôles et droits exacts ;
+- recettes privées, publiques ou partagées ;
+- liste officielle des allergènes du MVP ;
+- tags libres ou administrés ;
+- nombre de recettes pouvant alimenter une même liste ;
+- moteur de base de données et technologie de session ;
+- responsive Web seul ou PWA installable.
 

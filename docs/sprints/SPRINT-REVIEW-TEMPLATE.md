@@ -42,7 +42,8 @@ Décrire le scénario effectivement exécuté :
 
 | Mesure | Prévu | Réalisé |
 |---|---:|---:|
-| Story points | | |
+| Complexité en story points | | |
+| Temps estimé / temps réel | | |
 | Issues terminées | | |
 | Défauts découverts | | |
 | Pull Requests fusionnées | | |
@@ -68,4 +69,3 @@ Décrire le scénario effectivement exécuté :
 - captures ou démonstration ;
 - tag ou commit de fin de sprint ;
 - compte rendu de review.
-
