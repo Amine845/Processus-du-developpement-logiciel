@@ -58,25 +58,25 @@ CIQUAL sert à la composition nutritionnelle. Les allergènes sont modélisés s
 
 ## Documentation
 
-| Sujet | Document |
-|---|---|
-| Vision produit | [`docs/product/vision.md`](docs/product/vision.md) |
-| Périmètre et MVP | [`docs/product/scope.md`](docs/product/scope.md) |
-| Personas | [`docs/product/personas.md`](docs/product/personas.md) |
-| Backlog initial | [`docs/product/initial-backlog.md`](docs/product/initial-backlog.md) |
-| Architecture | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
-| Modèle métier | [`docs/architecture/domain-model.md`](docs/architecture/domain-model.md) |
-| Données CIQUAL | [`docs/data/ciqual.md`](docs/data/ciqual.md) |
-| Rôles | [`docs/organisation/roles.md`](docs/organisation/roles.md) |
-| Processus Scrum | [`docs/organisation/scrum-process.md`](docs/organisation/scrum-process.md) |
-| Workflow Git | [`docs/organisation/git-workflow.md`](docs/organisation/git-workflow.md) |
-| GitHub Projects | [`docs/organisation/github-project-setup.md`](docs/organisation/github-project-setup.md) |
-| Definition of Ready | [`docs/organisation/definition-of-ready.md`](docs/organisation/definition-of-ready.md) |
-| Definition of Done | [`docs/organisation/definition-of-done.md`](docs/organisation/definition-of-done.md) |
-| CI/CD | [`docs/development/ci-cd.md`](docs/development/ci-cd.md) |
-| Environnement local | [`docs/development/local-setup.md`](docs/development/local-setup.md) |
-| Stratégie de tests | [`docs/tests/test-strategy.md`](docs/tests/test-strategy.md) |
-| Registre des risques | [`docs/risks/risk-register.md`](docs/risks/risk-register.md) |
+| Sujet                | Document                                                                                 |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| Vision produit       | [`docs/product/vision.md`](docs/product/vision.md)                                       |
+| Périmètre et MVP     | [`docs/product/scope.md`](docs/product/scope.md)                                         |
+| Personas             | [`docs/product/personas.md`](docs/product/personas.md)                                   |
+| Backlog initial      | [`docs/product/initial-backlog.md`](docs/product/initial-backlog.md)                     |
+| Architecture         | [`docs/architecture/overview.md`](docs/architecture/overview.md)                         |
+| Modèle métier        | [`docs/architecture/domain-model.md`](docs/architecture/domain-model.md)                 |
+| Données CIQUAL       | [`docs/data/ciqual.md`](docs/data/ciqual.md)                                             |
+| Rôles                | [`docs/organisation/roles.md`](docs/organisation/roles.md)                               |
+| Processus Scrum      | [`docs/organisation/scrum-process.md`](docs/organisation/scrum-process.md)               |
+| Workflow Git         | [`docs/organisation/git-workflow.md`](docs/organisation/git-workflow.md)                 |
+| GitHub Projects      | [`docs/organisation/github-project-setup.md`](docs/organisation/github-project-setup.md) |
+| Definition of Ready  | [`docs/organisation/definition-of-ready.md`](docs/organisation/definition-of-ready.md)   |
+| Definition of Done   | [`docs/organisation/definition-of-done.md`](docs/organisation/definition-of-done.md)     |
+| CI/CD                | [`docs/development/ci-cd.md`](docs/development/ci-cd.md)                                 |
+| Environnement local  | [`docs/development/local-setup.md`](docs/development/local-setup.md)                     |
+| Stratégie de tests   | [`docs/tests/test-strategy.md`](docs/tests/test-strategy.md)                             |
+| Registre des risques | [`docs/risks/risk-register.md`](docs/risks/risk-register.md)                             |
 
 ## Installation actuelle
 

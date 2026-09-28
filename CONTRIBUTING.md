@@ -42,14 +42,14 @@ git switch -c feature/18-allergy-filter
 
 Préfixes autorisés :
 
-| Préfixe | Usage |
-|---|---|
-| `feature/` | Nouvelle fonctionnalité |
-| `fix/` | Correction d'un défaut |
+| Préfixe     | Usage                                       |
+| ----------- | ------------------------------------------- |
+| `feature/`  | Nouvelle fonctionnalité                     |
+| `fix/`      | Correction d'un défaut                      |
 | `refactor/` | Restructuration sans changement fonctionnel |
-| `test/` | Ajout ou correction de tests |
-| `docs/` | Documentation uniquement |
-| `chore/` | Maintenance, configuration ou dépendances |
+| `test/`     | Ajout ou correction de tests                |
+| `docs/`     | Documentation uniquement                    |
+| `chore/`    | Maintenance, configuration ou dépendances   |
 
 Format recommandé : `<type>/<numero-issue>-<description-courte>`.
 

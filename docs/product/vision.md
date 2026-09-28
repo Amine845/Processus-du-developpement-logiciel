@@ -63,4 +63,3 @@ Les besoins sont reliés au backlog, aux Pull Requests, aux tests et aux démons
 ## Limite importante
 
 L'application ne produit pas de diagnostic et ne garantit pas l'absence de contamination croisée. Les informations affichées dépendent des sources et des données renseignées.
-

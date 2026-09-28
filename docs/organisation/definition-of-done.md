@@ -62,4 +62,3 @@ Un élément est terminé seulement lorsque toutes les conditions applicables so
 ## Règle
 
 Un élément qui ne satisfait pas une condition applicable n'appartient pas à l'incrément. Il reste en cours ou retourne au Product Backlog.
-

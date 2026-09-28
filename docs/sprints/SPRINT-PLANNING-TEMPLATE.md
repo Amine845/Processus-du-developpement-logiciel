@@ -21,18 +21,18 @@
 
 ## Capacité
 
-| Membre | Disponibilité estimée | Contraintes |
-|---|---:|---|
-| `[Nom]` | | |
-| `[Nom]` | | |
-| `[Nom]` | | |
-| `[Nom]` | | |
+| Membre  | Disponibilité estimée | Contraintes |
+| ------- | --------------------: | ----------- |
+| `[Nom]` |                       |             |
+| `[Nom]` |                       |             |
+| `[Nom]` |                       |             |
+| `[Nom]` |                       |             |
 
 ## Éléments sélectionnés
 
 | Issue | Intitulé | Complexité | Temps estimé | Responsable initial | Dépendances |
-|---|---|---:|---:|---|---|
-| # | | | | | |
+| ----- | -------- | ---------: | -----------: | ------------------- | ----------- |
+| #     |          |            |              |                     |             |
 
 **Total prévu :** `X points / Y heures estimées`
 
@@ -56,8 +56,8 @@
 ## Risques du sprint
 
 | Risque | Probabilité | Impact | Réponse |
-|---|---|---|---|
-| | | | |
+| ------ | ----------- | ------ | ------- |
+|        |             |        |         |
 
 ## Definition of Done
 

@@ -1,9 +1,9 @@
 ---
 name: Bug
 about: Signaler un comportement incorrect et reproductible
-title: "[BUG] "
-labels: "type:bug, status:to-triage"
-assignees: ""
+title: '[BUG] '
+labels: 'type:bug, status:to-triage'
+assignees: ''
 ---
 
 ## Description
@@ -18,9 +18,7 @@ Décrire le comportement incorrect.
 
 ## Résultat observé
 
-
 ## Résultat attendu
-
 
 ## Environnement
 
@@ -43,4 +41,3 @@ Ajouter message d'erreur, log ou capture sans donnée sensible.
 
 - [ ] Un test automatisé reproduisant le défaut sera ajouté
 - [ ] Le défaut nécessite une vérification manuelle documentée
-

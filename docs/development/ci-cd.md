@@ -76,14 +76,14 @@ flowchart LR
 
 ## Rapports ouverts
 
-| Élément | Format |
-|---|---|
-| Tests | JUnit XML |
-| Couverture | Cobertura XML et HTML |
-| Analyse statique | SARIF si supporté |
-| Backlog | CSV |
-| Import CIQUAL | JSON ou CSV + log texte |
-| Build | Logs et artefacts compressés |
+| Élément          | Format                       |
+| ---------------- | ---------------------------- |
+| Tests            | JUnit XML                    |
+| Couverture       | Cobertura XML et HTML        |
+| Analyse statique | SARIF si supporté            |
+| Backlog          | CSV                          |
+| Import CIQUAL    | JSON ou CSV + log texte      |
+| Build            | Logs et artefacts compressés |
 
 Les artefacts de CI peuvent expirer. Les preuves significatives des sprints et releases doivent être exportées pour le rendu.
 
@@ -134,4 +134,3 @@ Processus :
 - [ ] Un scénario mobile-first est vérifié.
 - [ ] Les rapports sont consultables.
 - [ ] Le mécanisme de staging ou de démonstration est documenté.
-

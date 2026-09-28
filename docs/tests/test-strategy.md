@@ -18,15 +18,15 @@ La couverture est un indicateur, pas une preuve suffisante de qualité.
 
 ## Niveaux
 
-| Niveau | Portée | Outil envisagé | Fréquence |
-|---|---|---|---|
-| Unitaire | Domaine et fonctions pures | Vitest | Chaque PR |
-| Intégration | BDD, migrations, repositories, CIQUAL | Vitest | Chaque PR |
-| API | Routes, validation, auth et autorisation | Vitest + client HTTP | Chaque PR concernée |
-| Composant | Composants React | React Testing Library | Chaque PR concernée |
-| End-to-end | Parcours Web complet | Playwright | Chaque PR ou avant fusion selon durée |
-| Responsive | Viewports mobile et desktop | Playwright | Parcours critiques |
-| Exploratoire | Ergonomie et cas inattendus | Manuel guidé | Avant chaque démonstration |
+| Niveau       | Portée                                   | Outil envisagé        | Fréquence                             |
+| ------------ | ---------------------------------------- | --------------------- | ------------------------------------- |
+| Unitaire     | Domaine et fonctions pures               | Vitest                | Chaque PR                             |
+| Intégration  | BDD, migrations, repositories, CIQUAL    | Vitest                | Chaque PR                             |
+| API          | Routes, validation, auth et autorisation | Vitest + client HTTP  | Chaque PR concernée                   |
+| Composant    | Composants React                         | React Testing Library | Chaque PR concernée                   |
+| End-to-end   | Parcours Web complet                     | Playwright            | Chaque PR ou avant fusion selon durée |
+| Responsive   | Viewports mobile et desktop              | Playwright            | Parcours critiques                    |
+| Exploratoire | Ergonomie et cas inattendus              | Manuel guidé          | Avant chaque démonstration            |
 
 ## Cas critiques
 
@@ -145,4 +145,3 @@ tests/
 - import CIQUAL contrôlé ;
 - rapports CI conservés ;
 - limites connues documentées.
-

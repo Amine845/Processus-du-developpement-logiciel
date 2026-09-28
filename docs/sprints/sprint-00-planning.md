@@ -27,20 +27,20 @@
 
 ## Éléments proposés
 
-| ID | Élément | Priorité | Complexité | Temps estimé |
-|---|---|---|---:|---:|
-| S0-01 | Valider responsive Web ou PWA avec le PO | Must | À estimer | À estimer |
-| S0-02 | Ajouter le compte rendu et réaligner la documentation | Must | À estimer | À estimer |
-| S0-03 | Choisir framework API, BDD et session | Must | À estimer | À estimer |
-| S0-04 | Créer la structure client/serveur/domaine | Must | À estimer | À estimer |
-| S0-05 | Migrer le démarrage Vite hors Electron | Must | À estimer | À estimer |
-| S0-06 | Créer la première migration de base | Must | À estimer | À estimer |
-| S0-07 | Installer les tests et un test de domaine | Must | À estimer | À estimer |
-| S0-08 | Configurer la CI Web | Must | À estimer | À estimer |
-| S0-09 | Créer un écran bibliothèque mobile-first minimal | Must | À estimer | À estimer |
-| S0-10 | Exposer une route de lecture de recettes | Must | À estimer | À estimer |
-| S0-11 | Prototyper l'import d'un fixture CIQUAL | Should | À estimer | À estimer |
-| S0-12 | Créer les epics et vues GitHub actualisés | Must | À estimer | À estimer |
+| ID    | Élément                                               | Priorité | Complexité | Temps estimé |
+| ----- | ----------------------------------------------------- | -------- | ---------: | -----------: |
+| S0-01 | Valider responsive Web ou PWA avec le PO              | Must     |  À estimer |    À estimer |
+| S0-02 | Ajouter le compte rendu et réaligner la documentation | Must     |  À estimer |    À estimer |
+| S0-03 | Choisir framework API, BDD et session                 | Must     |  À estimer |    À estimer |
+| S0-04 | Créer la structure client/serveur/domaine             | Must     |  À estimer |    À estimer |
+| S0-05 | Migrer le démarrage Vite hors Electron                | Must     |  À estimer |    À estimer |
+| S0-06 | Créer la première migration de base                   | Must     |  À estimer |    À estimer |
+| S0-07 | Installer les tests et un test de domaine             | Must     |  À estimer |    À estimer |
+| S0-08 | Configurer la CI Web                                  | Must     |  À estimer |    À estimer |
+| S0-09 | Créer un écran bibliothèque mobile-first minimal      | Must     |  À estimer |    À estimer |
+| S0-10 | Exposer une route de lecture de recettes              | Must     |  À estimer |    À estimer |
+| S0-11 | Prototyper l'import d'un fixture CIQUAL               | Should   |  À estimer |    À estimer |
+| S0-12 | Créer les epics et vues GitHub actualisés             | Must     |  À estimer |    À estimer |
 
 ## Répartition initiale
 
@@ -67,13 +67,13 @@ Cette répartition ne crée pas de silos permanents.
 
 ## Risques
 
-| Risque | Réponse |
-|---|---|
-| Migration trop large | Conserver une tranche verticale minimale |
-| Choix techniques interminables | Timebox et critères écrits |
-| Authentification commencée sans règles produit | Clarifier droits avant CRUD complet |
-| Import CIQUAL trop tôt | Fixture réduit et documentation d'abord |
-| CI différente du local | Mêmes scripts npm et version Node fixée |
+| Risque                                         | Réponse                                  |
+| ---------------------------------------------- | ---------------------------------------- |
+| Migration trop large                           | Conserver une tranche verticale minimale |
+| Choix techniques interminables                 | Timebox et critères écrits               |
+| Authentification commencée sans règles produit | Clarifier droits avant CRUD complet      |
+| Import CIQUAL trop tôt                         | Fixture réduit et documentation d'abord  |
+| CI différente du local                         | Mêmes scripts npm et version Node fixée  |
 
 ## Démonstration
 
@@ -96,4 +96,3 @@ Cette répartition ne crée pas de silos permanents.
 - [ ] Au moins un test métier et un test API passent.
 - [ ] Un écran mobile est démontrable.
 - [ ] Review et rétrospective produites.
-

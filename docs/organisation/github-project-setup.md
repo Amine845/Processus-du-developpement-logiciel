@@ -6,18 +6,18 @@ GitHub Projects est la source de vérité du Product Backlog et du Sprint Backlo
 
 ## Champs
 
-| Champ | Type | Valeurs / usage |
-|---|---|---|
-| Status | Sélection | Backlog, To refine, Ready, In progress, In review, Done |
-| Type | Sélection | Epic, Story, Bug, Technical task, Documentation |
-| Priority | Sélection | Must, Should, Could, Won't now |
-| Sprint | Itération | Sprint 0, Sprint 1, Sprint 2, etc. |
-| Complexity | Nombre | Story points `1, 2, 3, 5, 8` |
-| Estimated time | Nombre | Heures prévues avant réalisation |
-| Actual time | Nombre | Heures réellement constatées |
-| Risk | Sélection | Low, Medium, High, Critical |
-| Assignee | Personne | Responsable du prochain travail |
-| PO validation | Sélection | Pending, Accepted, Changes requested |
+| Champ          | Type      | Valeurs / usage                                         |
+| -------------- | --------- | ------------------------------------------------------- |
+| Status         | Sélection | Backlog, To refine, Ready, In progress, In review, Done |
+| Type           | Sélection | Epic, Story, Bug, Technical task, Documentation         |
+| Priority       | Sélection | Must, Should, Could, Won't now                          |
+| Sprint         | Itération | Sprint 0, Sprint 1, Sprint 2, etc.                      |
+| Complexity     | Nombre    | Story points `1, 2, 3, 5, 8`                            |
+| Estimated time | Nombre    | Heures prévues avant réalisation                        |
+| Actual time    | Nombre    | Heures réellement constatées                            |
+| Risk           | Sélection | Low, Medium, High, Critical                             |
+| Assignee       | Personne  | Responsable du prochain travail                         |
+| PO validation  | Sélection | Pending, Accepted, Changes requested                    |
 
 Complexité, temps estimé et temps réel ne sont pas interchangeables. Ne pas modifier l'estimation initiale après réalisation.
 
@@ -91,4 +91,3 @@ Le label `area:electron` peut être conservé uniquement pour les tâches de mig
 - conserver le document de review et rétrospective ;
 - noter le commit ou tag démontré ;
 - vérifier l'accès du professeur.
-

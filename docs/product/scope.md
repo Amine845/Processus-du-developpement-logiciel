@@ -111,4 +111,3 @@ Ils restent visibles dans le Product Backlog avec le statut `Won't now` ou `À c
 3. le Product Owner ordonne l'élément dans le backlog ;
 4. l'élément n'est pas ajouté silencieusement au sprint en cours ;
 5. toute modification de périmètre est consignée dans le compte rendu de séance.
-

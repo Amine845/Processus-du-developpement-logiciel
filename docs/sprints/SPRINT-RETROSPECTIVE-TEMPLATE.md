@@ -42,8 +42,8 @@ Pour le problème principal, demander plusieurs fois « pourquoi » sans cherche
 Limiter le nombre d'actions pour qu'elles soient réellement appliquées.
 
 | Action | Responsable du suivi | Échéance | Mesure de réussite | Issue |
-|---|---|---|---|---|
-| | | | | |
+| ------ | -------------------- | -------- | ------------------ | ----- |
+|        |                      |          |                    |       |
 
 ## Expérience du prochain sprint
 
@@ -52,6 +52,5 @@ Limiter le nombre d'actions pour qu'elles soient réellement appliquées.
 ## Vérification de la rétrospective précédente
 
 | Action précédente | Résultat | Conserver / adapter / abandonner |
-|---|---|---|
-| | | |
-
+| ----------------- | -------- | -------------------------------- |
+|                   |          |                                  |

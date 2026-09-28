@@ -1,9 +1,9 @@
 ---
 name: User story
 about: Décrire une fonctionnalité apportant une valeur utilisateur
-title: "[STORY] "
-labels: "type:story, status:to-refine"
-assignees: ""
+title: '[STORY] '
+labels: 'type:story, status:to-refine'
+assignees: ''
 ---
 
 ## User story
