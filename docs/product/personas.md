@@ -72,4 +72,3 @@ Sam peut filtrer la bibliothèque et comprendre pourquoi une recette est exclue 
 - Quels allergènes doivent être gérés dans le MVP ?
 - Une liste de courses peut-elle regrouper plusieurs recettes ?
 - Une PWA installable est-elle attendue ou le responsive Web suffit-il ?
-

@@ -211,4 +211,3 @@ La migration doit être explicite :
 5. supprimer Electron seulement lorsque le build Web, les tests et la CI sont opérationnels.
 
 Le code existant et la documentation peuvent diverger pendant une courte branche de migration, jamais durablement sur `main`.
-

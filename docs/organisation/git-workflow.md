@@ -84,4 +84,3 @@ Besoin du Product Owner
 ```
 
 Une fonctionnalité sans issue ou une issue sans preuve d'intégration constitue une rupture de traçabilité.
-

@@ -17,15 +17,15 @@ Le Product Owner ordonne les éléments. Les développeurs estiment séparément
 
 ## Epic 0 - Fondations Web et processus
 
-| ID | Élément | Priorité | Critère synthétique |
-|---|---|---|---|
-| E0-01 | Consigner le premier rendez-vous PO | Must | Décisions, demandes et questions sont versionnées |
-| E0-02 | Valider Web responsive/PWA avec le PO | Must | La plateforme cible est non ambiguë |
-| E0-03 | Retirer progressivement Electron | Must | Le développement et le build Web fonctionnent sans Electron |
-| E0-04 | Choisir le framework API et la BDD | Must | Deux ADR validés documentent les choix |
-| E0-05 | Configurer la CI | Must | Lint, typecheck, tests et build Web passent sur une PR |
-| E0-06 | Configurer les migrations | Must | Une base vide atteint le schéma courant |
-| E0-07 | Créer un premier écran mobile-first | Must | Aucun défilement horizontal à la largeur cible |
+| ID    | Élément                               | Priorité | Critère synthétique                                         |
+| ----- | ------------------------------------- | -------- | ----------------------------------------------------------- |
+| E0-01 | Consigner le premier rendez-vous PO   | Must     | Décisions, demandes et questions sont versionnées           |
+| E0-02 | Valider Web responsive/PWA avec le PO | Must     | La plateforme cible est non ambiguë                         |
+| E0-03 | Retirer progressivement Electron      | Must     | Le développement et le build Web fonctionnent sans Electron |
+| E0-04 | Choisir le framework API et la BDD    | Must     | Deux ADR validés documentent les choix                      |
+| E0-05 | Configurer la CI                      | Must     | Lint, typecheck, tests et build Web passent sur une PR      |
+| E0-06 | Configurer les migrations             | Must     | Une base vide atteint le schéma courant                     |
+| E0-07 | Créer un premier écran mobile-first   | Must     | Aucun défilement horizontal à la largeur cible              |
 
 ## Epic 1 - Authentification
 
@@ -195,15 +195,15 @@ Critères d'acceptation :
 
 ## Epic 7 - Extensions à confirmer
 
-| Élément | Priorité initiale |
-|---|---|
-| Planning hebdomadaire | Won't now |
-| Objectifs nutritionnels personnalisés | Won't now |
-| Recommandations automatiques | Won't now |
-| Budget, pays et magasins | Won't now |
-| Équipements de cuisine | Won't now |
-| Suivi du consommé | Won't now |
-| Temps de préparation comme filtre majeur | Won't now |
+| Élément                                  | Priorité initiale |
+| ---------------------------------------- | ----------------- |
+| Planning hebdomadaire                    | Won't now         |
+| Objectifs nutritionnels personnalisés    | Won't now         |
+| Recommandations automatiques             | Won't now         |
+| Budget, pays et magasins                 | Won't now         |
+| Équipements de cuisine                   | Won't now         |
+| Suivi du consommé                        | Won't now         |
+| Temps de préparation comme filtre majeur | Won't now         |
 
 ## Règles d'utilisation
 
@@ -213,4 +213,3 @@ Critères d'acceptation :
 - les travaux imprévus sont ajoutés au tableau ;
 - aucun élément n'est terminé sans respecter la Definition of Done ;
 - le backlog est actualisé et présenté à chaque séance avec le Product Owner.
-

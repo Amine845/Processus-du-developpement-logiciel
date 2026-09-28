@@ -27,8 +27,8 @@ Décrire en une phrase le résultat attendu.
 ## Retour du Product Owner
 
 | Élément | Retour | Accepté / changement demandé | Issue liée |
-|---|---|---|---|
-| | | | |
+| ------- | ------ | ---------------------------- | ---------- |
+|         |        |                              |            |
 
 ## Rétrospective synthétique
 
@@ -43,20 +43,20 @@ Décrire en une phrase le résultat attendu.
 ### Actions d'amélioration
 
 | Action | Responsable du suivi | Échéance | Mesure de réussite |
-|---|---|---|---|
-| | | | |
+| ------ | -------------------- | -------- | ------------------ |
+|        |                      |          |                    |
 
 ## Décisions
 
-| ID | Décision | Justification | Décideur | Impact / ADR |
-|---|---|---|---|---|
-| D-01 | | | | |
+| ID   | Décision | Justification | Décideur | Impact / ADR |
+| ---- | -------- | ------------- | -------- | ------------ |
+| D-01 |          |               |          |              |
 
 ## Changements du backlog
 
 | Élément | Ajouté / modifié / retiré | Priorité | Motif PO |
-|---|---|---|---|
-| | | | |
+| ------- | ------------------------- | -------- | -------- |
+|         |                           |          |          |
 
 ## Sprint suivant
 
@@ -70,8 +70,8 @@ Décrire en une phrase le résultat attendu.
 ## Actions et questions
 
 | Action ou question | Destinataire | Échéance | Issue / hypothèse temporaire |
-|---|---|---|---|
-| | | | |
+| ------------------ | ------------ | -------- | ---------------------------- |
+|                    |              |          |                              |
 
 ## Preuves à conserver
 
@@ -81,4 +81,3 @@ Décrire en une phrase le résultat attendu.
 - [ ] Review
 - [ ] Rétrospective
 - [ ] Commit ou tag démontré
-

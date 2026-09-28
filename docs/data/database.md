@@ -67,28 +67,28 @@ npx prisma migrate dev --name ajout_table_recettes
 Prisma génère un client typé sur mesure adapté à notre schéma. L'instanciation centrale se fait dans `src/server/infrastructure/database/index.ts` :
 
 ```typescript
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-export default prisma;
+export default prisma
 ```
 
 Dans vos contrôleurs ou services, vous pouvez désormais interagir avec la base de données en profitant de l'autocomplétion native de WebStorm :
 
 ```typescript
-import prisma from '../infrastructure/database';
+import prisma from '../infrastructure/database'
 
 // Exemple : Récupérer tous les utilisateurs
-const users = await prisma.user.findMany();
+const users = await prisma.user.findMany()
 
 // Exemple : Créer une recette
 const newRecipe = await prisma.recipe.create({
   data: {
     title: 'Gâteau au chocolat',
-    authorId: 1
-  }
-});
+    authorId: 1,
+  },
+})
 ```
 
 ## 6. Limites de SQLite à connaître

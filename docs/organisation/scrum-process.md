@@ -84,11 +84,11 @@ Seuls les éléments respectant la Definition of Done appartiennent à l'incrém
 
 Trois mesures distinctes sont conservées :
 
-| Mesure | Moment | Usage |
-|---|---|---|
-| Complexité | Avant le sprint | Comparaison relative en points `1, 2, 3, 5, 8` |
-| Temps estimé | Avant le sprint | Planification en heures |
-| Temps réel | Pendant/après | Apprentissage et analyse des écarts |
+| Mesure       | Moment          | Usage                                          |
+| ------------ | --------------- | ---------------------------------------------- |
+| Complexité   | Avant le sprint | Comparaison relative en points `1, 2, 3, 5, 8` |
+| Temps estimé | Avant le sprint | Planification en heures                        |
+| Temps réel   | Pendant/après   | Apprentissage et analyse des écarts            |
 
 Les story points ne sont pas convertis automatiquement en heures. L'estimation originale n'est pas écrasée après réalisation.
 
@@ -127,4 +127,3 @@ Le Daily Scrum sert aux développeurs à adapter leur plan, pas à rendre compte
 - conserver estimation initiale et temps réel ;
 - écrire les hypothèses et désaccords ;
 - mettre le backlog à jour avant chaque séance.
-

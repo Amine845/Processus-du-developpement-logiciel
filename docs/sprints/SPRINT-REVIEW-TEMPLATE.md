@@ -18,15 +18,15 @@
 
 ## Éléments terminés
 
-| Issue | Résultat démontré | PR | Tests / preuves | Validation PO |
-|---|---|---|---|---|
-| # | | # | | |
+| Issue | Résultat démontré | PR  | Tests / preuves | Validation PO |
+| ----- | ----------------- | --- | --------------- | ------------- |
+| #     |                   | #   |                 |               |
 
 ## Éléments non terminés
 
 | Issue | État réel | Raison | Suite proposée |
-|---|---|---|---|
-| # | | | |
+| ----- | --------- | ------ | -------------- |
+| #     |           |        |                |
 
 Un élément non conforme à la Definition of Done n'est pas compté comme terminé.
 
@@ -40,14 +40,14 @@ Décrire le scénario effectivement exécuté :
 
 ## Indicateurs
 
-| Mesure | Prévu | Réalisé |
-|---|---:|---:|
-| Complexité en story points | | |
-| Temps estimé / temps réel | | |
-| Issues terminées | | |
-| Défauts découverts | | |
-| Pull Requests fusionnées | | |
-| Couverture, si pertinente | | |
+| Mesure                     | Prévu | Réalisé |
+| -------------------------- | ----: | ------: |
+| Complexité en story points |       |         |
+| Temps estimé / temps réel  |       |         |
+| Issues terminées           |       |         |
+| Défauts découverts         |       |         |
+| Pull Requests fusionnées   |       |         |
+| Couverture, si pertinente  |       |         |
 
 ## Retour du Product Owner
 

@@ -4,13 +4,13 @@
 
 Le projet distingue le Product Owner du groupe de réalisation.
 
-| Personne | Responsabilité Scrum | Contribution au projet |
-|---|---|---|
-| Professeur | Product Owner | Besoins, ordre du backlog, validation de l'incrément |
-| `[Votre nom]` | Scrum Master | Facilitation Scrum et développement |
-| `[Membre 2]` | Développeur | Conception, code, tests, documentation et revue |
-| `[Membre 3]` | Développeur | Conception, code, tests, documentation et revue |
-| `[Membre 4]` | Développeur | Conception, code, tests, documentation et revue |
+| Personne      | Responsabilité Scrum | Contribution au projet                               |
+| ------------- | -------------------- | ---------------------------------------------------- |
+| Professeur    | Product Owner        | Besoins, ordre du backlog, validation de l'incrément |
+| `[Votre nom]` | Scrum Master         | Facilitation Scrum et développement                  |
+| `[Membre 2]`  | Développeur          | Conception, code, tests, documentation et revue      |
+| `[Membre 3]`  | Développeur          | Conception, code, tests, documentation et revue      |
+| `[Membre 4]`  | Développeur          | Conception, code, tests, documentation et revue      |
 
 Le Product Owner est extérieur au groupe de quatre étudiants. Le Scrum Master fait partie du groupe et contribue également au produit.
 
@@ -72,42 +72,41 @@ Les développeurs sont collectivement responsables de :
 
 Pour chaque sprint, trois responsabilités de vigilance sont attribuées. Elles ne rendent pas leur porteur seul responsable du sujet.
 
-| Responsabilité | Mission pendant le sprint |
-|---|---|
-| Référent qualité | Suit les tests, la CI et les défauts ouverts |
-| Référent architecture | Repère les écarts aux frontières et prépare les ADR nécessaires |
-| Référent documentation | Vérifie comptes rendus, guides et preuves du sprint |
+| Responsabilité         | Mission pendant le sprint                                       |
+| ---------------------- | --------------------------------------------------------------- |
+| Référent qualité       | Suit les tests, la CI et les défauts ouverts                    |
+| Référent architecture  | Repère les écarts aux frontières et prépare les ADR nécessaires |
+| Référent documentation | Vérifie comptes rendus, guides et preuves du sprint             |
 
 Le Scrum Master conserve sa responsabilité Scrum. Les trois autres responsabilités peuvent tourner entre les quatre étudiants à chaque sprint.
 
 ### Tableau de rotation
 
-| Sprint | Qualité | Architecture | Documentation |
-|---|---|---|---|
-| Sprint 0 | `[Nom]` | `[Nom]` | `[Nom]` |
-| Sprint 1 | `[Nom]` | `[Nom]` | `[Nom]` |
-| Sprint 2 | `[Nom]` | `[Nom]` | `[Nom]` |
+| Sprint   | Qualité | Architecture | Documentation |
+| -------- | ------- | ------------ | ------------- |
+| Sprint 0 | `[Nom]` | `[Nom]`      | `[Nom]`       |
+| Sprint 1 | `[Nom]` | `[Nom]`      | `[Nom]`       |
+| Sprint 2 | `[Nom]` | `[Nom]`      | `[Nom]`       |
 
 ## Matrice de décision
 
-| Sujet | Responsable de la décision | Personnes consultées |
-|---|---|---|
-| Valeur et priorité du backlog | Product Owner | Scrum Master et développeurs |
-| Contenu réalisable du sprint | Développeurs | Product Owner pour l'objectif |
-| Architecture et technologie | Développeurs | Product Owner si impact produit |
-| Processus Scrum | Équipe avec facilitation du Scrum Master | Product Owner si nécessaire |
-| Acceptation d'une user story | Product Owner selon les critères | Développeurs |
-| Respect de la Definition of Done | Développeurs collectivement | Scrum Master facilite la transparence |
+| Sujet                            | Responsable de la décision               | Personnes consultées                  |
+| -------------------------------- | ---------------------------------------- | ------------------------------------- |
+| Valeur et priorité du backlog    | Product Owner                            | Scrum Master et développeurs          |
+| Contenu réalisable du sprint     | Développeurs                             | Product Owner pour l'objectif         |
+| Architecture et technologie      | Développeurs                             | Product Owner si impact produit       |
+| Processus Scrum                  | Équipe avec facilitation du Scrum Master | Product Owner si nécessaire           |
+| Acceptation d'une user story     | Product Owner selon les critères         | Développeurs                          |
+| Respect de la Definition of Done | Développeurs collectivement              | Scrum Master facilite la transparence |
 
 ## Disponibilités et communication
 
 À compléter au lancement :
 
-| Personne | Disponibilités habituelles | Canal préféré | Contraintes connues |
-|---|---|---|---|
-| `[Votre nom]` | | | |
-| `[Membre 2]` | | | |
-| `[Membre 3]` | | | |
-| `[Membre 4]` | | | |
-| Professeur / PO | | | |
-
+| Personne        | Disponibilités habituelles | Canal préféré | Contraintes connues |
+| --------------- | -------------------------- | ------------- | ------------------- |
+| `[Votre nom]`   |                            |               |                     |
+| `[Membre 2]`    |                            |               |                     |
+| `[Membre 3]`    |                            |               |                     |
+| `[Membre 4]`    |                            |               |                     |
+| Professeur / PO |                            |               |                     |

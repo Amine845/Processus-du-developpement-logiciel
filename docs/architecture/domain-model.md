@@ -6,19 +6,19 @@ Ce modèle couvre le MVP validé : comptes, recettes, ingrédients, tags, nutrit
 
 ## Entités principales
 
-| Entité | Responsabilité |
-|---|---|
-| `User` | Compte, identité et autorisations |
-| `Session` | Session authentifiée et révocable |
-| `Recipe` | Titre, description, portions, étapes et état |
+| Entité             | Responsabilité                                        |
+| ------------------ | ----------------------------------------------------- |
+| `User`             | Compte, identité et autorisations                     |
+| `Session`          | Session authentifiée et révocable                     |
+| `Recipe`           | Titre, description, portions, étapes et état          |
 | `RecipeIngredient` | Ingrédient, quantité, unité et ordre dans une recette |
-| `Ingredient` | Aliment canonique et caractéristiques |
-| `CiqualFood` | Entrée importée d'une version de CIQUAL |
-| `NutritionFacts` | Énergie et nutriments pour une quantité de référence |
-| `Allergen` | Référentiel séparé des allergènes |
-| `Tag` | Classification éditoriale d'une recette |
-| `ShoppingList` | Liste issue d'une ou plusieurs recettes |
-| `ShoppingItem` | Ingrédient, quantité, unité et état coché |
+| `Ingredient`       | Aliment canonique et caractéristiques                 |
+| `CiqualFood`       | Entrée importée d'une version de CIQUAL               |
+| `NutritionFacts`   | Énergie et nutriments pour une quantité de référence  |
+| `Allergen`         | Référentiel séparé des allergènes                     |
+| `Tag`              | Classification éditoriale d'une recette               |
+| `ShoppingList`     | Liste issue d'une ou plusieurs recettes               |
+| `ShoppingItem`     | Ingrédient, quantité, unité et état coché             |
 
 ## Relations
 
@@ -39,14 +39,14 @@ erDiagram
 
 ## Value objects
 
-| Type | Exemple | Invariant |
-|---|---|---|
-| `Quantity` | `250 g` | Valeur positive, unité connue |
-| `ServingCount` | `4 personnes` | Entier strictement positif |
-| `NutritionFacts` | kcal, protéines, glucides, lipides | Valeurs non négatives ou inconnues |
-| `EmailAddress` | `user@example.test` | Format normalisé |
-| `RecipeTitle` | `Curry de pois chiches` | Non vide, longueur bornée |
-| `TagName` | `gourmand` | Normalisé, unicité insensible à la casse |
+| Type             | Exemple                            | Invariant                                |
+| ---------------- | ---------------------------------- | ---------------------------------------- |
+| `Quantity`       | `250 g`                            | Valeur positive, unité connue            |
+| `ServingCount`   | `4 personnes`                      | Entier strictement positif               |
+| `NutritionFacts` | kcal, protéines, glucides, lipides | Valeurs non négatives ou inconnues       |
+| `EmailAddress`   | `user@example.test`                | Format normalisé                         |
+| `RecipeTitle`    | `Curry de pois chiches`            | Non vide, longueur bornée                |
+| `TagName`        | `gourmand`                         | Normalisé, unicité insensible à la casse |
 
 ## Règles métier
 
@@ -141,4 +141,3 @@ Le fichier CIQUAL brut est une source importée, pas le modèle applicatif direc
 - nombre de recettes pouvant alimenter une même liste ;
 - moteur de base de données et technologie de session ;
 - responsive Web seul ou PWA installable.
-

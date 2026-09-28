@@ -101,4 +101,3 @@ Avant d'ouvrir une issue :
 4. reproduire depuis `main` à jour ;
 5. conserver le message d'erreur complet sans secret ;
 6. préciser navigateur, système, viewport et étapes de reproduction.
-

@@ -1,13 +1,12 @@
 ---
 name: Tâche technique
 about: Tests, architecture, CI, documentation ou maintenance
-title: "[TECH] "
-labels: "type:technical-task, status:to-refine"
-assignees: ""
+title: '[TECH] '
+labels: 'type:technical-task, status:to-refine'
+assignees: ''
 ---
 
 ## Objectif
-
 
 ## Justification
 
@@ -20,9 +19,7 @@ Expliquer la valeur technique, le risque réduit ou le travail produit rendu pos
 
 ## Approche envisagée
 
-
 ## Alternatives considérées
-
 
 ## Validation
 
