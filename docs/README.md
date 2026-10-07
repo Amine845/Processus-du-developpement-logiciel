@@ -23,6 +23,9 @@ La documentation fait partie du produit. Elle est versionnée avec le code et mi
 
 - [`data/ciqual.md`](data/ciqual.md) : source, version, import et limites de CIQUAL.
 
+- [`data/database.md`](data/database.md) : schéma minimal, configuration SQLite et migrations.
+- [`architecture/decisions/ADR-006-minimal-recipe-database.md`](architecture/decisions/ADR-006-minimal-recipe-database.md) : choix du schéma initial.
+
 ## Organisation
 
 - [`organisation/roles.md`](organisation/roles.md) : Product Owner professeur, Scrum Master et développeurs.

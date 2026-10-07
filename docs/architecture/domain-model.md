@@ -4,6 +4,10 @@
 
 Ce modèle couvre le MVP validé : comptes, recettes, ingrédients, tags, nutrition, allergènes et listes de courses.
 
+Le sous-ensemble implémenté au Sprint 1 est décrit dans [la documentation BDD](../data/database.md).
+Il comprend aussi `RecipeStep` (position et instruction) ; les autres entités
+ci-dessous restent une cible, pas des tables déjà disponibles.
+
 ## Entités principales
 
 | Entité             | Responsabilité                                        |

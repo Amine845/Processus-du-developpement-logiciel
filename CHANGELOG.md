@@ -8,6 +8,8 @@ Le format s'inspire de Keep a Changelog et le projet utilise le versionnement s�
 
 ### Added
 
+- Schéma minimal SQLite/Prisma des recettes, ingrédients, lignes et étapes, migration initiale avec contraintes SQL et test d’intégration isolé.
+
 - Documentation initiale du produit, de l'architecture et du processus.
 - Modèles d'issues et de Pull Request.
 - Compte rendu du premier rendez-vous avec le Product Owner.
