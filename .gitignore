@@ -23,3 +23,16 @@ dist-electron
 *.njsproj
 *.sln
 *.sw?
+
+# Configuration locale (seuls les exemples sans secret sont versionnés)
+.env
+.env.*
+!.env.example
+
+# SQLite et fichiers auxiliaires, à tous les niveaux
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
