@@ -35,7 +35,7 @@ chercher à réaliser l'ensemble du MVP.
 ## Capacité
 
 | Membre   | Disponibilité estimée | Contraintes |
-|----------|----------------------:|-------------|
+| -------- | --------------------: | ----------- |
 | Titiplex |           À compléter | À compléter |
 | Qwantike |           À compléter | À compléter |
 | Ahrizmo  |           À compléter | À compléter |
@@ -47,7 +47,7 @@ de la démonstration. La charge ne peut pas être validée avant cette mise à j
 ## Éléments sélectionnés
 
 | Issue                                                                     | Intitulé                | Complexité | Temps estimé | Responsable initial          | Dépendances                                                                        |
-|---------------------------------------------------------------------------|-------------------------|-----------:|-------------:|------------------------------|------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------- | ----------------------- | ---------: | -----------: | ---------------------------- | ---------------------------------------------------------------------------------- |
 | https://github.com/Amine845/Processus-du-developpement-logiciel/issues/13 | Créer la BDD minimale   |   3 points |          5 h | Auto-attribution à confirmer | Configuration SQLite/Prisma et conventions de migration                            |
 | https://github.com/Amine845/Processus-du-developpement-logiciel/issues/14 | Implémenter l'interface |   3 points |          4 h | Auto-attribution à confirmer | Périmètre des écrans et contrat de données ; API pour une lecture réelle de la BDD |
 | https://github.com/Amine845/Processus-du-developpement-logiciel/issues/13 | Créer une seed          |   2 points |          2 h | Auto-attribution à confirmer | Schéma et migration BDD stabilisés                                                 |
@@ -162,7 +162,7 @@ Les probabilités et impacts ci-dessous sont des appréciations initiales à rev
 lors du planning.
 
 | Risque                                           | Probabilité                | Impact | Réponse                                                                                    |
-|--------------------------------------------------|----------------------------|--------|--------------------------------------------------------------------------------------------|
+| ------------------------------------------------ | -------------------------- | ------ | ------------------------------------------------------------------------------------------ |
 | Périmètre de l'interface trop large ou ambigu    | Élevée                     | Élevé  | Confirmer les écrans et interactions avant estimation                                      |
 | API de lecture absente                           | À vérifier                 | Élevé  | Décider explicitement du raccordement ou de l'usage de fixtures                            |
 | Chemin SQLite ou version Prisma incohérents      | Moyenne                    | Élevé  | Utiliser le lockfile et tester la migration sur une base vierge                            |
