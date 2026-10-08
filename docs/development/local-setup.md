@@ -45,6 +45,11 @@ Le nom exact peut varier selon l'organisation retenue, mais une même opération
 
 ## Configuration
 
+Pour la BDD minimale, suivre [la procédure SQLite/Prisma](../data/database.md) :
+le fichier réel est `src/server/.env`, créé depuis `src/server/.env.example`.
+Le bloc ci-dessous décrit la configuration cible de la future API, pas un second
+fichier à créer pour cette issue.
+
 Créer un `.env.example` ne contenant aucun secret :
 
 ```dotenv
@@ -66,8 +71,11 @@ Règles :
 
 ```bash
 npm run db:migrate
-npm run db:seed
+npm run db:generate
 ```
+
+Aucun seed ni serveur HTTP n’est fourni pour le schéma minimal. Les commandes de
+création de migrations et de test sont décrites dans la procédure BDD.
 
 Les commandes de reset doivent :
 

@@ -35,6 +35,9 @@ jobs:
       - name: Vérification des types TypeScript
         run: npx tsc --noEmit
 
+      - name: Valider les migrations et contraintes SQLite
+        run: npm run test:db
+
       - name: Tests unitaires
         run: npm run test
 
