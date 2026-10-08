@@ -45,11 +45,10 @@ Avec cette version et le pilote natif, le chemin SQLite relatif est résolu
 un niveau `prisma` superflu. `npm run test:db` vérifie ce comportement sur une
 copie temporaire du schéma et du `.env`, avec le CLI réellement installé.
 
-Le futur démarrage serveur doit charger sa configuration avant de créer le client,
-par exemple `node --env-file=src/server/.env <entree-serveur-compilee>` depuis la
-racine. Il doit refuser une configuration absente/invalide. Aucun serveur HTTP ni
-chargeur de configuration applicatif n'est ajouté par cette issue. Ne jamais
-préfixer `DATABASE_URL` par `VITE_` ni importer Prisma depuis `src/client`.
+Le serveur de lecture charge sa configuration avant de créer son unique client.
+Voir [le repository et le démarrage serveur](../development/recipe-repository.md)
+pour le contrat, les routes minimales, le cycle de vie et les tests isolés.
+Ne jamais préfixer `DATABASE_URL` par `VITE_` ni importer Prisma depuis `src/client`.
 
 ## Modèles, relations et validation
 

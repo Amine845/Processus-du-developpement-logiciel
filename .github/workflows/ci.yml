@@ -38,6 +38,9 @@ jobs:
       - name: Valider les migrations et contraintes SQLite
         run: npm run test:db
 
+      - name: Tester le repository sur une base temporaire
+        run: npm run test:repository
+
       - name: Tests unitaires
         run: npm run test
 
