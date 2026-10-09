@@ -14,7 +14,10 @@
     "db:generate": "node scripts/prisma.mjs generate",
     "db:migrate": "node scripts/prisma.mjs migrate deploy",
     "db:migrate:dev": "node scripts/prisma.mjs migrate dev",
-    "test:db": "npm run db:generate && node tests/integration/database-check.mjs"
+    "test:db": "npm run db:generate && node tests/integration/database-check.mjs",
+    "build:server": "npm run db:generate && tsc -p tsconfig.server.json",
+    "start:server": "npm run build:server && node scripts/start-server.mjs",
+    "test:repository": "npm run build:server && node --test tests/integration/recipe-repository-check.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.12.0",
