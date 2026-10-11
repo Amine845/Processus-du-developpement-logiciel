@@ -1,0 +1,39 @@
+/* src/client/components/layout/Layout.css */
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Header standardisé */
+.layout-header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    width: 100%;
+}
+
+.layout-header-inner {
+    padding: var(--spacing-md);
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.app-title {
+    font-size: var(--font-size-title);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* Conteneur principal avec marges adaptées */
+.layout-main {
+    flex: 1;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--spacing-md); /* Empêche le texte de coller aux bords sur smartphone */
+}
