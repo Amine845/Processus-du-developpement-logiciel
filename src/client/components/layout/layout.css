@@ -3,17 +3,16 @@
 .layout {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 100dvh;
     width: 100%;
 }
 
-/* Header standardisé */
 .layout-header {
-    background-color: var(--color-surface);
+    background-color: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: var(--z-header);
     width: 100%;
 }
 
@@ -23,17 +22,18 @@
     margin: 0 auto;
 }
 
+/* Sentence case appliqué au logo/titre */
 .app-title {
-    font-size: var(--font-size-title);
+    font-size: var(--text-lg);
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-accent);
+    letter-spacing: -0.02em;
 }
 
-/* Conteneur principal avec marges adaptées */
 .layout-main {
     flex: 1;
     width: 100%;
     max-width: 960px;
     margin: 0 auto;
-    padding: var(--spacing-md); /* Empêche le texte de coller aux bords sur smartphone */
+    padding: var(--spacing-md);
 }
