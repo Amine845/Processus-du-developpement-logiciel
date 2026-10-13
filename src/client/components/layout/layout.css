@@ -36,4 +36,5 @@
     max-width: 960px;
     margin: 0 auto;
     padding: var(--spacing-md);
+    padding-bottom: 80px; /* Dégagement obligatoire pour la BottomNav fixe */
 }

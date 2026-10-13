@@ -1,4 +1,5 @@
 import React from 'react';
+import { BottomNav } from './BottomNav';
 import './layout.css';
 
 interface LayoutProps {
@@ -7,18 +8,18 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
-        <div className="layout-container">
-            <header className="app-header">
-                <div className="header-content">
-                    <h1 className="app-title">Gestionnaire de recettes</h1>
+        <div className="layout">
+            <header className="layout-header">
+                <div className="layout-header-inner">
+                    <h1 className="app-title">Assiette</h1>
                 </div>
             </header>
 
-            <main className="main-content">
+            <main className="layout-main">
                 {children}
             </main>
+
+            <BottomNav />
         </div>
     );
 };
-
-
