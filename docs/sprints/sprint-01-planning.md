@@ -35,7 +35,7 @@ chercher à réaliser l'ensemble du MVP.
 ## Capacité
 
 | Membre   | Disponibilité estimée | Contraintes |
-| -------- | --------------------: | ----------- |
+|----------|----------------------:|-------------|
 | Titiplex |           À compléter | À compléter |
 | Qwantike |           À compléter | À compléter |
 | Ahrizmo  |           À compléter | À compléter |
@@ -46,11 +46,15 @@ de la démonstration. La charge ne peut pas être validée avant cette mise à j
 
 ## Éléments sélectionnés
 
-| Issue                                                                     | Intitulé                | Complexité | Temps estimé | Responsable initial          | Dépendances                                                                        |
-| ------------------------------------------------------------------------- | ----------------------- | ---------: | -----------: | ---------------------------- | ---------------------------------------------------------------------------------- |
-| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/13 | Créer la BDD minimale   |   3 points |          5 h | Auto-attribution à confirmer | Configuration SQLite/Prisma et conventions de migration                            |
-| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/14 | Implémenter l'interface |   3 points |          4 h | Auto-attribution à confirmer | Périmètre des écrans et contrat de données ; API pour une lecture réelle de la BDD |
-| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/13 | Créer une seed          |   2 points |          2 h | Auto-attribution à confirmer | Schéma et migration BDD stabilisés                                                 |
+| Issue                                                                     | Intitulé                                                            | Complexité | Temps estimé | Responsable initial | Dépendances                                                                        |
+|---------------------------------------------------------------------------|---------------------------------------------------------------------|-----------:|-------------:|---------------------|------------------------------------------------------------------------------------|
+| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/13 | Créer la BDD minimale                                               |   3 points |          5 h | Titiplex            | Configuration SQLite/Prisma et conventions de migration                            |
+| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/14 | Implémenter l'interface                                             |   3 points |          4 h | Titiplex            | Périmètre des écrans et contrat de données ; API pour une lecture réelle de la BDD |
+| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/13 | Créer une seed                                                      |   2 points |          2 h | Ahrizmo             | Schéma et migration BDD stabilisés                                                 |
+| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/22 | Création du composant réutilisable "Carte Recette"                  |   1 points |          1 h | Amine               | Front                                                                              |
+| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/20 | Configuration globale et Layout (Gabarit principal)                 |   1 points |          2 h | Amine               | Front                                                                              |
+| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/25 | Mettre en place la navigation principale et l'arborescence des vues |   6 points |          3 h | Amine               | Front                                                                              |
+| https://github.com/Amine845/Processus-du-developpement-logiciel/issues/19 | Exposer l'API REST locale et le client front des recettes           |   8 points |          3 h | Qwantike            | API                                                                                |
 
 **Total prévu :** 8 points / 11 h. Le temps réel sera renseigné dans
 chaque issue à la clôture, sans modifier l'estimation initiale.
@@ -124,9 +128,10 @@ démonstration doit être documentée avant de choisir le mécanisme de réexéc
 3. **Avancer sur l'interface :** utiliser un contrat de données partagé ; des fixtures conformes à ce contrat permettent
    de travailler avant la seed.
 4. **Construire la seed :** s'appuyer sur le schéma stabilisé et vérifier deux exécutions successives.
-5. **Intégrer :** brancher la lecture des données si l'API fait partie du périmètre confirmé ; sinon expliciter la
+5. **Avancer sur le Front:** Développer un front minimal de démo
+6. **Intégrer :** brancher la lecture des données si l'API fait partie du périmètre confirmé ; sinon expliciter la
    limite de la démonstration.
-6. **Valider :** exécuter les contrôles, effectuer les revues croisées et préparer la séance.
+7. **Valider :** exécuter les contrôles, effectuer les revues croisées et préparer la séance.
 
 ### Tests et documentation
 
@@ -147,22 +152,13 @@ L'authentification et l'import CIQUAL ne font pas partie des trois sous-issues
 actuelles. Ce sprint ne vaut pas validation d'un accès public sans protection.
 Toute extension du périmètre doit être estimée et inscrite au backlog.
 
-## Responsabilités tournantes
-
-- **Référent qualité :** `[à désigner]`
-- **Référent architecture :** `[à désigner]`
-- **Référent documentation :** `[à désigner]`
-
-Les développeurs s'auto-attribuent les issues. Chaque PR est relue par un autre
-membre ; le Scrum Master facilite les blocages et contribue au développement.
-
 ## Risques du sprint
 
 Les probabilités et impacts ci-dessous sont des appréciations initiales à revoir
 lors du planning.
 
 | Risque                                           | Probabilité                | Impact | Réponse                                                                                    |
-| ------------------------------------------------ | -------------------------- | ------ | ------------------------------------------------------------------------------------------ |
+|--------------------------------------------------|----------------------------|--------|--------------------------------------------------------------------------------------------|
 | Périmètre de l'interface trop large ou ambigu    | Élevée                     | Élevé  | Confirmer les écrans et interactions avant estimation                                      |
 | API de lecture absente                           | À vérifier                 | Élevé  | Décider explicitement du raccordement ou de l'usage de fixtures                            |
 | Chemin SQLite ou version Prisma incohérents      | Moyenne                    | Élevé  | Utiliser le lockfile et tester la migration sur une base vierge                            |
