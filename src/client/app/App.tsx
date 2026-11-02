@@ -76,7 +76,9 @@ const ProfilePage = () => (
     </div>
 );
 
-// 3. On utilise les composants dans le routeur
+// N'oublie pas d'importer la page de détail en haut de ton fichier
+import { RecipeDetailPage } from '../pages/RecipeDetailPage.tsx'; // Ajuste le chemin selon ton arborescence
+
 function App() {
     return (
         <HashRouter>
@@ -86,8 +88,11 @@ function App() {
                     <Route path="/recipes" element={<RecipesPage />} />
                     <Route path="/planner" element={<PlannerPage />} />
 
-                    {/* Ici, on appelle ta vraie page importée d'en haut */}
+                    {/* La route de création (doit rester avant la route dynamique pour éviter les conflits) */}
                     <Route path="/recipes/new" element={<RecipeCreatePage />} />
+
+                    {/* NOUVELLE ROUTE : Affichage des détails d'une recette spécifique */}
+                    <Route path="/recipes/:id" element={<RecipeDetailPage />} />
 
                     <Route path="/profile" element={<ProfilePage />} />
                 </Routes>

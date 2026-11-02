@@ -1,9 +1,11 @@
 // src/client/pages/RecipeCreatePage.tsx
 import React, { useState } from 'react';
 import { Trash2, Plus, Save } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { recipesApi } from '../../client/api/recipes.api';
 
 interface RecipeIngredientDraft {
-    localId: string; // Identifiant temporaire pour la clé React
+    localId: string;
     name: string;
     quantity: number | '';
     unit: string;
@@ -23,7 +25,6 @@ interface RecipeDraft {
     };
 }
 
-// Données issues de ta base de données pour l'autocomplétion[cite: 1, 2]
 const KNOWN_INGREDIENTS = [
     'Chocolat noir',
     'Œufs',
@@ -34,9 +35,17 @@ const KNOWN_INGREDIENTS = [
 ];
 
 const EQUIPMENTS = ['Four', 'Plaques', 'Air Fryer', 'Mixer', 'Micro-ondes'];
-const UNITS = ['g', 'ml', 'cl', 'càs', 'càc', 'unité(s)', 'pincée(s)'];
+const UNITS = [
+    { value: 'g', label: 'g' },
+    { value: 'kg', label: 'kg' },
+    { value: 'ml', label: 'ml' },
+    { value: 'l', label: 'l' },
+    { value: 'piece', label: 'unité(s)' },
+] as const
 
 export const RecipeCreatePage: React.FC = () => {
+    const navigate = useNavigate();
+
     const [draft, setDraft] = useState<RecipeDraft>({
         title: '',
         description: '',
@@ -45,6 +54,9 @@ export const RecipeCreatePage: React.FC = () => {
         ingredients: [{ localId: crypto.randomUUID(), name: '', quantity: '', unit: 'g' }],
         macros: { calories: '', proteins: '', carbs: '', fats: '' }
     });
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // --- GESTION DES CHAMPS SIMPLES ---
     const handleBasicChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -93,12 +105,51 @@ export const RecipeCreatePage: React.FC = () => {
         }));
     };
 
-    // --- SOUMISSION ---
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // En attendant la fonction create() de l'API, on valide l'objet construit
-        console.log('Payload prêt à être envoyé à l\'API :', JSON.stringify(draft, null, 2));
-        alert('Recette simulée avec succès. Regarde la console !');
+        setIsSubmitting(true);
+        setErrorMsg(null);
+
+        try {
+            // Un payload propre et strictement aligné avec recipe-input.ts
+            const payload = {
+                title: draft.title.trim(),
+                description: draft.description.trim() || null,
+                servings: Number(draft.portions),
+
+                // Le back-end attend un tableau d'objets avec "instruction"
+                steps: [
+                    { instruction: draft.description.trim() || "Préparation de la recette" }
+                ],
+
+                // Le back-end n'extrait que canonicalName, quantity et unit
+                ingredients: draft.ingredients
+                    .filter(ing => ing.name.trim() !== '')
+                    .map(ing => ({
+                        canonicalName: ing.name.trim(),
+                        quantity: Number(ing.quantity) || 1,
+                        unit: ing.unit
+                    }))
+            };
+
+            await recipesApi.create(payload as any);
+            navigate('/recipes');
+
+        } catch (err: any) {
+            console.error("Erreur API détaillée :", err);
+
+            let details = '';
+            if (Array.isArray(err.issues) && err.issues.length > 0) {
+                details = err.issues
+                    .map((issue: any) => typeof issue === 'string' ? issue : `${issue.path?.join('.') ?? 'champ'}: ${issue.message}`)
+                    .join(' | ');
+            }
+
+            const mainMessage = err.code || err.message || "Erreur serveur";
+            setErrorMsg(details ? `${mainMessage} -> ${details}` : mainMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -136,7 +187,7 @@ export const RecipeCreatePage: React.FC = () => {
                     </div>
                 </section>
 
-                {/* 3. INGRÉDIENTS (Hybride : liste existante ou libre) */}
+                {/* 3. INGRÉDIENTS */}
                 <section>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                         <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>Ingrédients</span>
@@ -176,7 +227,7 @@ export const RecipeCreatePage: React.FC = () => {
                                     onChange={(e) => handleIngredientChange(ing.localId, 'unit', e.target.value)}
                                     style={{ padding: '8px' }}
                                 >
-                                    {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                                    {UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
                                 </select>
                                 <button type="button" onClick={() => removeIngredient(ing.localId)} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
                                     <Trash2 size={18} />
@@ -209,8 +260,33 @@ export const RecipeCreatePage: React.FC = () => {
                     </div>
                 </section>
 
-                <button type="submit" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', background: 'var(--color-accent)', color: 'white', padding: '12px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, marginTop: '16px' }}>
-                    <Save size={20} /> Enregistrer la recette
+                {/* AFFICHAGE ERREUR & BOUTON DE SOUMISSION */}
+                {errorMsg && (
+                    <div style={{ color: 'red', fontSize: 'var(--text-sm)', textAlign: 'center', marginTop: '16px', wordBreak: 'break-word' }}>
+                        {errorMsg}
+                    </div>
+                )}
+
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: isSubmitting ? 'var(--color-text-muted)' : 'var(--color-accent)',
+                        color: 'white',
+                        padding: '12px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                        fontWeight: 600,
+                        marginTop: '16px'
+                    }}
+                >
+                    <Save size={20} />
+                    {isSubmitting ? 'Enregistrement en cours...' : 'Enregistrer la recette'}
                 </button>
             </form>
         </div>
