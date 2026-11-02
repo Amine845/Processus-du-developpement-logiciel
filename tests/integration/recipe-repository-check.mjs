@@ -8,8 +8,14 @@ import { after, before, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { createPersistence } from '../../dist-server/server/infrastructure/prisma.js'
 import { createPrismaRecipeRepository } from '../../dist-server/server/infrastructure/prisma-recipe-repository.js'
-import { RecipeReadError, RecipeConflictError } from '../../dist-server/server/domain/recipe-repository.js'
-import { createRecipeServer, startServer } from '../../dist-server/server/server.js'
+import {
+  RecipeReadError,
+  RecipeConflictError,
+} from '../../dist-server/server/domain/recipe-repository.js'
+import {
+  createRecipeServer,
+  startServer,
+} from '../../dist-server/server/server.js'
 
 const require = createRequire(import.meta.url)
 const root = fileURLToPath(new URL('../../', import.meta.url))
@@ -226,19 +232,31 @@ test('create, update and delete through HTTP', async () => {
     assert.equal(created.status, 201)
     const recipe = await created.json()
     assert.equal(created.headers.get('location'), `/api/recipes/${recipe.id}`)
-    assert.deepEqual(recipe.ingredients.map((l) => [l.canonicalName, l.position]), [
-      ['Carotte', 1],
-      ['Pomme de terre', 2],
-    ])
+    assert.deepEqual(
+      recipe.ingredients.map((l) => [l.canonicalName, l.position]),
+      [
+        ['Carotte', 1],
+        ['Pomme de terre', 2],
+      ],
+    )
     assert.equal(recipe.ingredients[0].ingredientId, 9)
-    assert.deepEqual(recipe.steps.map((s) => s.position), [1, 2])
+    assert.deepEqual(
+      recipe.steps.map((s) => s.position),
+      [1, 2],
+    )
 
     // conflict, validation, media type, size
     assert.equal((await call('POST', '/api/recipes', payload)).status, 409)
-    const invalid = await call('POST', '/api/recipes', { ...payload, servings: 0 })
+    const invalid = await call('POST', '/api/recipes', {
+      ...payload,
+      servings: 0,
+    })
     assert.equal(invalid.status, 400)
     assert.equal((await invalid.json()).error, 'INVALID_RECIPE')
-    assert.equal((await call('POST', '/api/recipes', payload, 'text/plain')).status, 415)
+    assert.equal(
+      (await call('POST', '/api/recipes', payload, 'text/plain')).status,
+      415,
+    )
     const huge = await call('POST', '/api/recipes', {
       ...payload,
       description: 'x'.repeat(200 * 1024),
@@ -256,15 +274,30 @@ test('create, update and delete through HTTP', async () => {
     assert.equal(after.title, 'Gratin dauphinois')
     assert.deepEqual(after.steps, [{ position: 1, instruction: 'Enfourner.' }])
     assert.deepEqual(await repository.findById(recipe.id), after)
-    assert.equal((await call('PUT', '/api/recipes/999999', payload)).status, 404)
+    assert.equal(
+      (await call('PUT', '/api/recipes/999999', payload)).status,
+      404,
+    )
 
     // delete cascades
-    assert.equal((await call('DELETE', `/api/recipes/${recipe.id}`)).status, 204)
+    assert.equal(
+      (await call('DELETE', `/api/recipes/${recipe.id}`)).status,
+      204,
+    )
     assert.equal((await fetch(`${base}/api/recipes/${recipe.id}`)).status, 404)
-    assert.equal((await call('DELETE', `/api/recipes/${recipe.id}`)).status, 404)
+    assert.equal(
+      (await call('DELETE', `/api/recipes/${recipe.id}`)).status,
+      404,
+    )
     const db = persistence.client
-    assert.equal(await db.recipeStep.count({ where: { recipeId: recipe.id } }), 0)
-    assert.equal(await db.recipeIngredient.count({ where: { recipeId: recipe.id } }), 0)
+    assert.equal(
+      await db.recipeStep.count({ where: { recipeId: recipe.id } }),
+      0,
+    )
+    assert.equal(
+      await db.recipeIngredient.count({ where: { recipeId: recipe.id } }),
+      0,
+    )
   } finally {
     await new Promise((resolve, reject) =>
       server.close((error) => (error ? reject(error) : resolve())),

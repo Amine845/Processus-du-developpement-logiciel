@@ -22,7 +22,9 @@ class HttpError extends Error {
 }
 
 function readJsonBody(request: IncomingMessage): Promise<unknown> {
-  if (!/^application\/json\s*(;|$)/i.test(request.headers['content-type'] ?? '')) {
+  if (
+    !/^application\/json\s*(;|$)/i.test(request.headers['content-type'] ?? '')
+  ) {
     return Promise.reject(new HttpError(415, 'UNSUPPORTED_MEDIA_TYPE'))
   }
   if (Number(request.headers['content-length']) > MAX_BODY_BYTES) {
@@ -42,7 +44,8 @@ function readJsonBody(request: IncomingMessage): Promise<unknown> {
     request.on('data', (chunk: Buffer) => {
       if (settled) return
       size += chunk.length
-      if (size > MAX_BODY_BYTES) return fail(new HttpError(413, 'PAYLOAD_TOO_LARGE'))
+      if (size > MAX_BODY_BYTES)
+        return fail(new HttpError(413, 'PAYLOAD_TOO_LARGE'))
       chunks.push(chunk)
     })
     request.on('end', () => {
@@ -133,7 +136,8 @@ export function createRecipeServer(repository: RecipeRepository) {
         send(409, { error: 'RECIPE_TITLE_CONFLICT' })
       } else {
         send(503, {
-          error: method === 'GET' ? 'RECIPE_READ_FAILED' : 'RECIPE_WRITE_FAILED',
+          error:
+            method === 'GET' ? 'RECIPE_READ_FAILED' : 'RECIPE_WRITE_FAILED',
         })
       }
     }
