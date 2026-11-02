@@ -1,21 +1,18 @@
-import express from 'express'
-import cors from 'cors'
-import { recipeRouter } from './interfaces/recipe.routes'
+import { startServer } from './server.js'
 
-const app = express()
-const PORT = process.env.PORT || 3001
+async function main() {
+  const databaseUrl = process.env.DATABASE_URL
+  if (!databaseUrl) throw new Error('DATABASE_URL is required')
 
-app.use(cors())
-app.use(express.json())
+  const port = Number(process.env.PORT ?? 3001)
+  const { close } = await startServer(databaseUrl, port)
 
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', message: 'API REST Recettes opérationnelle' })
+  for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+    process.once(signal, () => void close().then(() => process.exit(0)))
+  }
+}
+
+main().catch((error) => {
+  console.error(error instanceof Error ? error.message : error)
+  process.exit(1)
 })
-
-app.use('/api/recipes', recipeRouter)
-
-app.listen(PORT, () => {
-  console.log(`Serveur API REST démarré sur http://localhost:${PORT}`)
-})
-
-export default app

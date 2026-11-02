@@ -6,10 +6,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { after, before, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { createPersistence } from '../../dist-server/infrastructure/prisma.js'
-import { createPrismaRecipeRepository } from '../../dist-server/infrastructure/prisma-recipe-repository.js'
-import { RecipeReadError } from '../../dist-server/domain/recipe-repository.js'
-import { createRecipeServer, startServer } from '../../dist-server/server.js'
+import { createPersistence } from '../../dist-server/server/infrastructure/prisma.js'
+import { createPrismaRecipeRepository } from '../../dist-server/server/infrastructure/prisma-recipe-repository.js'
+import { RecipeReadError, RecipeConflictError } from '../../dist-server/server/domain/recipe-repository.js'
+import { createRecipeServer, startServer } from '../../dist-server/server/server.js'
 
 const require = createRequire(import.meta.url)
 const root = fileURLToPath(new URL('../../', import.meta.url))
@@ -192,6 +192,118 @@ test('injected repository failures return a sanitized HTTP response', async () =
       )
       assert.equal(result.status, 503)
       assert.deepEqual(await result.json(), { error: 'RECIPE_READ_FAILED' })
+    }
+  } finally {
+    await new Promise((resolve, reject) =>
+      server.close((error) => (error ? reject(error) : resolve())),
+    )
+  }
+})
+
+test('create, update and delete through HTTP', async () => {
+  const server = createRecipeServer(repository)
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+  const base = `http://127.0.0.1:${server.address().port}`
+  const call = (method, path, body, type = 'application/json') =>
+    fetch(`${base}${path}`, {
+      method,
+      headers: { 'Content-Type': type },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    })
+  const payload = {
+    title: 'Gratin',
+    description: null,
+    servings: 4,
+    ingredients: [
+      { canonicalName: 'Carotte', quantity: 300, unit: 'g' }, // existing (id 9)
+      { canonicalName: 'Pomme de terre', quantity: 1, unit: 'kg' }, // new
+    ],
+    steps: [{ instruction: 'Couper.' }, { instruction: 'Cuire.' }],
+  }
+  try {
+    // create
+    const created = await call('POST', '/api/recipes', payload)
+    assert.equal(created.status, 201)
+    const recipe = await created.json()
+    assert.equal(created.headers.get('location'), `/api/recipes/${recipe.id}`)
+    assert.deepEqual(recipe.ingredients.map((l) => [l.canonicalName, l.position]), [
+      ['Carotte', 1],
+      ['Pomme de terre', 2],
+    ])
+    assert.equal(recipe.ingredients[0].ingredientId, 9)
+    assert.deepEqual(recipe.steps.map((s) => s.position), [1, 2])
+
+    // conflict, validation, media type, size
+    assert.equal((await call('POST', '/api/recipes', payload)).status, 409)
+    const invalid = await call('POST', '/api/recipes', { ...payload, servings: 0 })
+    assert.equal(invalid.status, 400)
+    assert.equal((await invalid.json()).error, 'INVALID_RECIPE')
+    assert.equal((await call('POST', '/api/recipes', payload, 'text/plain')).status, 415)
+    const huge = await call('POST', '/api/recipes', {
+      ...payload,
+      description: 'x'.repeat(200 * 1024),
+    })
+    assert.equal(huge.status, 413)
+
+    // update replaces the lists
+    const updated = await call('PUT', `/api/recipes/${recipe.id}`, {
+      ...payload,
+      title: 'Gratin dauphinois',
+      steps: [{ instruction: 'Enfourner.' }],
+    })
+    assert.equal(updated.status, 200)
+    const after = await updated.json()
+    assert.equal(after.title, 'Gratin dauphinois')
+    assert.deepEqual(after.steps, [{ position: 1, instruction: 'Enfourner.' }])
+    assert.deepEqual(await repository.findById(recipe.id), after)
+    assert.equal((await call('PUT', '/api/recipes/999999', payload)).status, 404)
+
+    // delete cascades
+    assert.equal((await call('DELETE', `/api/recipes/${recipe.id}`)).status, 204)
+    assert.equal((await fetch(`${base}/api/recipes/${recipe.id}`)).status, 404)
+    assert.equal((await call('DELETE', `/api/recipes/${recipe.id}`)).status, 404)
+    const db = persistence.client
+    assert.equal(await db.recipeStep.count({ where: { recipeId: recipe.id } }), 0)
+    assert.equal(await db.recipeIngredient.count({ where: { recipeId: recipe.id } }), 0)
+  } finally {
+    await new Promise((resolve, reject) =>
+      server.close((error) => (error ? reject(error) : resolve())),
+    )
+  }
+})
+
+test('injected write failures return sanitized HTTP responses', async () => {
+  const fail = async () => {
+    throw new Error('private connection secret')
+  }
+  const server = createRecipeServer({
+    findAll: fail,
+    findById: fail,
+    create: fail,
+    update: fail,
+    deleteById: fail,
+  })
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+  const base = `http://127.0.0.1:${server.address().port}`
+  const body = JSON.stringify({
+    title: 'T',
+    servings: 1,
+    ingredients: [],
+    steps: [],
+  })
+  try {
+    for (const [method, path] of [
+      ['POST', '/api/recipes'],
+      ['PUT', '/api/recipes/1'],
+      ['DELETE', '/api/recipes/1'],
+    ]) {
+      const result = await fetch(`${base}${path}`, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: method === 'DELETE' ? undefined : body,
+      })
+      assert.equal(result.status, 503)
+      assert.deepEqual(await result.json(), { error: 'RECIPE_WRITE_FAILED' })
     }
   } finally {
     await new Promise((resolve, reject) =>

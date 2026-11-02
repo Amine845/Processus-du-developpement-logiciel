@@ -6,8 +6,8 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { PrismaClient } from '@prisma/client'
-import { seedDatabase } from '../../dist-server/prisma/seed.js'
-import { startServer } from '../../dist-server/server.js'
+import { seedDatabase } from '../../dist-server/server/prisma/seed.js'
+import { startServer } from '../../dist-server/server/server.js'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 function run(script, url, success = true) {
