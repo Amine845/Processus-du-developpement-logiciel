@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { loadEnvFile } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { PrismaClient } from '@prisma/client'
-import { seedDatabase } from '../dist-server/prisma/seed.js'
+import { seedDatabase } from '../dist-server/server/prisma/seed.js'
 
 const envFile = fileURLToPath(new URL('../src/server/.env', import.meta.url))
 if (existsSync(envFile)) loadEnvFile(envFile)
