@@ -41,7 +41,9 @@ export const recipeService = {
   },
 
   async getRecipeById(id: number): Promise<RecipeDTO | null> {
-    const recipe = (await recipeRepository.findById(id)) as RecipeWithRelations | null
+    const recipe = (await recipeRepository.findById(
+      id,
+    )) as RecipeWithRelations | null
     if (!recipe) return null
 
     return toRecipeDTO(recipe)
