@@ -41,6 +41,9 @@ jobs:
       - name: Tester le repository sur une base temporaire
         run: npm run test:repository
 
+      - name: Tester le seed sur une base temporaire
+        run: npm run test:seed
+
       - name: Tests unitaires
         run: npm run test
 

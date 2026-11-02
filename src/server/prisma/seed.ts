@@ -1,137 +1,102 @@
-import { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+// Les titres et noms canoniques servent de clés naturelles pour la démonstration.
+// Ces recettes sont réservées au seed : une relance restaure leurs valeurs.
+export const demoRecipes = [
+  {
+    title: 'Gâteau au chocolat fondant',
+    description: 'Un gâteau au chocolat simple à partager.',
+    servings: 6,
+    ingredients: [
+      { canonicalName: 'Chocolat noir', quantity: 200, unit: 'g' },
+      { canonicalName: 'Œufs', quantity: 3, unit: 'piece' },
+      { canonicalName: 'Farine de blé', quantity: 100, unit: 'g' },
+      { canonicalName: 'Beurre', quantity: 100, unit: 'g' },
+      { canonicalName: 'Sucre', quantity: 100, unit: 'g' },
+    ],
+    steps: [
+      'Préchauffer le four à 180 °C.',
+      'Faire fondre le chocolat avec le beurre.',
+      'Battre les œufs avec le sucre, puis incorporer la farine et le chocolat fondu.',
+      'Verser dans un moule et cuire environ 20 minutes. Laisser tiédir avant de servir.',
+    ],
+  },
+  {
+    title: 'Pâte à crêpes traditionnelle',
+    description: 'Une pâte à crêpes pour le goûter.',
+    servings: 4,
+    ingredients: [
+      { canonicalName: 'Farine de blé', quantity: 250, unit: 'g' },
+      { canonicalName: 'Œufs', quantity: 2, unit: 'piece' },
+      { canonicalName: 'Lait demi-écrémé', quantity: 500, unit: 'ml' },
+      { canonicalName: 'Beurre', quantity: 20, unit: 'g' },
+    ],
+    steps: [
+      'Verser la farine dans un saladier et creuser un puits.',
+      'Ajouter les œufs, puis incorporer progressivement le lait en fouettant.',
+      'Laisser reposer la pâte 30 minutes.',
+      'Graisser légèrement une poêle chaude avec le beurre et cuire les crêpes des deux côtés.',
+    ],
+  },
+  {
+    title: 'Omelette nature rapide',
+    description: 'Une omelette pour une personne.',
+    servings: 1,
+    ingredients: [
+      { canonicalName: 'Œufs', quantity: 2, unit: 'piece' },
+      { canonicalName: 'Beurre', quantity: 5, unit: 'g' },
+    ],
+    steps: [
+      'Battre les œufs dans un bol.',
+      'Faire fondre le beurre dans une poêle à feu moyen.',
+      'Verser les œufs, cuire en ramenant les bords vers le centre, puis replier et servir.',
+    ],
+  },
+]
 
-async function main() {
-  console.log('Début du peuplement de la base de données (Seed)...');
-
-  // 1. Ingrédients partagés
-  const oeufs = await prisma.ingredient.upsert({
-    where: { canonicalName: 'Œufs' },
-    update: {},
-    create: { canonicalName: 'Œufs' },
-  });
-
-  const farine = await prisma.ingredient.upsert({
-    where: { canonicalName: 'Farine de blé' },
-    update: {},
-    create: { canonicalName: 'Farine de blé' },
-  });
-
-  const chocolat = await prisma.ingredient.upsert({
-    where: { canonicalName: 'Chocolat noir' },
-    update: {},
-    create: { canonicalName: 'Chocolat noir' },
-  });
-
-  const lait = await prisma.ingredient.upsert({
-    where: { canonicalName: 'Lait demi-écrémé' },
-    update: {},
-    create: { canonicalName: 'Lait demi-écrémé' },
-  });
-
-  // 2. Recette 1 : Gâteau au chocolat
-  const gateau = await prisma.recipe.upsert({
-    where: { title: 'Gâteau au chocolat fondant' },
-    update: { servings: 6, description: 'Un classique indémodable.' },
-    create: {
-      title: 'Gâteau au chocolat fondant',
-      description: 'Un classique indémodable.',
-      servings: 6,
-    },
-  });
-
-  await prisma.recipeIngredient.upsert({
-    where: { recipeId_position: { recipeId: gateau.id, position: 1 } },
-    update: { quantity: 200, unit: 'g', ingredientId: chocolat.id },
-    create: { recipeId: gateau.id, position: 1, quantity: 200, unit: 'g', ingredientId: chocolat.id },
-  });
-  await prisma.recipeIngredient.upsert({
-    where: { recipeId_position: { recipeId: gateau.id, position: 2 } },
-    update: { quantity: 3, unit: 'piece', ingredientId: oeufs.id }, // Corrigé ici
-    create: { recipeId: gateau.id, position: 2, quantity: 3, unit: 'piece', ingredientId: oeufs.id }, // Corrigé ici
-  });
-  await prisma.recipeIngredient.upsert({
-    where: { recipeId_position: { recipeId: gateau.id, position: 3 } },
-    update: { quantity: 100, unit: 'g', ingredientId: farine.id },
-    create: { recipeId: gateau.id, position: 3, quantity: 100, unit: 'g', ingredientId: farine.id },
-  });
-
-  await prisma.recipeStep.upsert({
-    where: { recipeId_position: { recipeId: gateau.id, position: 1 } },
-    update: { instruction: 'Préchauffer le four à 180°C.' },
-    create: { recipeId: gateau.id, position: 1, instruction: 'Préchauffer le four à 180°C.' },
-  });
-  await prisma.recipeStep.upsert({
-    where: { recipeId_position: { recipeId: gateau.id, position: 2 } },
-    update: { instruction: 'Faire fondre le chocolat noir.' },
-    create: { recipeId: gateau.id, position: 2, instruction: 'Faire fondre le chocolat noir.' },
-  });
-
-  // 3. Recette 2 : Pâte à crêpes
-  const crepes = await prisma.recipe.upsert({
-    where: { title: 'Pâte à crêpes traditionnelle' },
-    update: { servings: 4, description: 'Idéal pour le goûter.' },
-    create: {
-      title: 'Pâte à crêpes traditionnelle',
-      description: 'Idéal pour le goûter.',
-      servings: 4,
-    },
-  });
-
-  await prisma.recipeIngredient.upsert({
-    where: { recipeId_position: { recipeId: crepes.id, position: 1 } },
-    update: { quantity: 250, unit: 'g', ingredientId: farine.id },
-    create: { recipeId: crepes.id, position: 1, quantity: 250, unit: 'g', ingredientId: farine.id },
-  });
-  await prisma.recipeIngredient.upsert({
-    where: { recipeId_position: { recipeId: crepes.id, position: 2 } },
-    update: { quantity: 2, unit: 'piece', ingredientId: oeufs.id }, // Corrigé ici
-    create: { recipeId: crepes.id, position: 2, quantity: 2, unit: 'piece', ingredientId: oeufs.id }, // Corrigé ici
-  });
-  await prisma.recipeIngredient.upsert({
-    where: { recipeId_position: { recipeId: crepes.id, position: 3 } },
-    update: { quantity: 500, unit: 'ml', ingredientId: lait.id },
-    create: { recipeId: crepes.id, position: 3, quantity: 500, unit: 'ml', ingredientId: lait.id },
-  });
-
-  await prisma.recipeStep.upsert({
-    where: { recipeId_position: { recipeId: crepes.id, position: 1 } },
-    update: { instruction: 'Verser la farine dans un saladier.' },
-    create: { recipeId: crepes.id, position: 1, instruction: 'Verser la farine dans un saladier.' },
-  });
-
-  // 4. Recette 3 : Omelette simple
-  const omelette = await prisma.recipe.upsert({
-    where: { title: 'Omelette nature rapide' },
-    update: { servings: 1, description: 'Rapide et efficace.' },
-    create: {
-      title: 'Omelette nature rapide',
-      description: 'Rapide et efficace.',
-      servings: 1,
-    },
-  });
-
-  await prisma.recipeIngredient.upsert({
-    where: { recipeId_position: { recipeId: omelette.id, position: 1 } },
-    update: { quantity: 2, unit: 'piece', ingredientId: oeufs.id }, // Corrigé ici
-    create: { recipeId: omelette.id, position: 1, quantity: 2, unit: 'piece', ingredientId: oeufs.id }, // Corrigé ici
-  });
-
-  await prisma.recipeStep.upsert({
-    where: { recipeId_position: { recipeId: omelette.id, position: 1 } },
-    update: { instruction: 'Battre les œufs dans un bol.' },
-    create: { recipeId: omelette.id, position: 1, instruction: 'Battre les œufs dans un bol.' },
-  });
-
-  console.log('Seed exécuté avec succès !');
-}
-
-main()
-  .catch((e) => {
-    console.error('Erreur lors du seed :', e);
-    process.exit(1);
+/** Atomique, relançable, sans suppression globale des données utilisateur. */
+export async function seedDatabase(prisma: PrismaClient) {
+  await prisma.$transaction(async (tx) => {
+    for (const example of demoRecipes) {
+      const { ingredients, steps, ...data } = example
+      const recipe = await tx.recipe.upsert({
+        where: { title: data.title },
+        update: data,
+        create: data,
+      })
+      for (const [index, item] of ingredients.entries()) {
+        const ingredient = await tx.ingredient.upsert({
+          where: { canonicalName: item.canonicalName },
+          update: {},
+          create: { canonicalName: item.canonicalName },
+        })
+        const line = {
+          ingredientId: ingredient.id,
+          quantity: item.quantity,
+          unit: item.unit,
+        }
+        const position = index + 1
+        await tx.recipeIngredient.upsert({
+          where: { recipeId_position: { recipeId: recipe.id, position } },
+          update: line,
+          create: { recipeId: recipe.id, position, ...line },
+        })
+      }
+      for (const [index, instruction] of steps.entries()) {
+        const position = index + 1
+        await tx.recipeStep.upsert({
+          where: { recipeId_position: { recipeId: recipe.id, position } },
+          update: { instruction },
+          create: { recipeId: recipe.id, position, instruction },
+        })
+      }
+      // Retirer uniquement les anciennes positions de ces recettes de démo.
+      await tx.recipeIngredient.deleteMany({
+        where: { recipeId: recipe.id, position: { gt: ingredients.length } },
+      })
+      await tx.recipeStep.deleteMany({
+        where: { recipeId: recipe.id, position: { gt: steps.length } },
+      })
+    }
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+}
