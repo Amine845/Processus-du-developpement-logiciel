@@ -48,7 +48,7 @@ model RecipeStep {
   @@unique([recipeId, position])
 }
 
-// Only the pinned 2025 release is supported; version upgrades need a separate migration.
+// Full imports retain a JSON snapshot; old subset audits are preserved.
 model CiqualImport {
   id           Int          @id @default(autoincrement())
   importedAt   DateTime     @default(now())
@@ -63,10 +63,13 @@ model CiqualImport {
   rowsRead     Int
   rowsAccepted Int
   rowsRejected Int
+  payload      String?
   foods        CiqualFood[]
 }
 
 model CiqualFood {
+  active       Boolean          @default(true)
+  rawData      String?
   code         String           @id
   name         String
   version      String
@@ -90,4 +93,11 @@ model CiqualNutrient {
   food     CiqualFood @relation(fields: [foodCode], references: [code], onDelete: Restrict)
 
   @@id([foodCode, key])
+}
+
+model CiqualSyncState {
+  id         Int       @id
+  checkedAt  DateTime?
+  releaseKey String?
+  lastError  String?
 }

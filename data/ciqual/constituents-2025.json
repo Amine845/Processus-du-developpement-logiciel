@@ -1,0 +1,372 @@
+[
+  {
+    "key": "327",
+    "header": "Energie, Règlement UE N° 1169/2011 (kJ/100 g)",
+    "unit": "kJ"
+  },
+  {
+    "key": "328",
+    "header": "Energie, Règlement UE N° 1169/2011 (kcal/100 g)",
+    "unit": "kcal"
+  },
+  {
+    "key": "332",
+    "header": "Energie, N x facteur Jones, avec fibres (kJ/100 g)",
+    "unit": "kJ"
+  },
+  {
+    "key": "333",
+    "header": "Energie, N x facteur Jones, avec fibres (kcal/100 g)",
+    "unit": "kcal"
+  },
+  {
+    "key": "400",
+    "header": "Eau (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "10000",
+    "header": "Cendres (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "10004",
+    "header": "Sel chlorure de sodium (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "10110",
+    "header": "Sodium (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10120",
+    "header": "Magnésium (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10150",
+    "header": "Phosphore (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10170",
+    "header": "Chlorure (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10190",
+    "header": "Potassium (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10200",
+    "header": "Calcium (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10251",
+    "header": "Manganèse (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10260",
+    "header": "Fer (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10290",
+    "header": "Cuivre (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10300",
+    "header": "Zinc (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "10340",
+    "header": "Sélénium (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "10530",
+    "header": "Iode (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "25000",
+    "header": "Protéines, N x facteur de Jones (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "25003",
+    "header": "Protéines, N x 6.25 (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "31000",
+    "header": "Glucides (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "32000",
+    "header": "Sucres (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "32210",
+    "header": "Fructose (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "32220",
+    "header": "Galactose (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "32250",
+    "header": "Glucose (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "32410",
+    "header": "Lactose (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "32430",
+    "header": "Maltose (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "32480",
+    "header": "Saccharose (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "33110",
+    "header": "Amidon (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "34000",
+    "header": "Polyols totaux (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "34100",
+    "header": "Fibres alimentaires (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "40000",
+    "header": "Lipides (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "40302",
+    "header": "AG saturés (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "40303",
+    "header": "AG monoinsaturés (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "40304",
+    "header": "AG polyinsaturés (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "40400",
+    "header": "AG 4:0, butyrique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "40600",
+    "header": "AG 6:0, caproïque (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "40800",
+    "header": "AG 8:0, caprylique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41000",
+    "header": "AG 10:0, caprique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41200",
+    "header": "AG 12:0, laurique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41400",
+    "header": "AG 14:0, myristique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41600",
+    "header": "AG 16:0, palmitique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41800",
+    "header": "AG 18:0, stéarique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41819",
+    "header": "AG 18:1 9c (n-9), oléique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41826",
+    "header": "AG 18:2 9c,12c (n-6), linoléique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "41833",
+    "header": "AG 18:3 c9,c12,c15 (n-3), alpha-linolénique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "42046",
+    "header": "AG 20:4 5c,8c,11c,14c (n-6), arachidonique (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "42053",
+    "header": "AG 20:5 5c,8c,11c,14c,17c (n-3) EPA (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "42263",
+    "header": "AG 22:6 4c,7c,10c,13c,16c,19c (n-3) DHA (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "51104",
+    "header": "Activité vitaminique A, équivalents rétinol (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "51200",
+    "header": "Rétinol (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "51330",
+    "header": "Beta-Carotène (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "52100",
+    "header": "Vitamine D (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "52200",
+    "header": "Vitamine D2 (ergocalciférol) (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "52300",
+    "header": "Vitamine D3 (cholécalciférol) (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "53100",
+    "header": "Vitamine E (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "54101",
+    "header": "Vitamine K1 (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "54104",
+    "header": "Vitamine K2 (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "55100",
+    "header": "Vitamine C (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "56100",
+    "header": "Vitamine B1 ou Thiamine (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "56200",
+    "header": "Vitamine B2 ou Riboflavine (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "56310",
+    "header": "Vitamine B3 ou PP ou Niacine (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "56400",
+    "header": "Vitamine B5 ou Acide pantothénique (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "56500",
+    "header": "Vitamine B6 (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "56600",
+    "header": "Vitamine B12 (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "56700",
+    "header": "Vitamine B9 ou Folates totaux (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "56702",
+    "header": "Vitamine B9 ou Folates totaux, équivalents folates alimentaires, DFE (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "56704",
+    "header": "Folates intrinsèques (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "56708",
+    "header": "Acide folique (enrichissement) (µg/100 g)",
+    "unit": "µg"
+  },
+  {
+    "key": "60000",
+    "header": "Alcool (éthanol) (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "65000",
+    "header": "Acides organiques (g/100 g)",
+    "unit": "g"
+  },
+  {
+    "key": "71010",
+    "header": "Alpha-tocophérol (vitamine E) (mg/100 g)",
+    "unit": "mg"
+  },
+  {
+    "key": "75100",
+    "header": "Cholestérol (mg/100 g)",
+    "unit": "mg"
+  }
+]

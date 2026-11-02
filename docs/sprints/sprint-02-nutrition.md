@@ -39,3 +39,10 @@ Le nombre de fichiers importés ne remplace pas les preuves de validation.
 
 La livraison ne constitue pas une intégration CIQUAL complète. La revue produit
 et la décision de fermeture de l'issue restent à l'équipe.
+
+## Extension ultérieure demandée : référentiel complet et veille
+
+Le patch 0004 étend la livraison aux 3 484 aliments et 74 constituants du XLSX
+officiel 2025, avec vérification hebdomadaire, mises à jour compatibles atomiques
+et conservation des instantanés. Voir `docs/data/ciqual-sync.md`. Cette extension
+dépasse le premier périmètre de démo ; les API et écrans restent distincts.

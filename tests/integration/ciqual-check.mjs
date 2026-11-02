@@ -73,6 +73,11 @@ test('isolated migration, imports, rejection, rollback and conservation', async 
       'prisma/migrations/20261102090000_ciqual_subset',
     )
     rmSync(addition, { recursive: true })
+    const updateMigration = join(
+      temp,
+      'prisma/migrations/20261102140000_ciqual_sync',
+    )
+    rmSync(updateMigration, { recursive: true })
     const deploy = () => {
       const r = spawnSync(
         process.execPath,
@@ -101,6 +106,11 @@ test('isolated migration, imports, rejection, rollback and conservation', async 
     cpSync(
       join(root, 'src/server/prisma/migrations/20261102090000_ciqual_subset'),
       addition,
+      { recursive: true },
+    )
+    cpSync(
+      join(root, 'src/server/prisma/migrations/20261102140000_ciqual_sync'),
+      updateMigration,
       { recursive: true },
     )
     deploy()

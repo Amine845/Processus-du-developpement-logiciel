@@ -84,6 +84,7 @@ try {
     'CiqualFood',
     'CiqualImport',
     'CiqualNutrient',
+    'CiqualSyncState',
     'Ingredient',
     'Recipe',
     'RecipeIngredient',

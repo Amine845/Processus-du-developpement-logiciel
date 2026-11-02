@@ -1,5 +1,8 @@
 # Référentiel local CIQUAL 2025 — sous-ensemble de 30 aliments
 
+> Documentation du premier périmètre. Pour le référentiel complet et les mises à
+> jour automatiques, suivre désormais [ciqual-sync.md](ciqual-sync.md).
+
 ## Périmètre et décision de format
 
 Cette livraison fournit **30 aliments et 4 constituants**, sans intégration exhaustive.

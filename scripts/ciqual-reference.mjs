@@ -9,7 +9,7 @@ export function searchCiqual(db, query, limit = 20) {
   )
     throw new RangeError('Invalid search')
   return db.ciqualFood.findMany({
-    where: { name: { contains: query.trim() } },
+    where: { active: true, name: { contains: query.trim() } },
     orderBy: { code: 'asc' },
     take: limit,
   })
@@ -36,6 +36,7 @@ export async function estimateCiqual(db, code, grams) {
   if (!food) return null
   return {
     code,
+    active: food.active,
     grams,
     attribution: food.import.attribution,
     version: food.version,
