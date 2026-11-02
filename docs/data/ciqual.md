@@ -1,93 +1,172 @@
-# Utilisation de la Table Ciqual
+# Référentiel local CIQUAL 2025 — sous-ensemble de 30 aliments
 
-## Source
+## Périmètre et décision de format
 
-- **Producteur :** Agence nationale de sécurité sanitaire de l'alimentation, de l'environnement et du travail (Anses)
-- **Jeu de données :** Table de composition nutritionnelle des aliments Ciqual 2025
-- **DOI :** [10.57745/RDMHWY](https://doi.org/10.57745/RDMHWY)
-- **Dépôt officiel :** [Recherche Data Gouv](https://entrepot.recherche.data.gouv.fr/dataset.xhtml?persistentId=doi%3A10.57745%2FRDMHWY)
-- **Version importée :** `[à renseigner lors de l'import]`
-- **Date de téléchargement :** `[à renseigner]`
-- **Licence :** vérifier et enregistrer le fichier de licence attaché à la version téléchargée avant redistribution
+Cette livraison fournit **30 aliments et 4 constituants**, sans intégration exhaustive.
+Aucune base n'est supposée préremplie. Les futures migrations de version, les autres
+constituants, les routes HTTP et les écrans de sélection/calcul sont des travaux distincts.
+Les fonctions locales `scripts/ciqual-reference.mjs` permettent déjà recherche, liaison
+explicite par code et estimation par masse en grammes.
 
-La notice historique CIQUAL 2020 indique qu'elle est annulée et remplacée par la version actualisée. Le projet utilise donc le DOI canonique et conserve la version réellement importée.
+## Source inspectée avant modélisation
 
-## Usage dans l'application
+- Producteur : Anses, unité Observatoire des Aliments.
+- DOI : https://doi.org/10.57745/RDMHWY ; dépôt officiel Recherche Data Gouv, V1.0.
+- Version retenue : `2025-V1.0-2025-11-03` (publication du dépôt : 19 novembre 2025).
+- Fichier : `Table Ciqual 2025_FR_2025_11_03.xlsx`.
+- Téléchargement : 2026-11-02 ; URL : https://entrepot.recherche.data.gouv.fr/api/access/datafile/666260.
+- SHA-256 du XLSX : `5555c572fa3735991298d832d0427788fa69a11b4fd20a5d580d58942369fbb0`.
+- MD5 du XLSX : `0d9758ce23f3f13dd63a005bc1bb4f2c`, conforme au dépôt.
+- Documentation officielle : `Table Ciqual 2025 doc FR_2025_11_19.pdf`,
+  https://entrepot.recherche.data.gouv.fr/api/access/datafile/666748.
+- Inspection : onglet `composition nutritionnelle`, 3 484 lignes d'aliments,
+  84 colonnes ; onglet `codes INFOODS`, 74 constituants avec `ORIGCPCD` et libellés.
+  Les cellules de teneur sont des textes (virgule décimale, tiret, `traces`, `< ...`).
+  Les en-têtes comprennent des retours à la ligne conservés dans le manifeste.
+- Documentation consultée : réutilisation p. 4, base et manquants p. 9,
+  traces p. 10 ; les intitulés et codes sont vérifiés dans les deux onglets du XLSX.
 
-CIQUAL fournit la composition nutritionnelle des aliments. Le MVP utilise au minimum :
+Le format d'entrée de l'importeur est un **JSON UTF-8 dérivé explicitement du XLSX**,
+`ciqual-subset-json-v1`, et non un format présenté comme officiel. Le script
+`extract-ciqual.py` contrôle le SHA-256 officiel et les en-têtes avant extraction.
+Le manifeste fixe colonnes, unités, version et attribution. Aucune dépendance Python
+n'est nécessaire pour importer le JSON livré ; Python/openpyxl sert uniquement à le
+régénérer. Le XLSX officiel et sa documentation sont également fournis dans le kit.
 
-- énergie ;
-- protéines ;
-- glucides ;
-- lipides.
+| Code ORIGCPCD | Colonne Excel (1-based) | Constituant                     | Unité / base |
+| ------------- | ----------------------- | ------------------------------- | ------------ |
+| 328           | 11                      | Énergie, règlement UE 1169/2011 | kcal / 100 g |
+| 25003         | 16                      | Protéines brutes, N × 6,25      | g / 100 g    |
+| 31000         | 17                      | Glucides                        | g / 100 g    |
+| 40000         | 18                      | Lipides                         | g / 100 g    |
 
-Les autres constituants peuvent être importés mais ne sont pas forcément exposés dans le MVP.
+Les protéines Jones (code 25000) et l'énergie Jones ne sont pas mélangées aux
+conventions retenues. La base est 100 g de **partie comestible**, pas 100 ml ni une pièce.
+Les identifiants de constituants sont `ORIGCPCD` ; ce ne sont pas les tags INFOODS.
 
-## Limite : allergènes
+## Échantillon et reproduction
 
-CIQUAL n'est pas utilisé comme preuve d'absence d'allergène. Les allergènes sont stockés dans un référentiel séparé et associés explicitement aux ingrédients.
+`data/ciqual/selection.json` fixe les 30 codes sélectionnés, couvrant légumes,
+fruits, féculents, légumineuses, farine, viande, lait, huile et sucre. L'état exact
+(cru, cuit, appertisé, etc.) figure dans chaque nom officiel ; il doit être choisi
+explicitement. Aucun code n'est deviné par similarité de nom.
 
-```text
-CIQUAL -> composition nutritionnelle
-Allergen -> information de restriction distincte
+```cmd
+python -m pip install openpyxl==3.1.5
+python scripts/extract-ciqual.py chemin\ciqual-2025.xlsx extrait.json
 ```
 
-Une information absente ou inconnue ne devient jamais automatiquement `sans allergène`.
+Les noms et teneurs sont copiés sans normalisation. Les métadonnées de préparation
+proviennent du manifeste revu ; modifier le manifeste est une décision de données
+à faire relire, pas une option implicite de l'importeur. Le contrôle de hash assure
+l'identité des octets téléchargés, pas une signature numérique de l'Anses.
 
-## Provenance à conserver
+## Modèle et conservation
 
-Chaque import conserve :
+`CiqualFood` est distinct d'`Ingredient`. Sa clé est le code officiel textuel stable.
+`Ingredient.ciqualCode` est nullable, référencé par clé étrangère : `null` signifie
+sans association CIQUAL ; une association conserve l'identité et le nom manuel.
+Les ingrédients ne sont jamais créés automatiquement par import CIQUAL.
+La migration ajoute trois tables et une colonne nullable, sans reconstruction,
+suppression ou modification des anciennes lignes. Recettes, étapes, quantités et
+contraintes existantes restent conservées.
 
-- nom du jeu de données ;
-- DOI ;
-- version ;
-- date de téléchargement ;
-- date d'import ;
-- empreinte du fichier source ;
-- format ;
-- attribution ;
-- nombre de lignes lues, acceptées et rejetées.
+`CiqualImport` garde source, version, format, téléchargement, date d'import,
+SHA-256 du XLSX officiel et SHA-256 du JSON effectivement lu, licence, attribution
+et compteurs. `CiqualNutrient` garde code de constituant, unité, texte brut, état et
+valeur numérique éventuelle. `CiqualFood` garde version, base et import d'origine.
 
-Chaque ingrédient associé conserve le code CIQUAL utilisé.
+Une seule version est gérée. Un code déjà connu avec des données différentes fait
+rejeter le fichier entier. Une future mise à jour de version nécessite une stratégie
+distincte, sans écraser silencieusement les données ou leur provenance.
 
-## Pipeline d'import
+## Commandes explicites (Windows CMD)
 
-1. télécharger manuellement une version officielle ;
-2. vérifier le fichier, la licence et son empreinte ;
-3. placer le fichier hors du dépôt si sa taille ou sa licence l'exige ;
-4. parser dans un script déterministe ;
-5. normaliser les valeurs sans perdre l'information d'origine ;
-6. valider codes, unités et plages ;
-7. importer dans une transaction ;
-8. produire un rapport ;
-9. exécuter les tests de non-régression.
+Depuis la racine du projet, après application des patchs :
 
-Le téléchargement ne doit pas être effectué à chaque démarrage de l'application.
+```cmd
+npm ci
+npm run db:generate
+set "DATABASE_URL=file:C:/chemin/absolu/recettes.db"
+npm run db:migrate
+npm run ciqual:import -- data/ciqual/subset-2025.json
+npm run ciqual:import -- data/ciqual/subset-2025.json
+npm run test:ciqual
+```
 
-## Valeurs manquantes et particulières
+L'importeur exige une variable exportée ; il ne charge pas le `.env` serveur.
+Utiliser le chemin absolu de la base réellement migrée, pas un autre fichier neuf.
+Aucun téléchargement, import, seed ou reset n'est lancé au démarrage du serveur.
+Ne pas utiliser `db:init` comme commande d'import CIQUAL.
 
-Avant l'implémentation, l'équipe doit inspecter le schéma de la version téléchargée et définir explicitement le traitement de :
+## Politique atomique et rapport
 
-- valeurs absentes ;
-- valeurs sous un seuil ;
-- traces ;
-- unités différentes ;
-- doublons ou renommages ;
-- constituants non utilisés.
+Tout est validé avant écriture : JSON, métadonnées épinglées, 1 à 50 aliments,
+codes décimaux textuels non vides, unicité dans le fichier, nom, quatre constituants,
+syntaxe et plages (0–100 g ; 0–1000 kcal par 100 g).
+Tous les aliments nouveaux et l'audit sont ensuite écrits dans une transaction Prisma.
+Un doublon de code dans le fichier est une erreur, même s'il a des teneurs identiques.
+Un code existant identique est inchangé ; un conflit ou une erreur SQL annule tout.
+Un réimport des mêmes octets ne crée aucun aliment ni nouvel audit. Un JSON aux
+mêmes données avec d'autres octets crée un audit distinct, sans doublon alimentaire.
 
-Une valeur non numérique ne doit pas être convertie silencieusement en zéro.
+Le rapport JSON distingue `rowsRead`, `rowsValidated`, `rowsAccepted`,
+`rowsRejected`, `created`, `unchanged`, `replay` et les erreurs par numéro de ligne
+**logique d'aliment** (1-based ; 0 pour le fichier/la transaction).
+`rowsAccepted + rowsRejected = rowsRead`. En cas d'échec atomique toutes les lignes
+lues sont rejetées, même si certaines étaient valides ; `rowsValidated` conserve ce
+nombre de lignes syntaxiquement valides. Un JSON illisible a zéro ligne comptable
+et une erreur fichier. Code retour 0 = succès, 1 = échec.
+Les échecs ne laissent pas d'audit en base : conserver stderr pour leur historique.
+Les audits réussis décrivent le fichier ; les aliments inchangés restent liés à leur
+premier import. Ils ne constituent pas une table d'appartenance de tous les imports.
 
-## Tests minimaux
+## Valeurs particulières et conversions
 
-- import déterministe d'un petit fixture ;
-- code CIQUAL conservé ;
-- conversion d'unité correcte ;
-- valeur manquante préservée ;
-- ligne invalide signalée ;
-- transaction annulée en cas d'échec ;
-- rapport avec totaux cohérents ;
-- calcul manuel vérifié sur quelques aliments connus.
+| Texte source        | État      | Valeur stockée | Estimation                        |
+| ------------------- | --------- | -------------- | --------------------------------- |
+| `0`                 | exact     | 0              | zéro explicite                    |
+| `-` ou cellule vide | missing   | null           | inconnue                          |
+| `traces`            | trace     | null           | non quantifiée                    |
+| `< 0,2`             | less_than | 0.2 (seuil)    | borne supérieure exclusive        |
+| `1,25`              | exact     | 1.25           | valeur proportionnelle à la masse |
 
-## Attribution utilisateur
+La virgule est remplacée par un point uniquement dans la valeur numérique ; le
+texte brut est préservé. Aucun remplacement par zéro ni par demi-seuil. Aucune
+conversion kcal/kJ ou ml/g n'est faite : les colonnes choisies ont déjà les unités
+attendues. Les estimations exactes multiplient par `grammes / 100` ; les seuils
+produisent uniquement `upperBoundExclusive`, les absences/traces restent nulles.
+Le test carotte vérifie un doublement à 200 g ; le fixture synthétique vérifie les
+quatre états et un seuil de 0.2 donnant une borne de 0.1 à 50 g.
+Un total de recette, la couverture et le traitement des masses manquantes restent
+à concevoir : additionner seulement les constituants connus serait trompeur.
 
-L'interface ou une page de crédits doit mentionner au minimum la source Anses et la version CIQUAL utilisée, conformément à la licence officielle attachée au jeu importé.
+## Licence et attribution
+
+Le dépôt V1.0 déclare **Etalab Open License 2.0**. La documentation officielle p. 4
+confirme la réutilisation avec indication de la source, version et date, sans
+dénaturation. Cette licence autorise reproduction, adaptation et redistribution,
+y compris commerciale, sous réserve d'attribution et des autres conditions.
+Le texte est conservé dans `data/ciqual/LICENSE-etalab-2.0.md` (source Etalab :
+https://github.com/etalab/licence-ouverte/blob/master/LO.md).
+Les 30 lignes sont un extrait, pas une nouvelle table officielle exhaustive.
+
+Attribution à reprendre dans toute future interface exposant ces données :
+**Anses. 2025. Table de composition nutritionnelle des aliments Ciqual. https://doi.org/10.57745/RDMHWY** Version V1.0, fichier du 03/11/2025,
+consulté le 02/11/2026. Extrait de 30 aliments et 4 constituants.
+La fonction d'estimation renvoie attribution et version ; cette livraison ne crée
+pas d'écran de crédits dans le front.
+
+## Tests et limites
+
+`npm run test:ciqual` utilise uniquement des bases temporaires : migration avant/après
+avec lignes existantes, import réel des 30 aliments, réimport, mêmes données avec
+nouveaux octets, doublon interne, ligne invalide, JSON invalide, unité non prévue,
+conflit sur code, échec SQL sur le deuxième aliment avec rollback du premier et de
+l'audit, liaison/déliaison par code, recherche, estimation et commandes CLI.
+Les cas synthétiques ne constituent pas des valeurs CIQUAL à redistribuer.
+La CI exécute ce test ; aucune base développeur n'est utilisée par les fixtures.
+
+Les allergènes restent un référentiel séparé : **l'absence d'information n'est
+jamais une preuve d'absence d'allergène**. Ni le nom ni les teneurs ne sont utilisés
+pour inférer automatiquement un statut « sans allergène ».
