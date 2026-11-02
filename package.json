@@ -21,14 +21,10 @@
     "test:repository": "npm run build:server && node --test tests/integration/recipe-repository-check.mjs",
     "seed:run": "npm run build:server && node scripts/seed.mjs",
     "db:init": "npm run db:migrate && npm run db:seed",
-    "test:seed": "npm run build:server && node --test tests/integration/seed-check.mjs",
-    "db:seed": "node scripts/prisma.mjs db seed"
+    "test:seed": "npm run build:server && node --test tests/integration/seed-check.mjs"
   },
   "prisma": {
     "seed": "npm run seed:run"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.ts db seed"
   },
   "dependencies": {
     "@prisma/client": "6.12.0",
@@ -43,7 +39,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
-    "electron": "^41.7.1",
+    "electron": "45.2.1",
     "electron-builder": "^26.15.3",
     "eslint": "^10.10.0",
     "eslint-plugin-react-hooks": "^7.1.1",
