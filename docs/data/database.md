@@ -45,11 +45,10 @@ Avec cette version et le pilote natif, le chemin SQLite relatif est résolu
 un niveau `prisma` superflu. `npm run test:db` vérifie ce comportement sur une
 copie temporaire du schéma et du `.env`, avec le CLI réellement installé.
 
-Le futur démarrage serveur doit charger sa configuration avant de créer le client,
-par exemple `node --env-file=src/server/.env <entree-serveur-compilee>` depuis la
-racine. Il doit refuser une configuration absente/invalide. Aucun serveur HTTP ni
-chargeur de configuration applicatif n'est ajouté par cette issue. Ne jamais
-préfixer `DATABASE_URL` par `VITE_` ni importer Prisma depuis `src/client`.
+Le serveur de lecture charge sa configuration avant de créer son unique client.
+Voir [le repository et le démarrage serveur](../development/recipe-repository.md)
+pour le contrat, les routes minimales, le cycle de vie et les tests isolés.
+Ne jamais préfixer `DATABASE_URL` par `VITE_` ni importer Prisma depuis `src/client`.
 
 ## Modèles, relations et validation
 
@@ -141,8 +140,54 @@ contrôler le contenu de `git diff --cached` avant de commiter.
 SQLite sérialise les écritures ; il ne fournit pas un serveur partagé entre les
 machines des développeurs. Le choix de production reste ouvert. Les quantités
 utilisent `Float` : la politique de conversion et d'arrondi sera traitée dans le
-domaine. Aucune authentification, donnée réelle ou seed n'est ajouté.
+domaine. Aucune authentification ni donnée réelle n’est ajoutée. Le seed de démonstration
+est facultatif et décrit ci-dessous.
 
 Références : [environnement Prisma 6](https://www.prisma.io/docs/orm/v6/more/dev-environment/environment-variables),
 [CLI Prisma 6](https://www.prisma.io/docs/orm/v6/reference/prisma-cli-reference).
 Le comportement de chemin est aussi couvert par un test exécutable versionné.
+
+## Initialiser les données de démonstration
+
+Prérequis : Node 22, `npm ci` et `src/server/.env` configuré comme ci-dessus.
+Depuis la racine du dépôt :
+
+```bash
+npm run db:init
+npm run start:server
+```
+
+`db:init` applique les migrations puis lance explicitement le seed. Le seed compile
+le TypeScript avec le compilateur déjà installé ; aucun `tsx` ou `ts-node` n'est requis.
+Il réutilise le même `.env` et la même URL que les autres commandes de base.
+Une `DATABASE_URL` exportée prend la priorité. Les chemins SQLite relatifs restent
+relatifs au schéma. `migrate deploy` seul n'insère aucune donnée.
+
+Pour une base déjà migrée :
+
+```bash
+npm run db:seed
+```
+
+Le jeu contient 3 recettes (gâteau, crêpes, omelette), 6 ingrédients partagés,
+11 lignes d'ingrédients et 11 étapes ordonnées. Le seed est transactionnel :
+une erreur annule tout le peuplement. La connexion est fermée même en cas d'erreur
+et la commande renvoie alors un code non nul.
+
+Les titres des recettes de démo et les noms des ingrédients sont des clés uniques.
+Une relance conserve les identifiants existants, restaure les valeurs des trois
+recettes et retire leurs positions excédentaires. Elle ne supprime pas les autres
+recettes ou ingrédients. Les modifications utilisateur des recettes portant ces
+mêmes titres seront écrasées : réserver ce seed à une base de développement/démo.
+Changer le titre d'un exemple dans le code crée une autre recette et ne supprime
+pas automatiquement l'ancienne.
+
+La migration historique `20261013160814_seed` ajoute uniquement deux index uniques ;
+son nom ne signifie pas qu'elle insère des données. Ne pas la modifier si elle a
+été partagée/appliquée. Si une base ancienne contient des titres ou noms dupliqués,
+les examiner et les fusionner/renommer avant d'appliquer cette migration.
+
+Vérification : `npm run test:seed` crée une base temporaire, exécute la commande
+publique, vérifie les données et leur lecture HTTP, la réexécution, la préservation
+d'une recette utilisateur et l'annulation transactionnelle en cas d'erreur.
+Le seed remplit la base serveur ; il ne branche pas les pages React sur l'API.

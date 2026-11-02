@@ -36,3 +36,7 @@ dist-electron
 *.sqlite-*
 *.sqlite3
 *.sqlite3-*
+*.db
+
+# Compiled server
+dist-server

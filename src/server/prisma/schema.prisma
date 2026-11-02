@@ -9,7 +9,7 @@ datasource db {
 
 model Recipe {
   id          Int                @id @default(autoincrement())
-  title       String
+  title       String             @unique
   description String?
   servings    Int
   ingredients RecipeIngredient[]
@@ -18,7 +18,7 @@ model Recipe {
 
 model Ingredient {
   id            Int                @id @default(autoincrement())
-  canonicalName String
+  canonicalName String             @unique
   recipes       RecipeIngredient[]
 }
 
