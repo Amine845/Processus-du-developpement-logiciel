@@ -82,6 +82,7 @@ function children(input: RecipeInput) {
 
 /** Never let Prisma details escape; only a title clash is a known outcome. */
 function toWriteError(error: unknown): Error {
+  console.error('[prisma-recipe-repository] cause réelle :', error)
   if (
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === 'P2002'
