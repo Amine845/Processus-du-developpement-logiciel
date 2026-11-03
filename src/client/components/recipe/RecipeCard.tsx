@@ -9,6 +9,7 @@ export interface RecipeCardProps {
   imageUrl?: string
   cookingTime?: string
   onClick?: (id: string | number) => void
+  onDelete?: (id: string | number) => void
 }
 
 const DEFAULT_IMAGE =
@@ -22,6 +23,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
   imageUrl = DEFAULT_IMAGE,
   cookingTime,
   onClick,
+  onDelete,
 }) => {
   const handleClick = () => {
     if (onClick) onClick(id)
@@ -62,6 +64,25 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
           <footer className="recipe-card-footer">
             <span className="recipe-card-meta">{cookingTime}</span>
           </footer>
+        )}
+
+        {onDelete && (
+          <div className="recipe-card-actions">
+            <button
+              type="button"
+              className="recipe-card-delete"
+              aria-label={`Supprimer la recette : ${title}`}
+              // Sans ça, le clic / Entrée / Espace remonte à l'<article>
+              // et ouvre la page de détail.
+              onClick={(event) => {
+                event.stopPropagation()
+                onDelete(id)
+              }}
+              onKeyDown={(event) => event.stopPropagation()}
+            >
+              Supprimer
+            </button>
+          </div>
         )}
       </div>
     </article>

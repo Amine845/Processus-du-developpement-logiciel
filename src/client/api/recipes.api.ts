@@ -43,7 +43,8 @@ const json = (method: string, body: RecipeInputDTO): RequestInit => ({
 export const recipesApi = {
   getAll: () => request<RecipeSummaryDTO[]>(''),
   getById: (id: number) => request<RecipeDTO>(`/${id}`),
-  create: (input: RecipeInputDTO) => request<RecipeDTO>('', json('POST', input)),
+  create: (input: RecipeInputDTO) =>
+    request<RecipeDTO>('', json('POST', input)),
   update: (id: number, input: RecipeInputDTO) =>
     request<RecipeDTO>(`/${id}`, json('PUT', input)),
   delete: (id: number) => request<void>(`/${id}`, { method: 'DELETE' }),
