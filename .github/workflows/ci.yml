@@ -44,6 +44,12 @@ jobs:
       - name: Tester le seed sur une base temporaire
         run: npm run test:seed
 
+      - name: Tester le sous-ensemble CIQUAL sur des bases temporaires
+        run: npm run test:ciqual
+
+      - name: Tester les mises à jour CIQUAL hors réseau
+        run: npm run test:ciqual:sync
+
       - name: Tests unitaires
         run: npm run test
 

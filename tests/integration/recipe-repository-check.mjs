@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { cpSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { cpSync, mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -38,6 +38,7 @@ after(async () => {
 })
 
 before(async () => {
+  writeFileSync(join(temp, 'recipes.db'), '', { flag: 'wx' })
   // Copy only the schema/migrations. Never load any developer .env.
   mkdirSync(join(temp, 'prisma'))
   cpSync(

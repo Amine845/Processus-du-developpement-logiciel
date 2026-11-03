@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { cpSync, existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  writeFileSync,
+  rmSync,
+} from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -44,6 +51,7 @@ try {
     { recursive: true },
   )
   cpSync(join(root, 'src/server/.env.example'), join(temp, '.env'))
+  writeFileSync(join(temp, 'prisma/dev.db'), '', { flag: 'wx' })
   prisma('validate')
   prisma('migrate', 'deploy')
   assert.ok(
@@ -73,6 +81,10 @@ try {
     "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_prisma_%'",
   )
   assert.deepEqual(tables.map((t) => t.name).sort(), [
+    'CiqualFood',
+    'CiqualImport',
+    'CiqualNutrient',
+    'CiqualSyncState',
     'Ingredient',
     'Recipe',
     'RecipeIngredient',
