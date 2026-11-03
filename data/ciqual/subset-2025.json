@@ -1,0 +1,339 @@
+{
+  "metadata": {
+    "source": "https://doi.org/10.57745/RDMHWY",
+    "version": "2025-V1.0-2025-11-03",
+    "downloadedAt": "2026-11-02",
+    "sourceFile": "Table Ciqual 2025_FR_2025_11_03.xlsx",
+    "sourceUrl": "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666260",
+    "sourceSha256": "5555c572fa3735991298d832d0427788fa69a11b4fd20a5d580d58942369fbb0",
+    "license": "Etalab-2.0",
+    "attribution": "Anses. 2025. Table de composition nutritionnelle des aliments Ciqual. https://doi.org/10.57745/RDMHWY",
+    "format": "ciqual-subset-json-v1",
+    "baseQuantity": 100,
+    "baseUnit": "g",
+    "constituents": {
+      "328": {
+        "column": 11,
+        "header": "Energie,\nRèglement\nUE N°\n1169\n2011 (kcal\n100 g)",
+        "unit": "kcal"
+      },
+      "25003": {
+        "column": 16,
+        "header": "Protéines,\nN x 6.25\n(g\n100 g)",
+        "unit": "g"
+      },
+      "31000": {
+        "column": 17,
+        "header": "Glucides\n(g\n100 g)",
+        "unit": "g"
+      },
+      "40000": {
+        "column": 18,
+        "header": "Lipides\n(g\n100 g)",
+        "unit": "g"
+      }
+    }
+  },
+  "foods": [
+    {
+      "code": "20009",
+      "name": "Carotte, crue",
+      "values": {
+        "328": "30,2",
+        "25003": "0,78",
+        "31000": "5,16",
+        "40000": "< 0,5"
+      }
+    },
+    {
+      "code": "20020",
+      "name": "Courgette, chair et peau, crue",
+      "values": {
+        "328": "16,7",
+        "25003": "1,21",
+        "31000": "1,75",
+        "40000": "0,32"
+      }
+    },
+    {
+      "code": "20034",
+      "name": "Oignon, cru",
+      "values": {
+        "328": "39",
+        "25003": "1,1",
+        "31000": "6,25",
+        "40000": "0,62"
+      }
+    },
+    {
+      "code": "20041",
+      "name": "Poivron, vert, jaune ou rouge, cru",
+      "values": {
+        "328": "22,6",
+        "25003": "0,8",
+        "31000": "3,5",
+        "40000": "0,27"
+      }
+    },
+    {
+      "code": "20057",
+      "name": "Brocoli, cru",
+      "values": {
+        "328": "31,9",
+        "25003": "2,9",
+        "31000": "2,15",
+        "40000": "0,36"
+      }
+    },
+    {
+      "code": "20085",
+      "name": "Poivron vert, cru",
+      "values": {
+        "328": "22,5",
+        "25003": "0,81",
+        "31000": "3,43",
+        "40000": "< 0,5"
+      }
+    },
+    {
+      "code": "20087",
+      "name": "Poivron rouge, cru",
+      "values": {
+        "328": "33,6",
+        "25003": "1,06",
+        "31000": "5,98",
+        "40000": "< 0,5"
+      }
+    },
+    {
+      "code": "20204",
+      "name": "Brocoli, surgelé, cru",
+      "values": {
+        "328": "26,4",
+        "25003": "2,78",
+        "31000": "1,5",
+        "40000": "0,42"
+      }
+    },
+    {
+      "code": "20021",
+      "name": "Courgette, chair et peau, cuite",
+      "values": {
+        "328": "15,5",
+        "25003": "0,93",
+        "31000": "1,4",
+        "40000": "0,36"
+      }
+    },
+    {
+      "code": "20048",
+      "name": "Tomate, pelée, appertisée, égouttée",
+      "values": {
+        "328": "16,4",
+        "25003": "0,9",
+        "31000": "1,61",
+        "40000": "0,28"
+      }
+    },
+    {
+      "code": "20068",
+      "name": "Tomate, concentré, appertisé",
+      "values": {
+        "328": "99,2",
+        "25003": "4,4",
+        "31000": "17,1",
+        "40000": "0,53"
+      }
+    },
+    {
+      "code": "4008",
+      "name": "Pomme de terre, sans peau, crue",
+      "values": {
+        "328": "80",
+        "25003": "2,02",
+        "31000": "16,2",
+        "40000": "0,09"
+      }
+    },
+    {
+      "code": "20507",
+      "name": "Pois chiche, bouilli/cuit à l'eau",
+      "values": {
+        "328": "148",
+        "25003": "8,31",
+        "31000": "17,7",
+        "40000": "3"
+      }
+    },
+    {
+      "code": "20516",
+      "name": "Pois chiche, sec",
+      "values": {
+        "328": "350",
+        "25003": "20,5",
+        "31000": "47,5",
+        "40000": "6,04"
+      }
+    },
+    {
+      "code": "20585",
+      "name": "Lentille verte, sèche",
+      "values": {
+        "328": "327",
+        "25003": "25,1",
+        "31000": "44,5",
+        "40000": "1,8"
+      }
+    },
+    {
+      "code": "13005",
+      "name": "Banane, chair sans peau, crue",
+      "values": {
+        "328": "87,6",
+        "25003": "1,06",
+        "31000": "19,7",
+        "40000": "< 0,5"
+      }
+    },
+    {
+      "code": "13009",
+      "name": "Citron, chair sans peau, sans pépins, cru",
+      "values": {
+        "328": "24,3",
+        "25003": "0,25",
+        "31000": "1,56",
+        "40000": "< 0,5"
+      }
+    },
+    {
+      "code": "13039",
+      "name": "Pomme, chair et peau, crue",
+      "values": {
+        "328": "54",
+        "25003": "0,25",
+        "31000": "11,6",
+        "40000": "0,25"
+      }
+    },
+    {
+      "code": "13125",
+      "name": "Citron, zeste, cru",
+      "values": {
+        "328": "-",
+        "25003": "1,5",
+        "31000": "5,4",
+        "40000": "0,3"
+      }
+    },
+    {
+      "code": "13089",
+      "name": "Banane, chair sans peau, sèche",
+      "values": {
+        "328": "365",
+        "25003": "3,89",
+        "31000": "78,4",
+        "40000": "1,81"
+      }
+    },
+    {
+      "code": "9100",
+      "name": "Riz blanc, cru",
+      "values": {
+        "328": "350",
+        "25003": "7,38",
+        "31000": "77,5",
+        "40000": "0,79"
+      }
+    },
+    {
+      "code": "9410",
+      "name": "Farine de blé tendre ou froment T110",
+      "values": {
+        "328": "343",
+        "25003": "10,3",
+        "31000": "68,6",
+        "40000": "1,5"
+      }
+    },
+    {
+      "code": "9435",
+      "name": "Farine de blé tendre ou froment T65",
+      "values": {
+        "328": "346",
+        "25003": "11",
+        "31000": "71,5",
+        "40000": "1"
+      }
+    },
+    {
+      "code": "6250",
+      "name": "Boeuf, steak haché 5% MG cru",
+      "values": {
+        "328": "130",
+        "25003": "21,9",
+        "31000": "0,3",
+        "40000": "4,59"
+      }
+    },
+    {
+      "code": "36017",
+      "name": "Poulet, filet sans peau cru",
+      "values": {
+        "328": "110",
+        "25003": "23,4",
+        "31000": "0",
+        "40000": "1,5"
+      }
+    },
+    {
+      "code": "19041",
+      "name": "Lait demi-écrémé, UHT",
+      "values": {
+        "328": "47,7",
+        "25003": "3,41",
+        "31000": "5",
+        "40000": "1,56"
+      }
+    },
+    {
+      "code": "2007",
+      "name": "Jus de citron, fait maison",
+      "values": {
+        "328": "28,6",
+        "25003": "0,35",
+        "31000": "2,52",
+        "40000": "0,24"
+      }
+    },
+    {
+      "code": "31016",
+      "name": "Sucre blanc",
+      "values": {
+        "328": "399",
+        "25003": "0",
+        "31000": "99,7",
+        "40000": "0"
+      }
+    },
+    {
+      "code": "17270",
+      "name": "Huile d'olive vierge extra",
+      "values": {
+        "328": "899",
+        "25003": "0,25",
+        "31000": "traces",
+        "40000": "99,9"
+      }
+    },
+    {
+      "code": "11000",
+      "name": "Ail, cru",
+      "values": {
+        "328": "109",
+        "25003": "5,31",
+        "31000": "18,6",
+        "40000": "< 0,5"
+      }
+    }
+  ]
+}

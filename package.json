@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "main": "dist-electron/main.js",
   "scripts": {
-    "server": "tsx src/server/index.ts",
+    "server": "node scripts/start-server.mjs --dev",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -22,7 +22,13 @@
     "test:repository": "npm run build:server && node --test tests/integration/recipe-repository-check.mjs",
     "seed:run": "npm run build:server && node scripts/seed.mjs",
     "db:init": "npm run db:migrate && npm run db:seed",
-    "test:seed": "npm run build:server && node --test tests/integration/seed-check.mjs"
+    "test:seed": "npm run build:server && node --test tests/integration/seed-check.mjs",
+    "ciqual:import": "node scripts/ciqual.mjs",
+    "test:ciqual": "npm run db:generate && node --test tests/integration/ciqual-check.mjs",
+    "ciqual:sync": "node scripts/ciqual-sync.mjs",
+    "ciqual:watch": "node scripts/ciqual-sync.mjs --watch",
+    "ciqual:status": "node scripts/ciqual-sync.mjs --status",
+    "test:ciqual:sync": "npm run db:generate && node --test tests/integration/ciqual-sync-check.mjs"
   },
   "prisma": {
     "seed": "npm run seed:run"
