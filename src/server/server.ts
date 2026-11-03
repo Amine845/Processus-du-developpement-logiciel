@@ -7,6 +7,17 @@ import { createRecipes } from './application/recipes.js'
 import { RecipeValidationError } from './application/recipe-input.js'
 import { createPersistence } from './infrastructure/prisma.js'
 import { createPrismaRecipeRepository } from './infrastructure/prisma-recipe-repository.js'
+import { createPrismaCiqualRepository } from './infrastructure/prisma-ciqual-repository.js'
+import {
+  CiqualReadError,
+  type CiqualRepository,
+} from './domain/ciqual-repository.js'
+import { CiqualQueryError, createCiqual } from './application/ciqual.js'
+import {
+  CIQUAL_SEARCH_DEFAULT_LIMIT,
+  CIQUAL_SEARCH_MAX_LIMIT,
+  CIQUAL_SEARCH_MIN_LENGTH,
+} from '../shared/types/ciqual.types.js'
 
 const MAX_BODY_BYTES = 100 * 1024
 const isValidId = (id: number) =>
@@ -62,8 +73,13 @@ function readJsonBody(request: IncomingMessage): Promise<unknown> {
   })
 }
 
-export function createRecipeServer(repository: RecipeRepository) {
+/** Le référentiel CIQUAL est facultatif : sans lui, /api/ciqual répond 404. */
+export function createRecipeServer(
+  repository: RecipeRepository,
+  ciqualRepository?: CiqualRepository,
+) {
   const recipes = createRecipes(repository)
+  const ciqual = ciqualRepository ? createCiqual(ciqualRepository) : undefined
   return createServer(async (request, response) => {
     const method = request.method ?? 'GET'
     const send = (
@@ -83,7 +99,34 @@ export function createRecipeServer(repository: RecipeRepository) {
       response.end(JSON.stringify(body))
     }
     try {
-      const path = new URL(request.url ?? '/', 'http://localhost').pathname
+      const url = new URL(request.url ?? '/', 'http://localhost')
+      const path = url.pathname
+
+      if (ciqual && path === '/api/ciqual/foods') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(
+          200,
+          await ciqual.search(
+            url.searchParams.get('q'),
+            url.searchParams.get('limit'),
+          ),
+        )
+        return
+      }
+
+      const foodMatch = /^\/api\/ciqual\/foods\/([^/]+)$/.exec(path)
+      if (ciqual && foodMatch) {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        const food = await ciqual.findByCode(foodMatch[1])
+        send(food ? 200 : 404, food ?? { error: 'CIQUAL_FOOD_NOT_FOUND' })
+        return
+      }
 
       if (path === '/api/recipes') {
         if (method === 'GET') {
@@ -131,6 +174,15 @@ export function createRecipeServer(repository: RecipeRepository) {
           { error: error.code },
           error.status === 413 ? { Connection: 'close' } : {},
         )
+      } else if (error instanceof CiqualQueryError) {
+        send(400, {
+          error: error.code,
+          minLength: CIQUAL_SEARCH_MIN_LENGTH,
+          defaultLimit: CIQUAL_SEARCH_DEFAULT_LIMIT,
+          maxLimit: CIQUAL_SEARCH_MAX_LIMIT,
+        })
+      } else if (error instanceof CiqualReadError) {
+        send(503, { error: 'CIQUAL_READ_FAILED' })
       } else if (error instanceof RecipeValidationError) {
         send(400, { error: 'INVALID_RECIPE', issues: error.issues })
       } else if (error instanceof RecipeConflictError) {
@@ -150,6 +202,7 @@ export async function startServer(databaseUrl: string, port = 3001) {
   const persistence = createPersistence(databaseUrl)
   const server = createRecipeServer(
     createPrismaRecipeRepository(persistence.client),
+    createPrismaCiqualRepository(persistence.client),
   )
   try {
     await persistence.connect()
