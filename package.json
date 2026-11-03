@@ -28,7 +28,8 @@
     "ciqual:sync": "node scripts/ciqual-sync.mjs",
     "ciqual:watch": "node scripts/ciqual-sync.mjs --watch",
     "ciqual:status": "node scripts/ciqual-sync.mjs --status",
-    "test:ciqual:sync": "npm run db:generate && node --test tests/integration/ciqual-sync-check.mjs"
+    "test:ciqual:sync": "npm run db:generate && node --test tests/integration/ciqual-sync-check.mjs",
+    "test:ciqual:api": "npm run build:server && node --test tests/integration/ciqual-api-check.mjs"
   },
   "prisma": {
     "seed": "npm run seed:run"
