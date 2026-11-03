@@ -22,7 +22,6 @@ class HttpError extends Error {
   }
 }
 
-
 function readJsonBody(request: IncomingMessage): Promise<unknown> {
   if (
     !/^application\/json\s*(;|$)/i.test(request.headers['content-type'] ?? '')
