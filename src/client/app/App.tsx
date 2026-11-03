@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+// 1. Ajout de useNavigate dans les imports de react-router-dom
+import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/layout';
 
-// 1. On importe tes vrais composants
 import { RecipeCreatePage } from '../pages/RecipeCreatePage';
 import { RecipeCard } from '../components/recipe/RecipeCard';
+import { RecipeDetailPage } from '../pages/RecipeDetailPage.tsx';
 
-// Import de l'API et des types (vérifie que ces chemins correspondent bien à ton arborescence)
 import { recipesApi } from '../api/recipes.api.ts';
 import type { RecipeDTO } from '../../shared/types/recipe.types';
 
-// 2. Le composant dynamique lié à la base de données
 const RecipesPage = () => {
+    // 2. Initialisation du hook de navigation
+    const navigate = useNavigate();
+
     const [recipes, setRecipes] = useState<RecipeDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ const RecipesPage = () => {
             try {
                 const data = await recipesApi.getAll();
                 setRecipes(data);
-            } catch (err: any) {
+            } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -32,7 +34,9 @@ const RecipesPage = () => {
     }, []);
 
     const handleSelectRecipe = (id: string | number) => {
-        console.log(`Recette sélectionnée : #${id}`);
+        console.log(`Redirection vers la recette : #${id}`);
+        // 3. Déclenchement de la redirection vers la page de détail
+        navigate(`/recipes/${id}`);
     };
 
     if (loading) return <p style={{ padding: 'var(--spacing-md)' }}>Chargement des recettes...</p>;
@@ -46,14 +50,13 @@ const RecipesPage = () => {
                 Bibliothèque, recherche par nom, filtres par allergènes et équipement.
             </p>
 
-            {/* Rendu dynamique des RecipeCards depuis la DB */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--spacing-md)' }}>
                 {recipes.map((recipe) => (
                     <RecipeCard
                         key={recipe.id}
                         id={recipe.id}
                         title={recipe.title}
-                        description={recipe.description || ""} // Ajout de la valeur par défaut pour éviter le null
+                        description={recipe.description || ""}
                         category="Recette"
                         onClick={handleSelectRecipe}
                     />
@@ -63,7 +66,6 @@ const RecipesPage = () => {
     );
 };
 
-/* Placeholders restants */
 const PlannerPage = () => (
     <div>
         <h2 style={{ fontSize: 'var(--text-xl)' }}>Planificateur & courses</h2>
@@ -76,9 +78,6 @@ const ProfilePage = () => (
     </div>
 );
 
-// N'oublie pas d'importer la page de détail en haut de ton fichier
-import { RecipeDetailPage } from '../pages/RecipeDetailPage.tsx'; // Ajuste le chemin selon ton arborescence
-
 function App() {
     return (
         <HashRouter>
@@ -87,13 +86,8 @@ function App() {
                     <Route path="/" element={<Navigate to="/recipes" replace />} />
                     <Route path="/recipes" element={<RecipesPage />} />
                     <Route path="/planner" element={<PlannerPage />} />
-
-                    {/* La route de création (doit rester avant la route dynamique pour éviter les conflits) */}
                     <Route path="/recipes/new" element={<RecipeCreatePage />} />
-
-                    {/* NOUVELLE ROUTE : Affichage des détails d'une recette spécifique */}
                     <Route path="/recipes/:id" element={<RecipeDetailPage />} />
-
                     <Route path="/profile" element={<ProfilePage />} />
                 </Routes>
             </Layout>
