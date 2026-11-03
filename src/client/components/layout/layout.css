@@ -1,0 +1,40 @@
+/* src/client/components/layout/Layout.css */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+.layout-header {
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  width: 100%;
+}
+
+.layout-header-inner {
+  padding: var(--spacing-md);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Sentence case appliqué au logo/titre */
+.app-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: -0.02em;
+}
+
+.layout-main {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  padding-bottom: 80px; /* Dégagement obligatoire pour la BottomNav fixe */
+}

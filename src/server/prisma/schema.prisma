@@ -19,6 +19,8 @@ model Recipe {
 model Ingredient {
   id            Int                @id @default(autoincrement())
   canonicalName String             @unique
+  ciqualCode    String?
+  ciqualFood    CiqualFood?        @relation(fields: [ciqualCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
   recipes       RecipeIngredient[]
 }
 
@@ -44,4 +46,58 @@ model RecipeStep {
   recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([recipeId, position])
+}
+
+// Full imports retain a JSON snapshot; old subset audits are preserved.
+model CiqualImport {
+  id           Int          @id @default(autoincrement())
+  importedAt   DateTime     @default(now())
+  source       String
+  version      String
+  downloadedAt String
+  sourceSha256 String
+  fileSha256   String       @unique
+  format       String
+  attribution  String
+  license      String
+  rowsRead     Int
+  rowsAccepted Int
+  rowsRejected Int
+  payload      String?
+  foods        CiqualFood[]
+}
+
+model CiqualFood {
+  active       Boolean          @default(true)
+  rawData      String?
+  code         String           @id
+  name         String
+  version      String
+  baseQuantity Float            @default(100)
+  baseUnit     String           @default("g")
+  importId     Int
+  import       CiqualImport     @relation(fields: [importId], references: [id], onDelete: Restrict)
+  nutrients    CiqualNutrient[]
+  ingredients  Ingredient[]
+
+  @@index([name])
+}
+
+model CiqualNutrient {
+  foodCode String
+  key      String
+  unit     String
+  raw      String
+  status   String
+  value    Float?
+  food     CiqualFood @relation(fields: [foodCode], references: [code], onDelete: Restrict)
+
+  @@id([foodCode, key])
+}
+
+model CiqualSyncState {
+  id         Int       @id
+  checkedAt  DateTime?
+  releaseKey String?
+  lastError  String?
 }

@@ -1,0 +1,35 @@
+{
+  "source": "https://doi.org/10.57745/RDMHWY",
+  "version": "2025-V1.0-2025-11-03",
+  "downloadedAt": "2026-11-02",
+  "sourceFile": "Table Ciqual 2025_FR_2025_11_03.xlsx",
+  "sourceUrl": "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666260",
+  "sourceSha256": "5555c572fa3735991298d832d0427788fa69a11b4fd20a5d580d58942369fbb0",
+  "license": "Etalab-2.0",
+  "attribution": "Anses. 2025. Table de composition nutritionnelle des aliments Ciqual. https://doi.org/10.57745/RDMHWY",
+  "format": "ciqual-subset-json-v1",
+  "baseQuantity": 100,
+  "baseUnit": "g",
+  "constituents": {
+    "328": {
+      "column": 11,
+      "header": "Energie,\nRèglement\nUE N°\n1169\n2011 (kcal\n100 g)",
+      "unit": "kcal"
+    },
+    "25003": {
+      "column": 16,
+      "header": "Protéines,\nN x 6.25\n(g\n100 g)",
+      "unit": "g"
+    },
+    "31000": {
+      "column": 17,
+      "header": "Glucides\n(g\n100 g)",
+      "unit": "g"
+    },
+    "40000": {
+      "column": 18,
+      "header": "Lipides\n(g\n100 g)",
+      "unit": "g"
+    }
+  }
+}

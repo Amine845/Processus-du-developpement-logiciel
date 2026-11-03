@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { PrismaClient } from '@prisma/client'
-import { seedDatabase } from '../../dist-server/prisma/seed.js'
-import { startServer } from '../../dist-server/server.js'
+import { seedDatabase } from '../../dist-server/server/prisma/seed.js'
+import { startServer } from '../../dist-server/server/server.js'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 function run(script, url, success = true) {
@@ -36,6 +36,7 @@ function run(script, url, success = true) {
 
 test('public seed command: complete data, rerun, HTTP, preservation and rollback', async () => {
   const temp = mkdtempSync(join(tmpdir(), 'recipe-seed-'))
+  writeFileSync(join(temp, 'demo.db'), '', { flag: 'wx' })
   const url = `file:${join(temp, 'demo.db').replaceAll('\\', '/')}`
   const db = new PrismaClient({ datasources: { db: { url } } })
   let server
