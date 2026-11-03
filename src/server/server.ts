@@ -33,7 +33,6 @@ class HttpError extends Error {
   }
 }
 
-
 function readJsonBody(request: IncomingMessage): Promise<unknown> {
   if (
     !/^application\/json\s*(;|$)/i.test(request.headers['content-type'] ?? '')
@@ -189,6 +188,7 @@ export function createRecipeServer(
       } else if (error instanceof RecipeConflictError) {
         send(409, { error: 'RECIPE_TITLE_CONFLICT' })
       } else {
+        console.error(`[${method} ${request.url}] erreur non gérée :`, error)
         send(503, {
           error:
             method === 'GET' ? 'RECIPE_READ_FAILED' : 'RECIPE_WRITE_FAILED',
