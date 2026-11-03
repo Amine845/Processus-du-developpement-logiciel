@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 
+export const prisma = new PrismaClient()
+
 /** One owner per server runtime; tests supply their own isolated URL. */
 export function createPersistence(databaseUrl: string) {
   if (!databaseUrl.startsWith('file:') || databaseUrl.length <= 5) {

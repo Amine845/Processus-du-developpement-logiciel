@@ -24,11 +24,12 @@ const isValidId = (id: number) =>
   Number.isInteger(id) && id >= 1 && id <= 2147483647
 
 class HttpError extends Error {
-  constructor(
-    readonly status: number,
-    readonly code: string,
-  ) {
+  readonly status: number
+  readonly code: string
+  constructor(status: number, code: string) {
     super(code)
+    this.status = status
+    this.code = code
   }
 }
 
@@ -187,6 +188,7 @@ export function createRecipeServer(
       } else if (error instanceof RecipeConflictError) {
         send(409, { error: 'RECIPE_TITLE_CONFLICT' })
       } else {
+        console.error(`[${method} ${request.url}] erreur non gérée :`, error)
         send(503, {
           error:
             method === 'GET' ? 'RECIPE_READ_FAILED' : 'RECIPE_WRITE_FAILED',

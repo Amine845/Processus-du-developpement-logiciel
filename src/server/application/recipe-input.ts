@@ -1,11 +1,19 @@
 import type { RecipeInput } from '../domain/recipe-repository.js'
 
 export class RecipeValidationError extends Error {
-  constructor(readonly issues: string[]) {
+  readonly issues: string[]
+  constructor(issues: string[]) {
     super('Invalid recipe')
     this.name = 'RecipeValidationError'
+    this.issues = issues
   }
 }
+
+// Doit rester aligné avec le CHECK "RecipeIngredient_unit_check" de la migration SQL.
+export const ALLOWED_UNITS = ['g', 'kg', 'ml', 'l', 'piece'] as const
+
+const isAllowedUnit = (unit: string): boolean =>
+  (ALLOWED_UNITS as readonly string[]).includes(unit)
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -60,8 +68,8 @@ export function parseRecipeInput(body: unknown): RecipeInput {
       if (canonicalName.length < 1 || canonicalName.length > 100) {
         issues.push(`${at}.canonicalName: 1 to 100 characters required`)
       }
-      if (unit.length < 1 || unit.length > 20) {
-        issues.push(`${at}.unit: 1 to 20 characters required`)
+      if (!isAllowedUnit(unit)) {
+        issues.push(`${at}.unit: one of ${ALLOWED_UNITS.join(', ')} required`)
       }
       if (
         typeof quantity !== 'number' ||
