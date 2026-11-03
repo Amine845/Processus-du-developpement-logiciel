@@ -57,8 +57,10 @@
   padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
-  flex: 1; /* Permet d'étirer le bloc pour caler le footer */
-  text-align: left; /* Refus du tout-centré */
+  flex: 1;
+  /* Permet d'étirer le bloc pour caler le footer */
+  text-align: left;
+  /* Refus du tout-centré */
 }
 
 .recipe-card-title {
@@ -96,4 +98,28 @@
   .recipe-card {
     max-width: 380px;
   }
+}
+
+.recipe-card-actions {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.recipe-card-delete {
+  padding: 6px 12px;
+  border: 1px solid #b91c1c;
+  border-radius: 8px;
+  background: transparent;
+  color: #b91c1c;
+  font: inherit;
+  font-size: var(--text-sm, 0.875rem);
+  cursor: pointer;
+}
+
+.recipe-card-delete:hover,
+.recipe-card-delete:focus-visible {
+  background: #b91c1c;
+  color: #fff;
 }

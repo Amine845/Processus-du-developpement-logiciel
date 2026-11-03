@@ -6,17 +6,23 @@ import { Layout } from '../components/layout/layout';
 import { RecipeCreatePage } from '../pages/RecipeCreatePage';
 import { RecipeCard } from '../components/recipe/RecipeCard';
 import { RecipeDetailPage } from '../pages/RecipeDetailPage.tsx';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 
-import { recipesApi } from '../api/recipes.api.ts';
-import type { RecipeDTO } from '../../shared/types/recipe.types';
+import { recipesApi, ApiError } from '../api/recipes.api.ts';
+import type { RecipeSummaryDTO } from '../../shared/types/recipe.types';
 
 const RecipesPage = () => {
     // 2. Initialisation du hook de navigation
     const navigate = useNavigate();
 
-    const [recipes, setRecipes] = useState<RecipeDTO[]>([]);
+    const [recipes, setRecipes] = useState<RecipeSummaryDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Suppression : recette en attente de confirmation + état de la requête
+    const [pendingDelete, setPendingDelete] = useState<RecipeSummaryDTO | null>(null);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadRecipes = async () => {
@@ -24,7 +30,11 @@ const RecipesPage = () => {
                 const data = await recipesApi.getAll();
                 setRecipes(data);
             } catch (err) {
-                setError(err.message);
+                setError(
+                    err instanceof ApiError && err.code === 'NETWORK_ERROR'
+                        ? 'Serveur injoignable. Vérifie qu’il est lancé.'
+                        : 'Impossible de charger les recettes.',
+                );
             } finally {
                 setLoading(false);
             }
@@ -37,6 +47,39 @@ const RecipesPage = () => {
         console.log(`Redirection vers la recette : #${id}`);
         // 3. Déclenchement de la redirection vers la page de détail
         navigate(`/recipes/${id}`);
+    };
+
+    const askDelete = (recipe: RecipeSummaryDTO) => {
+        setDeleteError(null);
+        setPendingDelete(recipe);
+    };
+
+    const cancelDelete = () => {
+        if (!deleting) setPendingDelete(null);
+    };
+
+    const confirmDelete = async () => {
+        if (!pendingDelete) return;
+        const { id } = pendingDelete;
+        setDeleting(true);
+        setDeleteError(null);
+        try {
+            await recipesApi.delete(id);
+        } catch (err) {
+            // RECIPE_NOT_FOUND = déjà supprimée ailleurs : on la retire de la liste quand même.
+            if (!(err instanceof ApiError && err.code === 'RECIPE_NOT_FOUND')) {
+                setDeleteError(
+                    err instanceof ApiError && err.code === 'NETWORK_ERROR'
+                        ? 'Serveur injoignable. Réessaie dans un instant.'
+                        : 'La suppression a échoué. Réessaie.',
+                );
+                setDeleting(false);
+                return;
+            }
+        }
+        setRecipes((current) => current.filter((r) => r.id !== id));
+        setPendingDelete(null);
+        setDeleting(false);
     };
 
     if (loading) return <p style={{ padding: 'var(--spacing-md)' }}>Chargement des recettes...</p>;
@@ -59,9 +102,20 @@ const RecipesPage = () => {
                         description={recipe.description || ""}
                         category="Recette"
                         onClick={handleSelectRecipe}
+                        onDelete={() => askDelete(recipe)}
                     />
                 ))}
             </div>
+
+            <ConfirmDialog
+                open={pendingDelete !== null}
+                title="Supprimer cette recette ?"
+                message={`« ${pendingDelete?.title ?? ''} » sera supprimée définitivement, avec ses ingrédients et ses étapes.`}
+                busy={deleting}
+                error={deleteError}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+            />
         </div>
     );
 };
