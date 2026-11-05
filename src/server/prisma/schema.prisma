@@ -68,6 +68,16 @@ model CiqualImport {
 }
 
 model CiqualFood {
+  category     String           @default("unclassified")
+  groupCode    String?
+  groupName    String?
+  subgroupCode String?
+  subgroupName String?
+  detailGroupCode String?
+  detailGroupName String?
+  classificationVersion String?
+  classificationRule String?
+  applicationTags String       @default("[]")
   active       Boolean          @default(true)
   rawData      String?
   code         String           @id
@@ -100,4 +110,5 @@ model CiqualSyncState {
   checkedAt  DateTime?
   releaseKey String?
   lastError  String?
+  classificationVersion String?
 }
