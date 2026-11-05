@@ -114,6 +114,7 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
     ...summaries[0],
     ingredients: [
       {
+        ciqualCode: null,
         ingredientId: 9,
         canonicalName: 'Carotte',
         position: 1,
@@ -121,6 +122,7 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
         unit: 'g',
       },
       {
+        ciqualCode: null,
         ingredientId: 8,
         canonicalName: 'Eau',
         position: 3,
@@ -322,8 +324,8 @@ test('injected write failures return sanitized HTTP responses', async () => {
   const body = JSON.stringify({
     title: 'T',
     servings: 1,
-    ingredients: [],
-    steps: [],
+    ingredients: [{ canonicalName: 'Manuel', quantity: 1, unit: 'g' }],
+    steps: [{ instruction: 'Servir' }],
   })
   try {
     for (const [method, path] of [

@@ -18,10 +18,13 @@ model Recipe {
 
 model Ingredient {
   id            Int                @id @default(autoincrement())
-  canonicalName String             @unique
+  canonicalName String
+  identityKey   String?            @unique
   ciqualCode    String?
   ciqualFood    CiqualFood?        @relation(fields: [ciqualCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
   recipes       RecipeIngredient[]
+
+  @@index([canonicalName])
 }
 
 model RecipeIngredient {
