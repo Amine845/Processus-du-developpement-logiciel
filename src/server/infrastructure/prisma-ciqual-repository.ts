@@ -5,13 +5,32 @@ import {
   type CiqualFoodSummary,
   type CiqualRepository,
 } from '../domain/ciqual-repository.js'
-import type { CiqualNutrientStatus } from '../../shared/types/ciqual.types.js'
+import {
+  CIQUAL_CATEGORIES,
+  type CiqualCategory,
+  type CiqualNutrientStatus,
+} from '../../shared/types/ciqual.types.js'
 
 type Db = Pick<PrismaClient, 'ciqualFood'>
 
 const STATUSES: readonly string[] = ['exact', 'less_than', 'trace', 'missing']
 
+const classificationSelect = {
+  category: true,
+  groupCode: true,
+  groupName: true,
+  subgroupCode: true,
+  subgroupName: true,
+  detailGroupCode: true,
+  detailGroupName: true,
+} as const
+function categoryOf(value: string): CiqualCategory {
+  if (!CIQUAL_CATEGORIES.includes(value as CiqualCategory))
+    throw new CiqualReadError()
+  return value as CiqualCategory
+}
 const summarySelect = {
+  ...classificationSelect,
   code: true,
   name: true,
   version: true,
@@ -22,10 +41,10 @@ const summarySelect = {
 
 export function createPrismaCiqualRepository(client: Db): CiqualRepository {
   return {
-    async listSearchableFoods() {
+    async listSearchableFoods(category = 'all') {
       try {
         return await client.ciqualFood.findMany({
-          where: { active: true },
+          where: { active: true, ...(category === 'all' ? {} : { category }) },
           select: { code: true, name: true },
         })
       } catch {
@@ -33,15 +52,21 @@ export function createPrismaCiqualRepository(client: Db): CiqualRepository {
       }
     },
 
-    async findSummaries(codes) {
+    async findSummaries(codes, category) {
       if (codes.length === 0) return []
       try {
         const rows = await client.ciqualFood.findMany({
-          where: { code: { in: codes } },
+          where: {
+            code: { in: codes },
+            ...(category === undefined
+              ? {}
+              : { active: true, ...(category === 'all' ? {} : { category }) }),
+          },
           select: summarySelect,
         })
         return rows.map(({ import: origin, ...food }): CiqualFoodSummary => ({
           ...food,
+          category: categoryOf(food.category),
           source: origin.source,
         }))
       } catch {
@@ -72,6 +97,7 @@ export function createPrismaCiqualRepository(client: Db): CiqualRepository {
         const { import: origin, nutrients, ...food } = row
         const detail: CiqualFoodDetail = {
           ...food,
+          category: categoryOf(food.category),
           source: origin.source,
           attribution: origin.attribution,
           nutrients: nutrients

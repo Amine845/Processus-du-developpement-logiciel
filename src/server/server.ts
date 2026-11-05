@@ -100,6 +100,8 @@ export function createRecipeServer(
     try {
       const url = new URL(request.url ?? '/', 'http://localhost')
       const path = url.pathname
+      if (path.startsWith('/api/ciqual/'))
+        response.setHeader('Cache-Control', 'no-store')
 
       if (ciqual && path === '/api/ciqual/foods') {
         if (method !== 'GET') {
@@ -111,6 +113,11 @@ export function createRecipeServer(
           await ciqual.search(
             url.searchParams.get('q'),
             url.searchParams.get('limit'),
+            url.searchParams.has('category')
+              ? url.searchParams.getAll('category').length === 1
+                ? url.searchParams.get('category')
+                : []
+              : undefined,
           ),
         )
         return

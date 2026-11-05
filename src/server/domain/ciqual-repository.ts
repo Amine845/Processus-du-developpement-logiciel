@@ -1,11 +1,16 @@
-import type { CiqualNutrientStatus } from '../../shared/types/ciqual.types.js'
+import type {
+  CiqualNutrientStatus,
+  CiqualCategoryFilter,
+  CiqualClassificationDTO,
+} from '../../shared/types/ciqual.types.js'
 
 export interface CiqualFoodRef {
   code: string
   name: string
 }
 
-export interface CiqualFoodSummary extends CiqualFoodRef {
+export interface CiqualFoodSummary
+  extends CiqualFoodRef, CiqualClassificationDTO {
   source: string
   version: string
   baseQuantity: number
@@ -30,9 +35,12 @@ export interface CiqualFoodDetail extends CiqualFoodSummary {
 /** Lecture seule du référentiel local ; aucun accès réseau. */
 export interface CiqualRepository {
   /** Aliments de la publication courante (actifs) : code et libellé seulement. */
-  listSearchableFoods(): Promise<CiqualFoodRef[]>
+  listSearchableFoods(category?: CiqualCategoryFilter): Promise<CiqualFoodRef[]>
   /** Détails d'affichage pour des codes précis ; l'ordre n'est pas garanti. */
-  findSummaries(codes: string[]): Promise<CiqualFoodSummary[]>
+  findSummaries(
+    codes: string[],
+    category?: CiqualCategoryFilter,
+  ): Promise<CiqualFoodSummary[]>
   /** null si le code est inconnu ; inclut les aliments devenus inactifs. */
   findByCode(code: string): Promise<CiqualFoodDetail | null>
 }
