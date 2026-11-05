@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import { CIQUAL_SEARCH_MIN_LENGTH } from '../../../shared/types/ciqual.types'
+import {
+  CIQUAL_SEARCH_MIN_LENGTH,
+  type CiqualCategoryFilter,
+} from '../../../shared/types/ciqual.types'
 import { ciqualApi } from '../../api/ciqual.api'
 import { createLatestRequest } from './latest-request'
 import {
@@ -12,12 +15,13 @@ import {
 interface Options {
   debounceMs?: number
   limit?: number
+  category?: CiqualCategoryFilter
 }
 
 /** Recherche CIQUAL avec délai de saisie, annulation et protection contre les réponses tardives. */
 export function useCiqualSearch(
   text: string,
-  { debounceMs = 250, limit }: Options = {},
+  { debounceMs = 250, limit, category = 'food' }: Options = {},
 ): { view: SearchView; retry: () => void } {
   const query = cleanQuery(text)
   const [latest] = useState(createLatestRequest)
@@ -29,22 +33,23 @@ export function useCiqualSearch(
     if (!searchable) return
     const timer = setTimeout(() => {
       latest
-        .run((signal) => ciqualApi.search(query, { signal, limit }))
+        .run((signal) => ciqualApi.search(query, { signal, limit, category }))
         .then(
           (outcome) => {
-            if (!outcome.stale) setSettled({ query, response: outcome.value })
+            if (!outcome.stale)
+              setSettled({ query, category, response: outcome.value })
           },
-          () => setSettled({ query, failed: true }),
+          () => setSettled({ query, category, failed: true }),
         )
     }, debounceMs)
     return () => {
       clearTimeout(timer)
       latest.cancel()
     }
-  }, [latest, query, searchable, limit, debounceMs, attempt])
+  }, [latest, query, searchable, limit, debounceMs, attempt, category])
 
   return {
-    view: deriveSearchView(text, settled, CIQUAL_SEARCH_MIN_LENGTH),
+    view: deriveSearchView(text, settled, CIQUAL_SEARCH_MIN_LENGTH, category),
     retry: () => {
       setSettled(null)
       setAttempt((n) => n + 1)

@@ -1,3 +1,4 @@
+import { resolveIngredient } from '../infrastructure/ingredient-identity.js'
 import type { PrismaClient } from '@prisma/client'
 
 // Les titres et noms canoniques servent de clés naturelles pour la démonstration.
@@ -65,13 +66,13 @@ export async function seedDatabase(prisma: PrismaClient) {
         create: data,
       })
       for (const [index, item] of ingredients.entries()) {
-        const ingredient = await tx.ingredient.upsert({
-          where: { canonicalName: item.canonicalName },
-          update: {},
-          create: { canonicalName: item.canonicalName },
-        })
+        const ingredientId = await resolveIngredient(
+          tx,
+          item.canonicalName,
+          null,
+        )
         const line = {
-          ingredientId: ingredient.id,
+          ingredientId,
           quantity: item.quantity,
           unit: item.unit,
         }

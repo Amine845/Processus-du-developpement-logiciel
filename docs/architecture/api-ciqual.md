@@ -156,3 +156,13 @@ démarré sans référentiel CIQUAL, ces routes répondent `404 NOT_FOUND`.
   formatage sans zéro trompeur.
 - `npm run test:ciqual:api` : mêmes parcours sur une base SQLite temporaire avec import réel
   du sous-ensemble (accents, ordre, limite, aliment inactif, traces, absence de création d'ingrédient).
+
+## Filtre par catégorie et groupes officiels
+
+La recherche accepte `category=food|prepared_dish|unclassified|all` ; omis signifie
+`all` pour compatibilité. Le formulaire transmet `food` par défaut. Valeur inconnue,
+vide ou répétée : HTTP 400 `INVALID_CATEGORY`. Le filtrage précède le classement
+et la limite. Les résumés et détails incluent `category`, `groupCode`, `groupName`,
+`subgroupCode`, `subgroupName`, `detailGroupCode`, `detailGroupName` (groupes nullables
+pour les données historiques). Le détail par code inclut toujours les codes
+inactifs ou reclassés. Voir [la politique complète](../data/ciqual-classification.md).
