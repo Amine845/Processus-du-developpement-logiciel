@@ -1,5 +1,11 @@
 # Changelog
 
+## CIQUAL — catégories aliments et plats composés
+
+- Conservation des groupes officiels, mapping versionné et migration additive.
+- Filtre API et sélection par catégorie ; ingrédients par défaut dans le formulaire.
+- Backfill, rapports, exceptions par code et tests de conservation des recettes.
+
 Les changements significatifs du projet sont consignés dans ce fichier.
 
 Le format s'inspire de Keep a Changelog et le projet utilise le versionnement sémantique lorsque des versions sont publiées.

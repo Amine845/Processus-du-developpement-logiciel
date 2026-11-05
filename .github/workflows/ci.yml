@@ -50,6 +50,12 @@ jobs:
       - name: Tester les mises à jour CIQUAL hors réseau
         run: npm run test:ciqual:sync
 
+      - name: Tester classification, migration et API CIQUAL
+        run: npm run test:ciqual:classification
+
+      - name: Tester la recherche API CIQUAL
+        run: npm run test:ciqual:api
+
       - name: Tests unitaires
         run: npm run test
 
