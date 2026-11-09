@@ -14,6 +14,7 @@ model Recipe {
   servings    Int
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
+  photoId     String?  @unique
 }
 
 model Ingredient {
