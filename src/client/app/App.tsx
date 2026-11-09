@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 // 1. Ajout de useNavigate dans les imports de react-router-dom
 import {
   HashRouter,
@@ -14,7 +14,7 @@ import { RecipeCard } from '../components/recipe/RecipeCard'
 import { RecipeDetailPage } from '../pages/RecipeDetailPage.tsx'
 import { ConfirmDialog } from '../components/common/ConfirmDialog'
 
-import { recipesApi, ApiError } from '../api/recipes.api.ts'
+import { recipesApi, ApiError, photoUrl } from '../api/recipes.api.ts'
 import type { RecipeSummaryDTO } from '../../shared/types/recipe.types'
 
 const RecipesPage = () => {
@@ -132,6 +132,7 @@ const RecipesPage = () => {
             title={recipe.title}
             description={recipe.description || ''}
             category="Recette"
+            imageUrl={photoUrl(recipe.photoId)}
             onClick={handleSelectRecipe}
             onDelete={() => askDelete(recipe)}
           />

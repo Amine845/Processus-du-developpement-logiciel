@@ -173,3 +173,10 @@ La CI exécute ce test ; aucune base développeur n'est utilisée par les fixtur
 Les allergènes restent un référentiel séparé : **l'absence d'information n'est
 jamais une preuve d'absence d'allergène**. Ni le nom ni les teneurs ne sont utilisés
 pour inférer automatiquement un statut « sans allergène ».
+
+## Distinction aliments / plats
+
+Les imports complets conservent les groupes officiels et appliquent les catégories
+`food`, `prepared_dish`, `unclassified`. Le sous-ensemble historique sans groupes
+reste à classer jusqu'au réimport officiel. Voir
+[la procédure de migration et le rapport](ciqual-classification.md).

@@ -1,5 +1,6 @@
+import CiqualNutrientPreview from '../features/ingredients/CiqualNutrientPreview'
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { recipesApi, ApiError, photoUrl } from '../api/recipes.api'
 import { ConfirmDialog } from '../components/common/ConfirmDialog'
 import type { RecipeDTO } from '../../shared/types/recipe.types'
@@ -12,12 +13,27 @@ export const RecipeDetailPage: React.FC = () => {
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
+  const [loadFailed, setLoadFailed] = useState(false)
+  const [loadedId, setLoadedId] = useState<string | undefined>()
   useEffect(() => {
-    if (id) {
-      recipesApi
-        .getById(Number(id))
-        .then((data) => setRecipe(data))
-        .catch((err) => console.error('Erreur de chargement', err))
+    let active = true
+    recipesApi.getById(Number(id)).then(
+      (data) => {
+        if (active) {
+          setRecipe(data)
+          setLoadFailed(false)
+          setLoadedId(id)
+        }
+      },
+      () => {
+        if (active) {
+          setLoadFailed(true)
+          setLoadedId(id)
+        }
+      },
+    )
+    return () => {
+      active = false
     }
   }, [id])
 
@@ -48,10 +64,18 @@ export const RecipeDetailPage: React.FC = () => {
     }
   }
 
-  if (!recipe) return <div>Chargement...</div>
+  if (loadedId !== id) return <p role="status">Chargement…</p>
+  if (loadFailed)
+    return (
+      <p role="alert">
+        Impossible de charger la recette.{' '}
+        <Link to="/recipes">Retour aux recettes</Link>
+      </p>
+    )
+  if (!recipe) return <p role="status">Chargement…</p>
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+    <article style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button onClick={() => navigate(-1)}>← Retour</button>
         <button
@@ -84,15 +108,50 @@ export const RecipeDetailPage: React.FC = () => {
       <h2>{recipe.title}</h2>
       <p>{recipe.description}</p>
 
+      <p>{recipe.servings} portion(s)</p>
       <h3>Ingrédients</h3>
       <ul>
         {recipe.ingredients.map((ing) => (
           <li key={ing.position}>
             {ing.quantity} {ing.unit} de {ing.canonicalName}
+            {ing.ciqualCode ? (
+              <>
+                <p>CIQUAL — code {ing.ciqualCode}</p>
+                <CiqualNutrientPreview code={ing.ciqualCode} />
+              </>
+            ) : (
+              <p>Ingrédient manuel — aucune donnée nutritionnelle associée.</p>
+            )}
           </li>
         ))}
       </ul>
 
+      <h3>Préparation</h3>
+      <ol>
+        {recipe.steps.map((step) => (
+          <li key={step.position}>{step.instruction}</li>
+        ))}
+      </ol>
+      {(recipe.equipment?.length ?? 0) > 0 && (
+        <>
+          <h3>Matériel requis</h3>
+          <ul>
+            {recipe.equipment!.map((item) => (
+              <li key={item.id}>{item.label}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      {(recipe.recipeTags?.length ?? 0) > 0 && (
+        <p>
+          Tags de la recette :{' '}
+          {recipe.recipeTags!.map((tag) => tag.label).join(', ')}
+        </p>
+      )}
+      <p>
+        Les valeurs de référence CIQUAL ne sont pas un total nutritionnel de la
+        recette.
+      </p>
       <ConfirmDialog
         open={confirmOpen}
         title="Supprimer cette recette ?"
@@ -102,6 +161,8 @@ export const RecipeDetailPage: React.FC = () => {
         onConfirm={handleDelete}
         onCancel={() => setConfirmOpen(false)}
       />
-    </div>
+    </article>
   )
 }
+
+export default RecipeDetailPage

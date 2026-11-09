@@ -1,4 +1,5 @@
 import type {
+  CiqualCategoryFilter,
   ApiErrorDTO,
   CiqualFoodDetailDTO,
   CiqualSearchResponseDTO,
@@ -46,9 +47,13 @@ async function getJson<T>(url: string, { signal }: RequestOptions): Promise<T> {
 export const ciqualApi = {
   search(
     query: string,
-    options: RequestOptions & { limit?: number } = {},
+    options: RequestOptions & {
+      limit?: number
+      category?: CiqualCategoryFilter
+    } = {},
   ): Promise<CiqualSearchResponseDTO> {
     const params = new URLSearchParams({ q: query })
+    if (options.category !== undefined) params.set('category', options.category)
     if (options.limit !== undefined) params.set('limit', String(options.limit))
     return getJson(`${BASE_URL}/foods?${params}`, options)
   },

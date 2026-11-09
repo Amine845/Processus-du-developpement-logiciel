@@ -1,3 +1,7 @@
+import {
+  CIQUAL_CATEGORY_LABELS,
+  type CiqualCategoryFilter,
+} from '../../../shared/types/ciqual.types'
 import { useEffect, useId, useRef, useState } from 'react'
 import type {
   CiqualFoodSummaryDTO,
@@ -44,7 +48,8 @@ export default function IngredientAutocomplete({
   const [active, setActive] = useState(-1)
   const listRef = useRef<HTMLUListElement>(null)
 
-  const { view, retry } = useCiqualSearch(text)
+  const [category, setCategory] = useState<CiqualCategoryFilter>('food')
+  const { view, retry } = useCiqualSearch(text, { category })
   const manualName = cleanQuery(text)
 
   const options: Option[] = [
@@ -128,6 +133,24 @@ export default function IngredientAutocomplete({
       <label className="ingredient-autocomplete__label" htmlFor={inputId}>
         {label}
       </label>
+      <label htmlFor={`${baseId}-category`}>Catégorie CIQUAL</label>
+      <select
+        id={`${baseId}-category`}
+        value={category}
+        disabled={disabled}
+        onChange={(event) => {
+          setCategory(event.target.value as CiqualCategoryFilter)
+          setActive(-1)
+          setOpen(true)
+        }}
+      >
+        {Object.entries(CIQUAL_CATEGORY_LABELS).map(([key, title]) => (
+          <option key={key} value={key}>
+            {title}
+          </option>
+        ))}
+        <option value="all">Toutes les catégories (y compris À classer)</option>
+      </select>
       <input
         id={inputId}
         className="ingredient-autocomplete__input"
@@ -207,7 +230,15 @@ export default function IngredientAutocomplete({
                       {option.food.name}
                     </span>
                     <span className="ingredient-autocomplete__meta">
-                      Ciqual, code {option.food.code}
+                      Ciqual, code {option.food.code} ·{' '}
+                      {CIQUAL_CATEGORY_LABELS[option.food.category]}
+                      {' · '}
+                      {option.food.detailGroupName &&
+                      option.food.detailGroupName !== '-'
+                        ? option.food.detailGroupName
+                        : option.food.subgroupName ||
+                          option.food.groupName ||
+                          'Groupe non renseigné'}
                     </span>
                   </>
                 ) : (

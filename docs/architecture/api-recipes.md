@@ -108,3 +108,16 @@ Supprime une recette ainsi que ses dépendances (ingrédients et étapes associ�
 - `204 No Content` : suppression réussie, aucun corps de réponse.
 - `400 Bad Request` : format de l'identifiant invalide.
 - `500 Internal Server Error` : erreur lors de la suppression en base.
+
+## Sélection CIQUAL (S3-T02)
+
+Les lignes d'entrée acceptent `ciqualCode?: string | null`. Omission/null signifie
+manuel, sans association automatique par le nom. POST/PUT valident l'existence et
+l'activité du code dans leur transaction ; le libellé officiel prime sur celui du
+client. Un code inactif déjà dans la recette peut être conservé par PUT. GET détail
+renvoie le code et `ingredientId` séparément. PUT remplace intégralement la recette ;
+renvoyer les codes pour garder les associations.
+
+Les écritures exigent au moins un ingrédient et une étape ; quantité finie > 0 ;
+unités g/kg/ml/l/piece uniquement. Erreurs de code : 400 `INVALID_CIQUAL_CODE` ou
+`INACTIVE_CIQUAL_CODE`. Voir [le contrat, la migration et les tests](../issues/S3-T02-ciqual-recipes.md).

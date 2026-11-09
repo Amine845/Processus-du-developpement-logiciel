@@ -4,7 +4,10 @@ import type {
   RecipeSummaryDTO,
 } from '../../shared/types/recipe.types'
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? '/api/recipes'
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3001')
+  .replace(/\/api\/recipes\/?$/, '')
+  .replace(/\/$/, '')
+const BASE_URL = `${API_ORIGIN}/api/recipes`
 const API_ROOT = BASE_URL.replace(/\/recipes\/?$/, '')
 
 export class ApiError extends Error {
@@ -13,7 +16,18 @@ export class ApiError extends Error {
   readonly issues: string[]
 
   constructor(status: number, code: string, issues: string[] = []) {
-    super(code)
+    const messages: Record<string, string> = {
+      NETWORK_ERROR:
+        'Serveur inaccessible. Votre saisie est conservée ; réessayez.',
+      INVALID_CIQUAL_CODE:
+        'Un code CIQUAL est inconnu. Sélectionnez à nouveau cet aliment.',
+      INACTIVE_CIQUAL_CODE:
+        'Un aliment CIQUAL a été retiré. Sélectionnez un autre aliment.',
+      RECIPE_TITLE_CONFLICT: 'Ce titre est déjà utilisé.',
+      INVALID_RECIPE:
+        'La recette contient une valeur invalide. Vérifiez les ingrédients et les étapes.',
+    }
+    super(messages[code] ?? code)
     this.name = 'ApiError'
     this.status = status
     this.code = code

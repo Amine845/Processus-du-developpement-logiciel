@@ -10,19 +10,49 @@ datasource db {
 model Recipe {
   id          Int                @id @default(autoincrement())
   title       String             @unique
+  photoId     String?            @unique
   description String?
   servings    Int
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
-  photoId     String?  @unique
+  tags        RecipeTagLink[]
+  equipment   RecipeEquipment[]
 }
 
 model Ingredient {
   id            Int                @id @default(autoincrement())
-  canonicalName String             @unique
+  canonicalName String
+  identityKey   String?            @unique
   ciqualCode    String?
   ciqualFood    CiqualFood?        @relation(fields: [ciqualCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
   recipes       RecipeIngredient[]
+  tags          IngredientTag[]
+
+  @@index([canonicalName])
+}
+
+// Vocabulaire contrôlé de tags descriptifs d'ingrédients (céréale, légume...).
+// Sans lien avec la classification CIQUAL ni avec les allergènes.
+// `key` est le libellé normalisé (minuscules, sans accents, mots reliés par « - ») ;
+// un tag retiré du vocabulaire est désactivé, jamais supprimé en silence.
+model Tag {
+  id          Int             @id @default(autoincrement())
+  key         String          @unique
+  label       String          @unique
+  active      Boolean         @default(true)
+  ingredients IngredientTag[]
+}
+
+// La clé primaire composite interdit les doublons d'association.
+// Supprimer un ingrédient retire ses associations ; un tag encore associé ne peut pas être supprimé.
+model IngredientTag {
+  ingredientId Int
+  tagId        Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tag          Tag        @relation(fields: [tagId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([ingredientId, tagId])
+  @@index([tagId])
 }
 
 model RecipeIngredient {
@@ -69,6 +99,16 @@ model CiqualImport {
 }
 
 model CiqualFood {
+  category     String           @default("unclassified")
+  groupCode    String?
+  groupName    String?
+  subgroupCode String?
+  subgroupName String?
+  detailGroupCode String?
+  detailGroupName String?
+  classificationVersion String?
+  classificationRule String?
+  applicationTags String       @default("[]")
   active       Boolean          @default(true)
   rawData      String?
   code         String           @id
@@ -101,4 +141,40 @@ model CiqualSyncState {
   checkedAt  DateTime?
   releaseKey String?
   lastError  String?
+  classificationVersion String?
+}
+
+// Vocabulaire éditorial propre aux recettes, indépendant des tags d'ingrédients.
+model RecipeTag {
+  id Int @id @default(autoincrement())
+  key String @unique
+  label String @unique
+  active Boolean @default(true)
+  recipes RecipeTagLink[]
+}
+
+model RecipeTagLink {
+  recipeId Int
+  tagId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tag RecipeTag @relation(fields: [tagId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  @@id([recipeId, tagId])
+  @@index([tagId])
+}
+
+// Matériel requis ; catalogue indépendant des tags éditoriaux et des ingrédients.
+model Equipment {
+  id Int @id @default(autoincrement())
+  key String @unique
+  label String @unique
+  active Boolean @default(true)
+  recipes RecipeEquipment[]
+}
+model RecipeEquipment {
+  recipeId Int
+  equipmentId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  @@id([recipeId, equipmentId])
+  @@index([equipmentId])
 }

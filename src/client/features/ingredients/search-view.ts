@@ -1,7 +1,11 @@
-import type { CiqualSearchResponseDTO } from '../../../shared/types/ciqual.types'
+import type {
+  CiqualSearchResponseDTO,
+  CiqualCategoryFilter,
+} from '../../../shared/types/ciqual.types'
 
 /** Dernier résultat connu, rattaché à la requête qui l'a produit. */
 export interface SettledSearch {
+  category?: CiqualCategoryFilter
   query: string
   response?: CiqualSearchResponseDTO
   failed?: boolean
@@ -28,11 +32,17 @@ export function deriveSearchView(
   text: string,
   settled: SettledSearch | null,
   minLength: number,
+  category?: CiqualCategoryFilter,
 ): SearchView {
   const query = cleanQuery(text)
   if (query.length === 0) return { kind: 'idle' }
   if ([...query].length < minLength) return { kind: 'short', minLength }
-  if (!settled || settled.query !== query) return { kind: 'loading' }
+  if (
+    !settled ||
+    settled.query !== query ||
+    (category !== undefined && settled.category !== category)
+  )
+    return { kind: 'loading' }
   if (settled.failed || !settled.response) return { kind: 'error' }
   return settled.response.results.length === 0
     ? { kind: 'empty' }

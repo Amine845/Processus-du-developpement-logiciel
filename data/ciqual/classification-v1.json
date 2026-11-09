@@ -1,0 +1,1311 @@
+{
+  "version": "2026-11-05.1",
+  "source": "https://doi.org/10.57745/RDMHWY",
+  "sourceSha256": "5555c572fa3735991298d832d0427788fa69a11b4fd20a5d580d58942369fbb0",
+  "rules": {
+    "00/0000/000000": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "",
+        "alim_ssgrp_nom_fr": "",
+        "alim_ssssgrp_nom_fr": ""
+      }
+    },
+    "01/0101/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "salades composées\net crudités",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "01/0102/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "soupes",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "01/0103/010301": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de viande sans\ngarniture"
+      }
+    },
+    "01/0103/010302": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de viande et\nféculents"
+      }
+    },
+    "01/0103/010303": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de viande et\nlégumes/légumineuses"
+      }
+    },
+    "01/0103/010304": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de poisson sans\ngarniture"
+      }
+    },
+    "01/0103/010305": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de poisson et\nféculents"
+      }
+    },
+    "01/0103/010306": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de\nlégumes/légumineuses"
+      }
+    },
+    "01/0103/010307": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de céréales/pâtes"
+      }
+    },
+    "01/0103/010308": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de fromage"
+      }
+    },
+    "01/0103/010309": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "autres plats\nvégétariens"
+      }
+    },
+    "01/0104/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "pizzas, tartes et\ncrêpes salées",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "01/0105/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "sandwichs",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "01/0106/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "feuilletées et autres\nentrées",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "02/0201/020101": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumes",
+        "alim_ssssgrp_nom_fr": "légumes crus"
+      }
+    },
+    "02/0201/020102": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumes",
+        "alim_ssssgrp_nom_fr": "légumes cuits"
+      }
+    },
+    "02/0201/020103": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumes",
+        "alim_ssssgrp_nom_fr": "légumes séchés ou\ndéshydratés"
+      }
+    },
+    "02/0201/020104": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumes",
+        "alim_ssssgrp_nom_fr": "légumes et leurs\nproduits de la\nMartinique"
+      }
+    },
+    "02/0201/020105": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumes",
+        "alim_ssssgrp_nom_fr": "légumes et leurs\nproduits de la Réunion"
+      }
+    },
+    "02/0202/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "pommes de terre et\nautres tubercules",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "02/0203/020301": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumineuses",
+        "alim_ssssgrp_nom_fr": "légumineuses cuites"
+      }
+    },
+    "02/0203/020302": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumineuses",
+        "alim_ssssgrp_nom_fr": "légumineuses fraîches"
+      }
+    },
+    "02/0203/020303": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "légumineuses",
+        "alim_ssssgrp_nom_fr": "légumineuses sèches"
+      }
+    },
+    "02/0204/020401": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "fruits",
+        "alim_ssssgrp_nom_fr": "fruits crus"
+      }
+    },
+    "02/0204/020402": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "fruits",
+        "alim_ssssgrp_nom_fr": "compotes et assimilés"
+      }
+    },
+    "02/0204/020403": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "fruits",
+        "alim_ssssgrp_nom_fr": "fruits appertisés"
+      }
+    },
+    "02/0204/020404": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "fruits",
+        "alim_ssssgrp_nom_fr": "fruits séchés"
+      }
+    },
+    "02/0204/020405": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "fruits",
+        "alim_ssssgrp_nom_fr": "fruits et leurs produits\nde la Martinique"
+      }
+    },
+    "02/0204/020406": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "fruits",
+        "alim_ssssgrp_nom_fr": "fruits et leurs produits\nde la Réunion"
+      }
+    },
+    "02/0205/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "fruits, légumes,\nlégumineuses et\noléagineux",
+        "alim_ssgrp_nom_fr": "fruits à coque et\ngraines\noléagineuses",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "03/0301/030101": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "pâtes, riz et\ncéréales",
+        "alim_ssssgrp_nom_fr": "pâtes, riz et céréales\ncuits"
+      }
+    },
+    "03/0301/030102": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "pâtes, riz et\ncéréales",
+        "alim_ssssgrp_nom_fr": "pâtes, riz et céréales\ncrus"
+      }
+    },
+    "03/0302/030201": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "pains et assimilés",
+        "alim_ssssgrp_nom_fr": "pains"
+      }
+    },
+    "03/0302/030202": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "pains et assimilés",
+        "alim_ssssgrp_nom_fr": "biscottes et pains\ngrillés"
+      }
+    },
+    "03/0303/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "biscuits apéritifs",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "03/0304/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "farines",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "03/0305/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "pâtes à tarte",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0401/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0401/040101": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "boeuf et veau"
+      }
+    },
+    "04/0401/040102": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "porc"
+      }
+    },
+    "04/0401/040103": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "poulet"
+      }
+    },
+    "04/0401/040104": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "dinde"
+      }
+    },
+    "04/0401/040105": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "agneau et mouton"
+      }
+    },
+    "04/0401/040106": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "gibier"
+      }
+    },
+    "04/0401/040107": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "autres viandes"
+      }
+    },
+    "04/0401/040108": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes cuites",
+        "alim_ssssgrp_nom_fr": "abats"
+      }
+    },
+    "04/0402/040201": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "boeuf et veau"
+      }
+    },
+    "04/0402/040202": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "porc"
+      }
+    },
+    "04/0402/040203": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "poulet"
+      }
+    },
+    "04/0402/040204": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "dinde"
+      }
+    },
+    "04/0402/040205": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "agneau et mouton"
+      }
+    },
+    "04/0402/040206": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "gibier"
+      }
+    },
+    "04/0402/040207": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "autres viandes"
+      }
+    },
+    "04/0402/040208": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "viandes crues",
+        "alim_ssssgrp_nom_fr": "abats"
+      }
+    },
+    "04/0403/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0403/040301": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "jambons cuits"
+      }
+    },
+    "04/0403/040302": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "jambons secs et crus"
+      }
+    },
+    "04/0403/040303": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "saucisson secs"
+      }
+    },
+    "04/0403/040304": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "saucisses et assimilés"
+      }
+    },
+    "04/0403/040305": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "pâtés et terrines"
+      }
+    },
+    "04/0403/040306": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "rillettes"
+      }
+    },
+    "04/0403/040307": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "quenelles"
+      }
+    },
+    "04/0403/040308": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "autres spécialités\ncharcutières"
+      }
+    },
+    "04/0403/040309": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "charcuteries et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "alternatives végétales\naux charcuteries"
+      }
+    },
+    "04/0404/000000": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "autres produits à\nbase de viande",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0405/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "poissons cuits",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0406/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "poissons crus",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0407/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "mollusques et\ncrustacés cuits",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0408/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "mollusques et\ncrustacés crus",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0409/000000": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "produits à base de\npoissons et produits\nde la mer",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "04/0410/041001": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "oeufs",
+        "alim_ssssgrp_nom_fr": "oeufs cuits"
+      }
+    },
+    "04/0410/041002": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "oeufs",
+        "alim_ssssgrp_nom_fr": "oeufs crus"
+      }
+    },
+    "04/0410/041003": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "oeufs",
+        "alim_ssssgrp_nom_fr": "omelettes et autres\novoproduits"
+      }
+    },
+    "05/0501/050101": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "laits",
+        "alim_ssssgrp_nom_fr": "laits de vaches liquides\n(non concentrés)"
+      }
+    },
+    "05/0501/050102": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "laits",
+        "alim_ssssgrp_nom_fr": "laits autres que de\nvache"
+      }
+    },
+    "05/0501/050103": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "laits",
+        "alim_ssssgrp_nom_fr": "laits de vache\nconcentrés ou en\npoudre"
+      }
+    },
+    "05/0502/050201": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "produits laitiers frais\net alternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "yaourts et spécialités\nlaitières type yaourt"
+      }
+    },
+    "05/0502/050202": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "produits laitiers frais\net alternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "fromages blancs"
+      }
+    },
+    "05/0502/050203": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "produits laitiers frais\net alternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "desserts lactés"
+      }
+    },
+    "05/0502/050204": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "produits laitiers frais\net alternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "autres desserts"
+      }
+    },
+    "05/0502/050205": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "produits laitiers frais\net alternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "desserts végétaux"
+      }
+    },
+    "05/0503/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "fromages et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "05/0503/050301": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "fromages et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "fromages à pâte molle"
+      }
+    },
+    "05/0503/050302": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "fromages et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "fromages à pâte\npersillée"
+      }
+    },
+    "05/0503/050303": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "fromages et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "fromages à pâte\npressée ou dure"
+      }
+    },
+    "05/0503/050304": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "fromages et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "fromage fondus"
+      }
+    },
+    "05/0503/050305": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "fromages et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "autres fromages et\nspécialités"
+      }
+    },
+    "05/0503/050306": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "fromages et\nalternatives\nvégétales",
+        "alim_ssssgrp_nom_fr": "alternatives végétales\naux fromages"
+      }
+    },
+    "05/0504/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits laitiers",
+        "alim_ssgrp_nom_fr": "crèmes et\nspécialités à base\nde crème",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "06/0601/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "eaux",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "06/0602/060201": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boissons sans\nalcool",
+        "alim_ssssgrp_nom_fr": "jus"
+      }
+    },
+    "06/0602/060202": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boissons sans\nalcool",
+        "alim_ssssgrp_nom_fr": "nectars"
+      }
+    },
+    "06/0602/060203": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boissons sans\nalcool",
+        "alim_ssssgrp_nom_fr": "boissons\nrafraîchissantes sans\nalcool"
+      }
+    },
+    "06/0602/060204": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boissons sans\nalcool",
+        "alim_ssssgrp_nom_fr": "boissons\nrafraîchissantes\nlactées"
+      }
+    },
+    "06/0602/060205": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boissons sans\nalcool",
+        "alim_ssssgrp_nom_fr": "boissons végétales"
+      }
+    },
+    "06/0602/060206": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boissons sans\nalcool",
+        "alim_ssssgrp_nom_fr": "café, thé, cacao etc.\nprêts à consommer"
+      }
+    },
+    "06/0602/060207": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boissons sans\nalcool",
+        "alim_ssssgrp_nom_fr": "boissons à reconstituer"
+      }
+    },
+    "06/0603/060301": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boisson alcoolisées",
+        "alim_ssssgrp_nom_fr": "vins"
+      }
+    },
+    "06/0603/060302": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boisson alcoolisées",
+        "alim_ssssgrp_nom_fr": "bières et cidres"
+      }
+    },
+    "06/0603/060303": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boisson alcoolisées",
+        "alim_ssssgrp_nom_fr": "liqueurs et alcools"
+      }
+    },
+    "06/0603/060304": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "eaux et autres\nboissons",
+        "alim_ssgrp_nom_fr": "boisson alcoolisées",
+        "alim_ssssgrp_nom_fr": "cocktails"
+      }
+    },
+    "07/0701/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "sucres, miels et\nassimilés",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0702/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "chocolats et produits\nà base de chocolat",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0703/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "confiseries non\nchocolatées",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0704/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "confitures et\nassimilés",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0705/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "viennoiseries",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0706/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "biscuits sucrés",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0707/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "céréales de\npetit-déjeuner",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0708/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "barres céréalières",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "07/0709/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "produits sucrés",
+        "alim_ssgrp_nom_fr": "gâteaux et\npâtisseries",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "08/0000/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "glaces et sorbets",
+        "alim_ssgrp_nom_fr": "-",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "08/0801/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "glaces et sorbets",
+        "alim_ssgrp_nom_fr": "glaces",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "08/0802/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "glaces et sorbets",
+        "alim_ssgrp_nom_fr": "sorbets",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "08/0803/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "glaces et sorbets",
+        "alim_ssgrp_nom_fr": "desserts glacés",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "09/0901/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "matières grasses",
+        "alim_ssgrp_nom_fr": "beurres",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "09/0902/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "matières grasses",
+        "alim_ssgrp_nom_fr": "huiles et graisses\nvégétales",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "09/0903/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "matières grasses",
+        "alim_ssgrp_nom_fr": "margarines",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "09/0904/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "matières grasses",
+        "alim_ssgrp_nom_fr": "huiles de poissons",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "09/0905/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "matières grasses",
+        "alim_ssgrp_nom_fr": "autres matières\ngrasses",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1001/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "sauces",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1001/100101": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "sauces",
+        "alim_ssssgrp_nom_fr": "sauces froides"
+      }
+    },
+    "10/1001/100102": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "sauces",
+        "alim_ssssgrp_nom_fr": "sauces chaudes"
+      }
+    },
+    "10/1001/100103": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "sauces",
+        "alim_ssssgrp_nom_fr": "sauces sucrées"
+      }
+    },
+    "10/1002/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "condiments",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1003/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "aides culinaires",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1004/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "sels",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1005/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "épices",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1006/100601": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "herbes",
+        "alim_ssssgrp_nom_fr": "herbes fraîches"
+      }
+    },
+    "10/1006/100602": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "herbes",
+        "alim_ssssgrp_nom_fr": "herbes séchées"
+      }
+    },
+    "10/1007/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "algues",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1008/000000": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "denrées destinées à\nune alimentation\nparticulière",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1009/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "ingrédients pour\nvégétariens",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "10/1010/000000": {
+      "category": "food",
+      "reason": "Produit utilisable comme aliment ou ingrédient, y compris transformé.",
+      "labels": {
+        "alim_grp_nom_fr": "aides culinaires et\ningrédients divers",
+        "alim_ssgrp_nom_fr": "tartinables\nvégétariens",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "11/1101/000000": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "aliments infantiles",
+        "alim_ssgrp_nom_fr": "laits et boissons\ninfantiles",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "11/1102/000000": {
+      "category": "prepared_dish",
+      "reason": "Préparation composée destinée à être consommée comme plat, entrée ou dessert.",
+      "labels": {
+        "alim_grp_nom_fr": "aliments infantiles",
+        "alim_ssgrp_nom_fr": "petits pots salés et\nplats infantiles",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "11/1103/000000": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "aliments infantiles",
+        "alim_ssgrp_nom_fr": "desserts infantiles",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    "11/1104/000000": {
+      "category": "unclassified",
+      "reason": "Groupe mixte ou usage ambigu : revue par code nécessaire.",
+      "labels": {
+        "alim_grp_nom_fr": "aliments infantiles",
+        "alim_ssgrp_nom_fr": "céréales et biscuits\ninfantiles",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    }
+  },
+  "exceptions": {
+    "22003": {
+      "category": "food",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Ovoproduit en poudre utilisable comme ingrédient.",
+      "reviewedName": "Oeuf, jaune (jaune d'oeuf), en poudre"
+    },
+    "22004": {
+      "category": "food",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Ovoproduit en poudre utilisable comme ingrédient.",
+      "reviewedName": "Oeuf, blanc (blanc d'oeuf), en poudre"
+    },
+    "22013": {
+      "category": "food",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Ovoproduit en poudre utilisable comme ingrédient.",
+      "reviewedName": "Oeuf, en poudre"
+    },
+    "22500": {
+      "category": "prepared_dish",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Omelette cuisinée, prête à consommer.",
+      "reviewedName": "Omelette nature, faite maison"
+    },
+    "22506": {
+      "category": "prepared_dish",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Omelette cuisinée, prête à consommer.",
+      "reviewedName": "Omelette au fromage, faite maison"
+    },
+    "22507": {
+      "category": "prepared_dish",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Omelette cuisinée, prête à consommer.",
+      "reviewedName": "Omelette aux lardons, faite maison"
+    },
+    "22508": {
+      "category": "prepared_dish",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Omelette cuisinée, prête à consommer.",
+      "reviewedName": "Omelette aux champignons, faite maison"
+    },
+    "22509": {
+      "category": "prepared_dish",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Omelette cuisinée, prête à consommer.",
+      "reviewedName": "Omelette à la ciboulette, faite maison"
+    },
+    "22510": {
+      "category": "prepared_dish",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Omelette cuisinée, prête à consommer.",
+      "reviewedName": "Tortilla espagnole aux oignons (omelette aux pommes\nde terre et oignons), préemballée"
+    },
+    "22511": {
+      "category": "prepared_dish",
+      "expectedGroup": "04/0410/041003",
+      "reason": "Omelette cuisinée, prête à consommer.",
+      "reviewedName": "Omelette, garnitures diverses : légumes, fromages,\nviandes... (aliment moyen)"
+    }
+  }
+}
