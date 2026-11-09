@@ -15,6 +15,7 @@ model Recipe {
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
   tags        RecipeTagLink[]
+  equipment   RecipeEquipment[]
 }
 
 model Ingredient {
@@ -144,4 +145,21 @@ model RecipeTagLink {
   tag RecipeTag @relation(fields: [tagId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   @@id([recipeId, tagId])
   @@index([tagId])
+}
+
+// Matériel requis ; catalogue indépendant des tags éditoriaux et des ingrédients.
+model Equipment {
+  id Int @id @default(autoincrement())
+  key String @unique
+  label String @unique
+  active Boolean @default(true)
+  recipes RecipeEquipment[]
+}
+model RecipeEquipment {
+  recipeId Int
+  equipmentId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  @@id([recipeId, equipmentId])
+  @@index([equipmentId])
 }

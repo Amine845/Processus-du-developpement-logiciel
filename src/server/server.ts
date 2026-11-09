@@ -1,3 +1,14 @@
+import { createPrismaRecipeEquipmentRepository } from './infrastructure/prisma-recipe-equipment-repository.js'
+import {
+  RecipeEquipmentReadError,
+  RecipeEquipmentWriteError,
+  type RecipeEquipmentRepository,
+} from './domain/recipe-equipment-repository.js'
+import {
+  EquipmentValidationError,
+  parseEquipmentId,
+  parseAssignEquipmentBody,
+} from './application/recipe-equipment.js'
 import { createPrismaRecipeTagRepository } from './infrastructure/prisma-recipe-tag-repository.js'
 import {
   RecipeTagReadError,
@@ -99,6 +110,7 @@ export function createRecipeServer(
   ciqualRepository?: CiqualRepository,
   tagRepository?: IngredientTagRepository,
   recipeTagRepository?: RecipeTagRepository,
+  equipmentRepository?: RecipeEquipmentRepository,
 ) {
   const recipes = createRecipes(repository)
   const ciqual = ciqualRepository ? createCiqual(ciqualRepository) : undefined
@@ -314,6 +326,79 @@ export function createRecipeServer(
         return
       }
 
+      if (equipmentRepository && path === '/api/equipment') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await equipmentRepository.listEquipment())
+        return
+      }
+
+      const equipmentAssignMatch = /^\/api\/recipes\/(\d+)\/equipment$/.exec(
+        path,
+      )
+      if (equipmentRepository && equipmentAssignMatch) {
+        const id = Number(equipmentAssignMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'POST') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'POST' })
+          return
+        }
+        const outcome = await equipmentRepository.assign(
+          id,
+          parseAssignEquipmentBody(await readJsonBody(request)),
+        )
+        if (outcome.kind === 'created' || outcome.kind === 'exists') {
+          const recipe = await repository.findById(id)
+          send(
+            recipe ? (outcome.kind === 'created' ? 201 : 200) : 404,
+            recipe ?? { error: 'RECIPE_NOT_FOUND' },
+          )
+        } else if (outcome.kind === 'equipment_inactive') {
+          send(409, { error: 'EQUIPMENT_INACTIVE' })
+        } else {
+          send(404, {
+            error:
+              outcome.kind === 'equipment_not_found'
+                ? 'EQUIPMENT_NOT_FOUND'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      const equipmentRemoveMatch =
+        /^\/api\/recipes\/(\d+)\/equipment\/(\d+)$/.exec(path)
+      if (equipmentRepository && equipmentRemoveMatch) {
+        const id = Number(equipmentRemoveMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'DELETE') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'DELETE' })
+          return
+        }
+        const outcome = await equipmentRepository.remove(
+          id,
+          parseEquipmentId(Number(equipmentRemoveMatch[2])),
+        )
+        if (outcome.kind === 'removed') send(204)
+        else {
+          send(404, {
+            error:
+              outcome.kind === 'absent'
+                ? 'EQUIPMENT_NOT_ASSIGNED'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
+        return
+      }
+
       if (path === '/api/recipes') {
         if (method === 'GET') {
           send(200, await recipes.findAll())
@@ -369,6 +454,12 @@ export function createRecipeServer(
         })
       } else if (error instanceof CiqualReadError) {
         send(503, { error: 'CIQUAL_READ_FAILED' })
+      } else if (error instanceof EquipmentValidationError) {
+        send(400, { error: 'INVALID_EQUIPMENT', issues: error.issues })
+      } else if (error instanceof RecipeEquipmentReadError) {
+        send(503, { error: 'EQUIPMENT_READ_FAILED' })
+      } else if (error instanceof RecipeEquipmentWriteError) {
+        send(503, { error: 'EQUIPMENT_WRITE_FAILED' })
       } else if (error instanceof TagValidationError) {
         send(400, { error: 'INVALID_TAG', issues: error.issues })
       } else if (
@@ -402,6 +493,7 @@ export async function startServer(databaseUrl: string, port = 3001) {
     createPrismaCiqualRepository(persistence.client),
     createPrismaTagRepository(persistence.client),
     createPrismaRecipeTagRepository(persistence.client),
+    createPrismaRecipeEquipmentRepository(persistence.client),
   )
   try {
     await persistence.connect()

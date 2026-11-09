@@ -1,3 +1,4 @@
+import type { EquipmentDTO } from './equipment.types'
 import type { TagDTO } from './tag.types'
 
 export type RecipeUnit = 'g' | 'kg' | 'ml' | 'l' | 'piece'
@@ -29,12 +30,14 @@ export interface RecipeDTO {
    * Lecture seule : union des tags des ingrédients de la recette, triée par clé.
    * Ce ne sont pas des tags de recette (« Gourmand », « Rapide »).
    */
+  /** Matériel requis, lecture seule ; attribution via les routes dédiées. */
+  equipment?: EquipmentDTO[]
   recipeTags?: TagDTO[]
   ingredientTags?: TagDTO[]
 }
 
 export type CreateRecipeDTO = Omit<
   RecipeDTO,
-  'id' | 'recipeTags' | 'ingredientTags' | 'ingredients'
+  'id' | 'equipment' | 'recipeTags' | 'ingredientTags' | 'ingredients'
 > & { ingredients: Omit<IngredientDTO, 'tags'>[] }
 export type UpdateRecipeDTO = Partial<CreateRecipeDTO>

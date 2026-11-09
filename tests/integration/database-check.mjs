@@ -85,9 +85,11 @@ try {
     'CiqualImport',
     'CiqualNutrient',
     'CiqualSyncState',
+    'Equipment',
     'Ingredient',
     'IngredientTag',
     'Recipe',
+    'RecipeEquipment',
     'RecipeIngredient',
     'RecipeStep',
     'RecipeTag',
@@ -205,6 +207,13 @@ try {
       [
         ['Ingredient', 'CASCADE'],
         ['Tag', 'RESTRICT'],
+      ],
+    ],
+    [
+      'RecipeEquipment',
+      [
+        ['Equipment', 'RESTRICT'],
+        ['Recipe', 'CASCADE'],
       ],
     ],
     [

@@ -1,3 +1,4 @@
+import type { EquipmentDTO } from '../../shared/types/equipment.types.js'
 import { Prisma, type PrismaClient } from '@prisma/client'
 import {
   RecipeConflictError,
@@ -10,12 +11,22 @@ import {
 import type { TagRef } from '../domain/tag-repository.js'
 import { activeTagsSelect, sortTags } from './prisma-tag-repository.js'
 
+const activeEquipmentSelect = {
+  where: { equipment: { active: true } },
+  select: { equipment: { select: { id: true, key: true, label: true } } },
+} as const
+function sortEquipment(items: EquipmentDTO[]): EquipmentDTO[] {
+  return [...items].sort((a, b) =>
+    a.key < b.key ? -1 : a.key > b.key ? 1 : a.id - b.id,
+  )
+}
 const summary = {
   id: true,
   title: true,
   description: true,
   servings: true,
   tags: activeTagsSelect,
+  equipment: activeEquipmentSelect,
 } as const
 
 const listSelect = {
@@ -69,9 +80,10 @@ async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
     canonicalName: ingredient.canonicalName,
     tags: sortTags(ingredient.tags.map(({ tag }) => tag)),
   }))
-  const { tags, ...fields } = recipe
+  const { tags, equipment, ...fields } = recipe
   return {
     ...fields,
+    equipment: sortEquipment(equipment.map((link) => link.equipment)),
     recipeTags: sortTags(tags.map(({ tag }) => tag)),
     ingredients,
     ingredientTags: unionTags(ingredients),
@@ -123,7 +135,8 @@ export function createPrismaRecipeRepository(
           select: listSelect,
           orderBy: { id: 'asc' },
         })
-        return recipes.map(({ ingredients, tags, ...recipe }) => ({
+        return recipes.map(({ ingredients, tags, equipment, ...recipe }) => ({
+          equipment: sortEquipment(equipment.map((link) => link.equipment)),
           recipeTags: sortTags(tags.map(({ tag }) => tag)),
           ...recipe,
           ingredientTags: unionTags(

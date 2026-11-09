@@ -1,3 +1,4 @@
+import { syncEquipmentVocabulary } from '../infrastructure/equipment-vocabulary-sync.js'
 import { syncRecipeTagVocabulary } from '../infrastructure/recipe-tag-vocabulary-sync.js'
 import type { PrismaClient } from '@prisma/client'
 import {
@@ -110,6 +111,7 @@ export async function seedDatabase(
         where: { recipeId: recipe.id, position: { gt: steps.length } },
       })
     }
+    await syncEquipmentVocabulary(tx)
     await syncRecipeTagVocabulary(tx)
     return syncTagVocabulary(tx)
   })
