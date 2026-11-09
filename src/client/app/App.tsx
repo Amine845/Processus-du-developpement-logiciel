@@ -16,9 +16,8 @@ import { ConfirmDialog } from '../components/common/ConfirmDialog'
 
 import { recipesApi, ApiError, photoUrl } from '../api/recipes.api.ts'
 import type { RecipeSummaryDTO } from '../../shared/types/recipe.types'
-
-const AVAILABLE_TAGS = ['Gourmand', 'Rapide', 'Healthy', 'Pas cher', 'Végétarien']
-const AVAILABLE_EQUIPMENT = ['Four', 'Plaques', 'Air Fryer', 'Mixer', 'Micro-ondes']
+import type { TagDTO } from '../../shared/types/tag.types'
+import type { EquipmentDTO } from '../../shared/types/equipment.types'
 
 const RecipesPage = () => {
   const navigate = useNavigate()
@@ -27,10 +26,14 @@ const RecipesPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // --- ÉTATS DES FILTRES ---
+  // --- CATALOGUES DYNAMIQUES DE LA BDD ---
+  const [tagsCatalog, setTagsCatalog] = useState<TagDTO[]>([])
+  const [equipmentCatalog, setEquipmentCatalog] = useState<EquipmentDTO[]>([])
+
+  // --- ÉTATS DES FILTRES (ON STOCKE LES IDS SÉLECTIONNÉS) ---
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([])
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
+  const [selectedEquipmentIds, setSelectedEquipmentIds] = useState<number[]>([])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const [pendingDelete, setPendingDelete] = useState<RecipeSummaryDTO | null>(null)
@@ -38,68 +41,88 @@ const RecipesPage = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
   useEffect(() => {
-    const loadRecipes = async () => {
+    const loadAllData = async () => {
       try {
-        const data = await recipesApi.getAll()
-        setRecipes(data)
+        const [recipesData, tagsData, equipmentData] = await Promise.all([
+          recipesApi.getAll(),
+          recipesApi.getTags(),
+          recipesApi.getEquipment(),
+        ])
+        setRecipes(recipesData)
+        setTagsCatalog(tagsData)
+        setEquipmentCatalog(equipmentData)
       } catch (err) {
         setError(
             err instanceof ApiError && err.code === 'NETWORK_ERROR'
                 ? 'Serveur injoignable. Vérifie qu’il est lancé.'
-                : 'Impossible de charger les recettes.',
+                : 'Impossible de charger les données.',
         )
       } finally {
         setLoading(false)
       }
     }
-    loadRecipes()
+    loadAllData()
   }, [])
 
-// --- FILTRAGE DYNAMIQUE CROISÉ ---
+  // --- FILTRAGE DYNAMIQUE ROBUSTE (TITRE + INGRÉDIENTS + TEXTE GLOBAL) ---
   const filteredRecipes = recipes.filter((recipe: any) => {
     const term = searchQuery.toLowerCase().trim()
 
-    // 1. Recherche Texte (Titre + Ingrédients)
+    // 1. Recherche Texte (Titre, Description, Ingrédients & Sécurité globale)
     let textMatch = true
     if (term) {
       const matchTitle = recipe.title?.toLowerCase().includes(term)
+      const matchDescription = recipe.description?.toLowerCase().includes(term)
+
       const matchIngredients = recipe.ingredients?.some((ing: any) => {
-        // Gère la NOUVELLE structure du DTO (CIQUAL ou Ingrédient Manuel)
         const name =
             ing.name ||
             ing.customName ||
+            ing.canonicalName ||
             ing.ciqualFood?.name ||
             ing.food?.name ||
             ing.ingredient?.name ||
             ing.ingredient?.canonicalName ||
-            ing.canonicalName ||
-            '';
-
-        // SÉCURITÉ ABSOLUE : Si la structure est complexe, on fouille dans l'objet entier converti en texte
-        const rawString = JSON.stringify(ing).toLowerCase();
-
-        return name.toLowerCase().includes(term) || rawString.includes(term);
+            ''
+        return name.toLowerCase().includes(term)
       })
-      textMatch = matchTitle || matchIngredients
+
+      const rawRecipeString = JSON.stringify(recipe).toLowerCase()
+
+      textMatch = matchTitle || matchDescription || matchIngredients || rawRecipeString.includes(term)
     }
 
-    // Extraction sécurisée des tags et équipements
-    const recipeTags = recipe.tags?.map((t: any) => typeof t === 'string' ? t : t.tag?.label || t.label || t.name) || []
-    const recipeEq = recipe.equipment?.map((e: any) => typeof e === 'string' ? e : e.equipment?.name || e.name) || []
+    // 2. Extraction sécurisée des IDs des tags et équipements de la recette
+    const recipeTagIds: number[] = (recipe.recipeTags || recipe.tags || []).map((t: any) =>
+        typeof t === 'number' ? t : t.tagId || t.tag?.id || t.id
+    ).filter(Boolean)
 
-    // 2. Filtres (doit inclure TOUS les tags sélectionnés et TOUS les équipements sélectionnés)
-    const tagMatch = selectedTags.length === 0 || selectedTags.every(tag => recipeTags.includes(tag))
-    const eqMatch = selectedEquipment.length === 0 || selectedEquipment.every(eq => recipeEq.includes(eq))
+    const recipeEqIds: number[] = (recipe.equipment || recipe.recipeEquipments || []).map((e: any) =>
+        typeof e === 'number' ? e : e.equipmentId || e.equipment?.id || e.id
+    ).filter(Boolean)
+
+    // 3. Correspondance des filtres
+    const tagMatch =
+        selectedTagIds.length === 0 ||
+        selectedTagIds.every((id) => recipeTagIds.includes(id))
+
+    const eqMatch =
+        selectedEquipmentIds.length === 0 ||
+        selectedEquipmentIds.every((id) => recipeEqIds.includes(id))
 
     return textMatch && tagMatch && eqMatch
   })
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])
+  const toggleTag = (id: number) => {
+    setSelectedTagIds((prev) =>
+        prev.includes(id) ? prev.filter((tId) => tId !== id) : [...prev, id]
+    )
   }
 
-  const toggleEquipment = (eq: string) => {
-    setSelectedEquipment(prev => prev.includes(eq) ? prev.filter(e => e !== eq) : [...prev, eq])
+  const toggleEquipment = (id: number) => {
+    setSelectedEquipmentIds((prev) =>
+        prev.includes(id) ? prev.filter((eId) => eId !== id) : [...prev, id]
+    )
   }
 
   const handleSelectRecipe = (id: string | number) => {
@@ -148,7 +171,7 @@ const RecipesPage = () => {
           Bibliothèque, recherche par nom, ingrédients, tags et équipement.
         </p>
 
-        {/* BARRE DE RECHERCHE & BOUTON TIROIR */}
+        {/* BARRE DE RECHERCHE */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
           <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--color-surface)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
             <Search size={20} color="var(--color-text-muted)" />
@@ -174,27 +197,58 @@ const RecipesPage = () => {
           </button>
         </div>
 
-        {/* PUCES DE TAGS */}
-        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '16px', marginBottom: '8px', scrollbarWidth: 'none' }}>
-          {AVAILABLE_TAGS.map(tag => (
-              <button
-                  key={tag}
-                  onClick={() => toggleTag(tag)}
-                  style={{
-                    padding: '6px 16px',
-                    borderRadius: '999px',
-                    border: '1px solid',
-                    borderColor: selectedTags.includes(tag) ? 'var(--color-accent)' : 'var(--color-border)',
-                    background: selectedTags.includes(tag) ? 'var(--color-accent)' : 'var(--color-surface)',
-                    color: selectedTags.includes(tag) ? 'white' : 'inherit',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.2s ease'
-                  }}
-              >
-                {tag}
-              </button>
-          ))}
+        {/* BARRE DES TAGS DYNAMIQUES */}
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '8px', scrollbarWidth: 'none' }}>
+          {tagsCatalog.map((tag) => {
+            const active = selectedTagIds.includes(tag.id)
+            return (
+                <button
+                    key={tag.id}
+                    onClick={() => toggleTag(tag.id)}
+                    style={{
+                      padding: '6px 16px',
+                      borderRadius: '999px',
+                      border: '1px solid',
+                      borderColor: active ? 'var(--color-accent)' : 'var(--color-border)',
+                      background: active ? 'var(--color-accent)' : 'var(--color-surface)',
+                      color: active ? 'white' : 'inherit',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      fontWeight: active ? 600 : 400,
+                      transition: 'all 0.2s ease',
+                    }}
+                >
+                  {tag.label}
+                </button>
+            )
+          })}
+        </div>
+
+        {/* BARRE DES ÉQUIPEMENTS DYNAMIQUES (EN DESSOUS DE LA RECHERCHE / TAGS) */}
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '16px', marginBottom: '16px', scrollbarWidth: 'none' }}>
+          {equipmentCatalog.map((eq) => {
+            const active = selectedEquipmentIds.includes(eq.id)
+            return (
+                <button
+                    key={eq.id}
+                    onClick={() => toggleEquipment(eq.id)}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: '8px',
+                      border: '1px solid',
+                      borderColor: active ? 'var(--color-text)' : 'var(--color-border)',
+                      background: active ? 'var(--color-text)' : 'var(--color-surface)',
+                      color: active ? 'var(--color-surface)' : 'inherit',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      fontSize: 'var(--text-sm)',
+                      transition: 'all 0.2s ease',
+                    }}
+                >
+                  🔧 {eq.label}
+                </button>
+            )
+          })}
         </div>
 
         {/* RÉSULTATS */}
@@ -210,7 +264,7 @@ const RecipesPage = () => {
                       id={recipe.id}
                       title={recipe.title}
                       description={recipe.description || ''}
-                      category={recipe.tags?.[0]?.label || recipe.tags?.[0] || "Recette"}
+                      category={recipe.recipeTags?.[0]?.label || recipe.tags?.[0]?.label || "Recette"}
                       imageUrl={photoUrl(recipe.photoId)}
                       onClick={handleSelectRecipe}
                       onDelete={() => askDelete(recipe)}
@@ -219,28 +273,23 @@ const RecipesPage = () => {
             </div>
         )}
 
-        {/* TIROIR MOBILE */}
+        {/* TIROIR MOBILE POUR OPTIONS SUPPLÉMENTAIRES SI BESOIN */}
         {isDrawerOpen && (
             <>
               <div onClick={() => setIsDrawerOpen(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40 }} />
               <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--color-background)', borderTopLeftRadius: '16px', borderTopRightRadius: '16px', padding: '24px', zIndex: 50, boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)', maxHeight: '80vh', overflowY: 'auto' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <h3 style={{ fontSize: 'var(--text-lg)', margin: 0 }}>Équipement requis</h3>
+                  <h3 style={{ fontSize: 'var(--text-lg)', margin: 0 }}>Options de filtres</h3>
                   <button onClick={() => setIsDrawerOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)' }}><X size={24} /></button>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {AVAILABLE_EQUIPMENT.map(eq => (
-                      <label key={eq} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--color-surface)', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--color-border)', cursor: 'pointer' }}>
-                        <input type="checkbox" checked={selectedEquipment.includes(eq)} onChange={() => toggleEquipment(eq)} />
-                        <span style={{ fontSize: 'var(--text-sm)' }}>{eq}</span>
-                      </label>
-                  ))}
-                </div>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+                  Tous les tags et équipements sont directement accessibles depuis les barres de sélection principales sur l'écran d'accueil.
+                </p>
                 <button
                     onClick={() => setIsDrawerOpen(false)}
                     style={{ width: '100%', padding: '14px', background: 'var(--color-accent)', color: 'white', border: 'none', borderRadius: '8px', marginTop: '32px', fontWeight: 'bold', cursor: 'pointer' }}
                 >
-                  Voir les résultats ({filteredRecipes.length})
+                  Fermer ({filteredRecipes.length} résultats)
                 </button>
               </div>
             </>
