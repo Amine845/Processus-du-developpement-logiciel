@@ -86,7 +86,8 @@ async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
   if (!recipe) return null
   const ingredients = recipe.ingredients.map(({ ingredient, ...line }) => ({
     ...line,
-    canonicalName: ingredient.canonicalName,
+    canonicalName: ingredient.ciqualFood?.name ?? ingredient.canonicalName,
+    ciqualCode: ingredient.ciqualCode,
     tags: sortTags(ingredient.tags.map(({ tag }) => tag)),
   }))
   const { tags, equipment, ...fields } = recipe
@@ -96,7 +97,6 @@ async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
     recipeTags: sortTags(tags.map(({ tag }) => tag)),
     ingredients,
     ingredientTags: unionTags(ingredients),
-    ...recipe,
   }
 }
 

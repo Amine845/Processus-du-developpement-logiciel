@@ -26,6 +26,8 @@ model Ingredient {
   ciqualFood    CiqualFood?        @relation(fields: [ciqualCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
   recipes       RecipeIngredient[]
   tags          IngredientTag[]
+
+  @@index([canonicalName])
 }
 
 // Vocabulaire contrôlé de tags descriptifs d'ingrédients (céréale, légume...).
@@ -50,7 +52,6 @@ model IngredientTag {
 
   @@id([ingredientId, tagId])
   @@index([tagId])
-  @@index([canonicalName])
 }
 
 model RecipeIngredient {

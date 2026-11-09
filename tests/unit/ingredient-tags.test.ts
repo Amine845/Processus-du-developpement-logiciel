@@ -156,9 +156,9 @@ function fakeDb() {
       },
     },
     ingredient: {
-      findUnique: async ({ where }: { where: { canonicalName: string } }) => {
+      findMany: async ({ where }: { where: { canonicalName: string } }) => {
         const id = ingredients.get(where.canonicalName)
-        return id === undefined ? null : { id }
+        return id === undefined ? [] : [{ id }]
       },
     },
     ingredientTag: {

@@ -89,29 +89,33 @@ export async function syncTagVocabulary(
   // Compté après les désactivations ci-dessus, donc à jour pour cette exécution.
 
   for (const [name, labels] of Object.entries(assignments)) {
-    const ingredient = await db.ingredient.findUnique({
+    const ingredients = await db.ingredient.findMany({
       where: { canonicalName: name },
       select: { id: true },
+      orderBy: { id: 'asc' },
     })
-    if (!ingredient) {
+    if (ingredients.length === 0) {
       report.skippedIngredients.push(name)
       continue
     }
-    for (const rawLabel of labels) {
-      const tagId = idByKey.get(parseTagLabel(rawLabel).key)
-      if (tagId === undefined) {
-        throw new TagValidationError([
-          `assignments: "${rawLabel}" is not in the vocabulary`,
-        ])
-      }
-      const where = {
-        ingredientId_tagId: { ingredientId: ingredient.id, tagId },
-      }
-      if (!(await db.ingredientTag.findUnique({ where }))) {
-        await db.ingredientTag.create({
-          data: { ingredientId: ingredient.id, tagId },
-        })
-        report.associationsAdded++
+    // Le nom n’est plus unique : conserver toutes les lignes de même nom exact.
+    for (const ingredient of ingredients) {
+      for (const rawLabel of labels) {
+        const tagId = idByKey.get(parseTagLabel(rawLabel).key)
+        if (tagId === undefined) {
+          throw new TagValidationError([
+            `assignments: "${rawLabel}" is not in the vocabulary`,
+          ])
+        }
+        const where = {
+          ingredientId_tagId: { ingredientId: ingredient.id, tagId },
+        }
+        if (!(await db.ingredientTag.findUnique({ where }))) {
+          await db.ingredientTag.create({
+            data: { ingredientId: ingredient.id, tagId },
+          })
+          report.associationsAdded++
+        }
       }
     }
   }

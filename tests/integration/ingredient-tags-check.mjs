@@ -15,6 +15,7 @@ import { after, before, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { PrismaClient } from '@prisma/client'
 import { importCiqual } from '../../scripts/ciqual.mjs'
+import { applyFull, definitions } from '../../scripts/ciqual-full.mjs'
 import { linkCiqual } from '../../scripts/ciqual-reference.mjs'
 import { TAG_VOCABULARY } from '../../dist-server/server/application/ingredient-tags.js'
 import { createPrismaCiqualRepository } from '../../dist-server/server/infrastructure/prisma-ciqual-repository.js'
@@ -76,7 +77,12 @@ const sync = (vocabulary = TAG_VOCABULARY, assignments = {}) =>
 const tagId = async (key) =>
   (await db.tag.findUniqueOrThrow({ where: { key } })).id
 const ingredientId = async (name) =>
-  (await db.ingredient.findUniqueOrThrow({ where: { canonicalName: name } })).id
+  (
+    await db.ingredient.findFirstOrThrow({
+      where: { canonicalName: name },
+      orderBy: { id: 'asc' },
+    })
+  ).id
 const counts = async () => ({
   recipes: await db.recipe.count(),
   ingredients: await db.ingredient.count(),
@@ -136,6 +142,11 @@ test('migration additive : recettes, ingrédients et liaison CIQUAL intacts', as
   )
   await importCiqual(db, encode(sample))
   await linkCiqual(db, 52, '20009')
+  // La fixture est créée après la migration d’identité : fournir aussi sa clé.
+  await db.ingredient.update({
+    where: { id: 52 },
+    data: { identityKey: 'ciqual:20009' },
+  })
   const snapshot = () =>
     Promise.all([
       db.recipe.findMany({
@@ -218,7 +229,12 @@ test('API : attribuer un tag, idempotence, erreurs validées', async () => {
     description: null,
     servings: 4,
     ingredients: [
-      { canonicalName: 'Carotte', quantity: 200, unit: 'g' },
+      {
+        canonicalName: 'Carotte',
+        ciqualCode: '20009',
+        quantity: 200,
+        unit: 'g',
+      },
       { canonicalName: 'Pomme de terre', quantity: 300, unit: 'g' },
       { canonicalName: 'Oignon', quantity: 1, unit: 'piece' },
     ],
@@ -483,7 +499,39 @@ test('mise à jour CIQUAL : tags, associations et liaison conservés', async () 
 
   const next = structuredClone(sample)
   next.foods[0].values = { ...next.foods[0].values, 328: '31,5' }
-  await importCiqual(db, encode(next))
+  // Les mises à jour passent par le synchroniseur complet, pas par l’import
+  // de sous-ensemble qui refuse volontairement les valeurs conflictuelles.
+  const foods = next.foods.map((food) => ({
+    code: food.code,
+    name: food.name,
+    values: Object.fromEntries(
+      definitions.map(({ key }) => [key, food.values[key] ?? '-']),
+    ),
+  }))
+  const { source, version, downloadedAt, sourceSha256, attribution, license } =
+    next.metadata
+  await applyFull(
+    db,
+    foods,
+    {
+      source,
+      version,
+      downloadedAt,
+      sourceSha256,
+      attribution,
+      license,
+      format: 'ciqual-full-xlsx-v1',
+    },
+    'ingredient-tags-test-update',
+  )
+  assert.equal(
+    (
+      await db.ciqualNutrient.findUniqueOrThrow({
+        where: { foodCode_key: { foodCode: foods[0].code, key: '328' } },
+      })
+    ).value,
+    31.5,
+  )
 
   assert.deepEqual(
     await db.ingredientTag.findMany({
@@ -546,4 +594,36 @@ test('seed relancé : recettes et tags utilisateur préservés, démo restaurée
   assert.equal((await seedDatabase(db)).associationsAdded, 1)
   assert.deepEqual(await snapshot(), before)
   assert.deepEqual(await db.$queryRawUnsafe('PRAGMA foreign_key_check'), [])
+})
+
+test('sync supports distinct ingredient identities sharing the same canonical name', async () => {
+  const first = await db.ingredient.create({
+    data: {
+      canonicalName: 'Doublon merge',
+      identityKey: 'manual:Doublon merge',
+    },
+  })
+  const second = await db.ingredient.create({
+    data: { canonicalName: 'Doublon merge', identityKey: 'legacy:merge-test' },
+  })
+  try {
+    const report = await sync(TAG_VOCABULARY, { 'Doublon merge': ['Légume'] })
+    assert.equal(report.associationsAdded, 2)
+    const id = await tagId('legume')
+    assert.equal(
+      await db.ingredientTag.count({
+        where: { ingredientId: { in: [first.id, second.id] }, tagId: id },
+      }),
+      2,
+    )
+    assert.equal(
+      (await sync(TAG_VOCABULARY, { 'Doublon merge': ['Légume'] }))
+        .associationsAdded,
+      0,
+    )
+  } finally {
+    await db.ingredient.deleteMany({
+      where: { id: { in: [first.id, second.id] } },
+    })
+  }
 })
