@@ -3,6 +3,7 @@ export interface RecipeSummary {
   title: string
   description: string | null
   servings: number
+  photoId: string | null
 }
 
 export interface RecipeDetail extends RecipeSummary {
@@ -28,14 +29,15 @@ export interface RecipeInput {
 /** List: ascending id. Detail collections: ascending position. */
 export interface RecipeRepository {
   findAll(): Promise<RecipeSummary[]>
-  /** null means absent; persistence failures reject with RecipeReadError. */
   findById(id: number): Promise<RecipeDetail | null>
-  /** Rejects with RecipeConflictError if the title is already used. */
   create(input: RecipeInput): Promise<RecipeDetail>
-  /** Full replacement. null means absent. */
   update(id: number, input: RecipeInput): Promise<RecipeDetail | null>
-  /** false means absent. Steps and ingredient lines are deleted by cascade. */
   deleteById(id: number): Promise<boolean>
+
+  /** null = recette absente ou sans photo. */
+  getPhotoId(id: number): Promise<string | null>
+  /** Remplace la photo. Retourne l'ancien photoId (ou null), undefined si la recette n'existe pas. */
+  setPhoto(id: number, photoId: string): Promise<string | null | undefined>
 }
 
 export class RecipeReadError extends Error {
@@ -57,4 +59,12 @@ export class RecipeConflictError extends Error {
     super('A recipe with this title already exists')
     this.name = 'RecipeConflictError'
   }
+}
+
+export interface RecipeSummary {
+  id: number
+  title: string
+  description: string | null
+  servings: number
+  photoId: string | null
 }

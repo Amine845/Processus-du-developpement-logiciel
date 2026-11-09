@@ -1,8 +1,8 @@
 // src/client/pages/RecipeCreatePage.tsx
-import React, { useState } from 'react'
 import { Trash2, Plus, Save } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { recipesApi } from '../../client/api/recipes.api'
+import React, { useState, useEffect } from 'react'
 
 interface RecipeIngredientDraft {
   localId: string
@@ -59,6 +59,29 @@ export const RecipeCreatePage: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [createdId, setCreatedId] = useState<number | null>(null)
+
+  // libère l'URL d'aperçu au changement / démontage
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview)
+    }
+  }, [photoPreview])
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null
+    if (file && file.size > 10 * 1024 * 1024) {
+      setErrorMsg('Photo trop lourde (10 Mo max)')
+      e.target.value = ''
+      return
+    }
+    setErrorMsg(null)
+    setPhoto(file)
+    setPhotoPreview(file ? URL.createObjectURL(file) : null)
+  }
 
   // --- GESTION DES CHAMPS SIMPLES ---
   const handleBasicChange = (
@@ -146,7 +169,24 @@ export const RecipeCreatePage: React.FC = () => {
           })),
       }
 
-      await recipesApi.create(payload as any)
+      let id = createdId
+      if (id === null) {
+        const created = await recipesApi.create(payload as any)
+        id = created.id
+        setCreatedId(id)
+      }
+
+      if (photo) {
+        try {
+          await recipesApi.uploadPhoto(id, photo)
+        } catch {
+          setErrorMsg(
+            "Recette créée, mais l'envoi de la photo a échoué. Réessaie ou continue sans photo.",
+          )
+          setIsSubmitting(false)
+          return
+        }
+      }
       navigate('/recipes')
     } catch (err: any) {
       console.error('Erreur API détaillée :', err)
@@ -246,6 +286,34 @@ export const RecipeCreatePage: React.FC = () => {
               style={{ padding: '8px', width: '80px' }}
             />
           </label>
+        </section>
+
+        {/* Photo */}
+        <section>
+          <label>
+            <span
+              style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 600,
+                marginBottom: '8px',
+              }}
+            >
+              Photo (facultative)
+            </span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handlePhotoChange}
+            />
+          </label>
+          {photoPreview && (
+            <img
+              src={photoPreview}
+              alt="Aperçu"
+              style={{ marginTop: 8, maxWidth: '100%', borderRadius: 8 }}
+            />
+          )}
         </section>
 
         {/* 2. MATÉRIEL REQUIS */}
@@ -460,6 +528,16 @@ export const RecipeCreatePage: React.FC = () => {
           >
             {errorMsg}
           </div>
+        )}
+
+        {createdId !== null && (
+          <button
+            type="button"
+            onClick={() => navigate('/recipes')}
+            style={{ alignSelf: 'center' }}
+          >
+            Continuer sans photo
+          </button>
         )}
 
         <button

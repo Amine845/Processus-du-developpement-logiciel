@@ -40,3 +40,6 @@ dist-electron
 
 # Compiled server
 dist-server
+
+# Uploads
+uploads/
