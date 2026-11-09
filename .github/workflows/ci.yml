@@ -53,8 +53,17 @@ jobs:
       - name: Tester les tags d'ingrédients sur une base temporaire
         run: npm run test:tags
 
-      - name: Tests unitaires
-        run: npm run test
+      - name: Tester classification, migration et API CIQUAL
+        run: npm run test:ciqual:classification
+
+      - name: Tester la recherche API CIQUAL
+        run: npm run test:ciqual:api
+
+      - name: Tester la conservation CIQUAL dans les recettes
+        run: npm run test:recipe:ciqual
+
+      - name: Tests unitaires et parcours React vers API
+        run: npm test
 
       - name: Build de l'application
         run: npm run build

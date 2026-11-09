@@ -120,8 +120,7 @@ préparation de ce kit, en partant de l'ancien sous-ensemble.
 
 ## Limites fonctionnelles
 
-La livraison fournit le référentiel local complet et sa synchronisation. Les
-routes HTTP et interfaces de sélection/calcul restent à réaliser. Un ingrédient
+La livraison fournit le référentiel local complet et sa synchronisation. Les routes HTTP de recherche/détail et la sélection sont disponibles ; le calcul nutritionnel de recette reste à réaliser. Un ingrédient
 manuel n'est pas associé automatiquement par son seul nom : une sélection explicite
 du code CIQUAL est nécessaire. Les recettes ne changent pas de quantités lors
 d'une mise à jour, mais les estimations futures suivent les nouvelles teneurs.
@@ -130,3 +129,14 @@ Le calcul d'une recette historique figé sur une version exige un lien explicite
 
 CIQUAL ne prouve jamais l'absence d'allergènes. Les noms et les valeurs manquantes
 ne deviennent pas des garanties de composition ou des indications médicales.
+
+## Catégories et groupes officiels
+
+Le pipeline conserve désormais les six colonnes de groupes du XLSX officiel et
+réapplique un mapping métier versionné. Voir [la politique de classification et
+le compte rendu](ciqual-classification.md) pour la migration, le backfill, les
+exceptions, les 253 entrées à classer et les commandes de contrôle. Un changement
+de mapping impose un réimport même si la publication distante est identique.
+Les routes de recherche/détail et le formulaire d'autocomplétion sont maintenant
+implémentés ; les anciennes limites fonctionnelles ci-dessus sur ces écrans ne
+s'appliquent plus. Le calcul nutritionnel figé sur un instantané reste hors périmètre.

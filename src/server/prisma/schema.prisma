@@ -20,7 +20,8 @@ model Recipe {
 
 model Ingredient {
   id            Int                @id @default(autoincrement())
-  canonicalName String             @unique
+  canonicalName String
+  identityKey   String?            @unique
   ciqualCode    String?
   ciqualFood    CiqualFood?        @relation(fields: [ciqualCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
   recipes       RecipeIngredient[]
@@ -49,6 +50,7 @@ model IngredientTag {
 
   @@id([ingredientId, tagId])
   @@index([tagId])
+  @@index([canonicalName])
 }
 
 model RecipeIngredient {
@@ -95,6 +97,16 @@ model CiqualImport {
 }
 
 model CiqualFood {
+  category     String           @default("unclassified")
+  groupCode    String?
+  groupName    String?
+  subgroupCode String?
+  subgroupName String?
+  detailGroupCode String?
+  detailGroupName String?
+  classificationVersion String?
+  classificationRule String?
+  applicationTags String       @default("[]")
   active       Boolean          @default(true)
   rawData      String?
   code         String           @id
@@ -127,6 +139,7 @@ model CiqualSyncState {
   checkedAt  DateTime?
   releaseKey String?
   lastError  String?
+  classificationVersion String?
 }
 
 // Vocabulaire éditorial propre aux recettes, indépendant des tags d'ingrédients.

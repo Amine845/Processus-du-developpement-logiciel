@@ -46,7 +46,10 @@ def read_xlsx(path):
     indexes = {d['key']: columns[norm(d['header'])] for d in expected}
     if len(indexes) != 74:
         raise ValueError('Expected 74 constituents')
-    foods = [{'code': row[6], 'name': row[7], 'values': {key: row[i] if i < len(row) else '' for key, i in indexes.items()}} for row in rows[1:]]
+    group_headers = ['alim_grp_code', 'alim_ssgrp_code', 'alim_ssssgrp_code', 'alim_grp_nom_fr', 'alim_ssgrp_nom_fr', 'alim_ssssgrp_nom_fr']
+    if header[:6] != group_headers:
+        raise ValueError('Official group columns changed; review required')
+    foods = [{'groups': dict(zip(group_headers, row[:6])), 'code': row[6], 'name': row[7], 'values': {key: row[i] if i < len(row) else '' for key, i in indexes.items()}} for row in rows[1:]]
     return foods
 if __name__ == '__main__':
     print(json.dumps(read_xlsx(sys.argv[1]), ensure_ascii=False))

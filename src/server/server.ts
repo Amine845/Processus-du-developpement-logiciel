@@ -18,6 +18,7 @@ import {
 import { createServer, type IncomingMessage } from 'node:http'
 import {
   RecipeConflictError,
+  RecipeAssociationError,
   type RecipeRepository,
 } from './domain/recipe-repository.js'
 import { createRecipes } from './application/recipes.js'
@@ -117,6 +118,24 @@ export function createRecipeServer(
   const tags = tagRepository ? createIngredientTags(tagRepository) : undefined
   return createServer(async (request, response) => {
     const method = request.method ?? 'GET'
+    // Vite development and the packaged Electron file renderer.
+    const origin = request.headers.origin
+    if (
+      origin &&
+      (origin === 'null' ||
+        /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))
+    ) {
+      response.setHeader('Access-Control-Allow-Origin', origin)
+      response.setHeader('Vary', 'Origin')
+      if (method === 'OPTIONS') {
+        response.writeHead(204, {
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        })
+        response.end()
+        return
+      }
+    }
     const send = (
       status: number,
       body?: unknown,
@@ -136,6 +155,8 @@ export function createRecipeServer(
     try {
       const url = new URL(request.url ?? '/', 'http://localhost')
       const path = url.pathname
+      if (path.startsWith('/api/ciqual/') || path.startsWith('/api/recipes'))
+        response.setHeader('Cache-Control', 'no-store')
 
       if (ciqual && path === '/api/ciqual/foods') {
         if (method !== 'GET') {
@@ -147,6 +168,11 @@ export function createRecipeServer(
           await ciqual.search(
             url.searchParams.get('q'),
             url.searchParams.get('limit'),
+            url.searchParams.has('category')
+              ? url.searchParams.getAll('category').length === 1
+                ? url.searchParams.get('category')
+                : []
+              : undefined,
           ),
         )
         return
@@ -474,6 +500,8 @@ export function createRecipeServer(
         send(503, { error: 'TAG_WRITE_FAILED' })
       } else if (error instanceof RecipeValidationError) {
         send(400, { error: 'INVALID_RECIPE', issues: error.issues })
+      } else if (error instanceof RecipeAssociationError) {
+        send(400, { error: error.code, ciqualCode: error.ciqualCode })
       } else if (error instanceof RecipeConflictError) {
         send(409, { error: 'RECIPE_TITLE_CONFLICT' })
       } else {

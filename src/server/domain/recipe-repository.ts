@@ -16,6 +16,7 @@ export interface RecipeSummary {
 export interface RecipeDetail extends RecipeSummary {
   ingredients: {
     ingredientId: number
+    ciqualCode: string | null
     canonicalName: string
     quantity: number
     unit: string
@@ -30,7 +31,12 @@ export interface RecipeInput {
   title: string
   description: string | null
   servings: number
-  ingredients: { canonicalName: string; quantity: number; unit: string }[]
+  ingredients: {
+    canonicalName: string
+    ciqualCode?: string | null
+    quantity: number
+    unit: string
+  }[]
   steps: { instruction: string }[]
 }
 
@@ -65,5 +71,15 @@ export class RecipeConflictError extends Error {
   constructor() {
     super('A recipe with this title already exists')
     this.name = 'RecipeConflictError'
+  }
+}
+
+export class RecipeAssociationError extends Error {
+  constructor(
+    readonly code: 'INVALID_CIQUAL_CODE' | 'INACTIVE_CIQUAL_CODE',
+    readonly ciqualCode: string,
+  ) {
+    super(code)
+    this.name = 'RecipeAssociationError'
   }
 }

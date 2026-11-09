@@ -1,7 +1,9 @@
 import type { EquipmentDTO } from '../../shared/types/equipment.types.js'
+import { resolveIngredient } from './ingredient-identity.js'
 import { Prisma, type PrismaClient } from '@prisma/client'
 import {
   RecipeConflictError,
+  RecipeAssociationError,
   RecipeReadError,
   RecipeWriteError,
   type RecipeDetail,
@@ -45,7 +47,14 @@ const detailSelect = {
       quantity: true,
       unit: true,
       position: true,
-      ingredient: { select: { canonicalName: true, tags: activeTagsSelect } },
+      ingredient: {
+        select: {
+          canonicalName: true,
+            tags: activeTagsSelect,
+          ciqualCode: true,
+          ciqualFood: { select: { name: true } },
+        },
+      },
     },
   },
   steps: {
@@ -87,24 +96,45 @@ async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
     recipeTags: sortTags(tags.map(({ tag }) => tag)),
     ingredients,
     ingredientTags: unionTags(ingredients),
+      ...recipe
   }
 }
 
-function children(input: RecipeInput) {
+async function children(
+  tx: Prisma.TransactionClient,
+  input: RecipeInput,
+  retained = new Set<string>(),
+) {
+  // Validate every new link in the same transaction as the recipe write.
+  const validated = []
+  for (const line of input.ingredients) {
+    const code = line.ciqualCode ?? null
+    let name = line.canonicalName
+    if (code !== null) {
+      const food = await tx.ciqualFood.findUnique({ where: { code } })
+      if (!food) throw new RecipeAssociationError('INVALID_CIQUAL_CODE', code)
+      if (!food.active && !retained.has(code))
+        throw new RecipeAssociationError('INACTIVE_CIQUAL_CODE', code)
+      name = food.name // The client cannot forge the official label.
+    }
+    validated.push({ ...line, canonicalName: name, ciqualCode: code })
+  }
+  const lines = []
+  for (const [index, line] of validated.entries()) {
+    const ingredientId = await resolveIngredient(
+      tx,
+      line.canonicalName,
+      line.ciqualCode,
+    )
+    lines.push({
+      position: index + 1,
+      quantity: line.quantity,
+      unit: line.unit,
+      ingredientId,
+    })
+  }
   return {
-    ingredients: {
-      create: input.ingredients.map((line, index) => ({
-        position: index + 1,
-        quantity: line.quantity,
-        unit: line.unit,
-        ingredient: {
-          connectOrCreate: {
-            where: { canonicalName: line.canonicalName },
-            create: { canonicalName: line.canonicalName },
-          },
-        },
-      })),
-    },
+    ingredients: { create: lines },
     steps: {
       create: input.steps.map((step, index) => ({
         position: index + 1,
@@ -116,9 +146,12 @@ function children(input: RecipeInput) {
 
 /** Never let Prisma details escape; only a title clash is a known outcome. */
 function toWriteError(error: unknown): Error {
+  if (error instanceof RecipeAssociationError) return error
   if (
     error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === 'P2002'
+    error.code === 'P2002' &&
+    Array.isArray(error.meta?.target) &&
+    error.meta.target.includes('title')
   ) {
     return new RecipeConflictError()
   }
@@ -161,19 +194,21 @@ export function createPrismaRecipeRepository(
 
     async create(input) {
       try {
-        // A nested write is atomic: recipe, lines and steps all exist or none do.
-        const { id } = await client.recipe.create({
-          data: {
-            title: input.title,
-            description: input.description,
-            servings: input.servings,
-            ...children(input),
-          },
-          select: { id: true },
+        return await client.$transaction(async (tx) => {
+          const nested = await children(tx, input)
+          const { id } = await tx.recipe.create({
+            data: {
+              title: input.title,
+              description: input.description,
+              servings: input.servings,
+              ...nested,
+            },
+            select: { id: true },
+          })
+          const created = await readDetail(tx, id)
+          if (!created) throw new RecipeWriteError()
+          return created
         })
-        const created = await readDetail(client, id)
-        if (!created) throw new RecipeWriteError()
-        return created
       } catch (error) {
         throw toWriteError(error)
       }
@@ -185,9 +220,20 @@ export function createPrismaRecipeRepository(
         return await client.$transaction(async (tx) => {
           const exists = await tx.recipe.findUnique({
             where: { id },
-            select: { id: true },
+            select: {
+              id: true,
+              ingredients: {
+                select: { ingredient: { select: { ciqualCode: true } } },
+              },
+            },
           })
           if (!exists) return null
+          const retained = new Set(
+            exists.ingredients.flatMap((l) =>
+              l.ingredient.ciqualCode ? [l.ingredient.ciqualCode] : [],
+            ),
+          )
+          const nested = await children(tx, input, retained)
           await tx.recipeIngredient.deleteMany({ where: { recipeId: id } })
           await tx.recipeStep.deleteMany({ where: { recipeId: id } })
           await tx.recipe.update({
@@ -196,7 +242,7 @@ export function createPrismaRecipeRepository(
               title: input.title,
               description: input.description,
               servings: input.servings,
-              ...children(input),
+              ...nested,
             },
           })
           return readDetail(tx, id)

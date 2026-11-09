@@ -1,3 +1,7 @@
+import {
+  RECIPE_UNITS,
+  type RecipeUnit,
+} from '../../shared/types/recipe.types.js'
 import type { RecipeInput } from '../domain/recipe-repository.js'
 
 export class RecipeValidationError extends Error {
@@ -44,8 +48,12 @@ export function parseRecipeInput(body: unknown): RecipeInput {
   }
 
   const ingredients: RecipeInput['ingredients'] = []
-  if (!Array.isArray(body.ingredients) || body.ingredients.length > 100) {
-    issues.push('ingredients: array of at most 100 items required')
+  if (
+    !Array.isArray(body.ingredients) ||
+    body.ingredients.length < 1 ||
+    body.ingredients.length > 100
+  ) {
+    issues.push('ingredients: array of 1 to 100 items required')
   } else {
     body.ingredients.forEach((line: unknown, index) => {
       const at = `ingredients[${index}]`
@@ -57,11 +65,18 @@ export function parseRecipeInput(body: unknown): RecipeInput {
         typeof line.canonicalName === 'string' ? line.canonicalName.trim() : ''
       const unit = typeof line.unit === 'string' ? line.unit.trim() : ''
       const quantity = line.quantity
-      if (canonicalName.length < 1 || canonicalName.length > 100) {
-        issues.push(`${at}.canonicalName: 1 to 100 characters required`)
+      const ciqualCode = line.ciqualCode === undefined ? null : line.ciqualCode
+      if (
+        ciqualCode !== null &&
+        (typeof ciqualCode !== 'string' || !/^\d{1,12}$/.test(ciqualCode))
+      )
+        issues.push(`${at}.ciqualCode: official code or null required`)
+      const maxName = ciqualCode === null ? 100 : 500
+      if (canonicalName.length < 1 || canonicalName.length > maxName) {
+        issues.push(`${at}.canonicalName: valid ingredient name required`)
       }
-      if (unit.length < 1 || unit.length > 20) {
-        issues.push(`${at}.unit: 1 to 20 characters required`)
+      if (!RECIPE_UNITS.includes(unit as RecipeUnit)) {
+        issues.push(`${at}.unit: one of g, kg, ml, l, piece required`)
       }
       if (
         typeof quantity !== 'number' ||
@@ -71,14 +86,23 @@ export function parseRecipeInput(body: unknown): RecipeInput {
         issues.push(`${at}.quantity: positive number required`)
       }
       if (typeof quantity === 'number') {
-        ingredients.push({ canonicalName, unit, quantity })
+        ingredients.push({
+          canonicalName,
+          ciqualCode: ciqualCode as string | null,
+          unit,
+          quantity,
+        })
       }
     })
   }
 
   const steps: RecipeInput['steps'] = []
-  if (!Array.isArray(body.steps) || body.steps.length > 200) {
-    issues.push('steps: array of at most 200 items required')
+  if (
+    !Array.isArray(body.steps) ||
+    body.steps.length < 1 ||
+    body.steps.length > 200
+  ) {
+    issues.push('steps: array of 1 to 200 items required')
   } else {
     body.steps.forEach((step: unknown, index) => {
       const instruction =
