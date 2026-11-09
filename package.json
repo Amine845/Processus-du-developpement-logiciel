@@ -30,6 +30,8 @@
     "ciqual:status": "node scripts/ciqual-sync.mjs --status",
     "test:ciqual:sync": "npm run db:generate && node --test tests/integration/ciqual-sync-check.mjs",
     "test:ciqual:api": "npm run build:server && node --test tests/integration/ciqual-api-check.mjs",
+    "recipe-tags:sync": "npm run build:server && node scripts/recipe-tags-sync.mjs",
+    "test:recipe-tags": "npm run build:server && node --test tests/integration/recipe-tags-check.mjs",
     "tags:sync": "npm run build:server && node scripts/tags-sync.mjs",
     "test:tags": "npm run build:server && node --test tests/integration/ingredient-tags-check.mjs"
   },

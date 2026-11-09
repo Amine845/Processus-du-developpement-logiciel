@@ -6,6 +6,7 @@ export interface RecipeSummary {
   description: string | null
   servings: number
   /** Lecture seule : union des tags actifs des ingrédients, triée par clé. */
+  recipeTags?: TagRef[]
   ingredientTags: TagRef[]
 }
 

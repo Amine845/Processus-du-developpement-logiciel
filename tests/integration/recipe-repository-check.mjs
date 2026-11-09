@@ -110,6 +110,7 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
       title: 'Z soupe',
       servings: 3,
       description: 'Description',
+      recipeTags: [],
       ingredientTags: [],
     },
     {
@@ -117,6 +118,7 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
       title: 'A soupe',
       servings: 2,
       description: null,
+      recipeTags: [],
       ingredientTags: [],
     },
   ]

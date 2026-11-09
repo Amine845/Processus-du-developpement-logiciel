@@ -29,11 +29,12 @@ export interface RecipeDTO {
    * Lecture seule : union des tags des ingrédients de la recette, triée par clé.
    * Ce ne sont pas des tags de recette (« Gourmand », « Rapide »).
    */
+  recipeTags?: TagDTO[]
   ingredientTags?: TagDTO[]
 }
 
 export type CreateRecipeDTO = Omit<
   RecipeDTO,
-  'id' | 'ingredientTags' | 'ingredients'
+  'id' | 'recipeTags' | 'ingredientTags' | 'ingredients'
 > & { ingredients: Omit<IngredientDTO, 'tags'>[] }
 export type UpdateRecipeDTO = Partial<CreateRecipeDTO>

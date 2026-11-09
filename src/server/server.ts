@@ -1,3 +1,9 @@
+import { createPrismaRecipeTagRepository } from './infrastructure/prisma-recipe-tag-repository.js'
+import {
+  RecipeTagReadError,
+  RecipeTagWriteError,
+  type RecipeTagRepository,
+} from './domain/recipe-tag-repository.js'
 import { createServer, type IncomingMessage } from 'node:http'
 import {
   RecipeConflictError,
@@ -18,6 +24,7 @@ import {
   TagValidationError,
   createIngredientTags,
   parseTagId,
+  parseAssignBody,
 } from './application/ingredient-tags.js'
 import {
   CiqualReadError,
@@ -91,6 +98,7 @@ export function createRecipeServer(
   repository: RecipeRepository,
   ciqualRepository?: CiqualRepository,
   tagRepository?: IngredientTagRepository,
+  recipeTagRepository?: RecipeTagRepository,
 ) {
   const recipes = createRecipes(repository)
   const ciqual = ciqualRepository ? createCiqual(ciqualRepository) : undefined
@@ -234,6 +242,78 @@ export function createRecipeServer(
         return
       }
 
+      if (recipeTagRepository && path === '/api/recipe-tags') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await recipeTagRepository.listTags())
+        return
+      }
+
+      const recipeAssignMatch = /^\/api\/recipes\/(\d+)\/tags$/.exec(path)
+      if (recipeTagRepository && recipeAssignMatch) {
+        const id = Number(recipeAssignMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'POST') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'POST' })
+          return
+        }
+        const outcome = await recipeTagRepository.assign(
+          id,
+          parseAssignBody(await readJsonBody(request)),
+        )
+        if (outcome.kind === 'created' || outcome.kind === 'exists') {
+          const recipe = await repository.findById(id)
+          send(
+            recipe ? (outcome.kind === 'created' ? 201 : 200) : 404,
+            recipe ?? { error: 'RECIPE_NOT_FOUND' },
+          )
+        } else if (outcome.kind === 'tag_inactive') {
+          send(409, { error: 'TAG_INACTIVE' })
+        } else {
+          send(404, {
+            error:
+              outcome.kind === 'tag_not_found'
+                ? 'TAG_NOT_FOUND'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      const recipeRemoveMatch = /^\/api\/recipes\/(\d+)\/tags\/(\d+)$/.exec(
+        path,
+      )
+      if (recipeTagRepository && recipeRemoveMatch) {
+        const id = Number(recipeRemoveMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'DELETE') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'DELETE' })
+          return
+        }
+        const outcome = await recipeTagRepository.remove(
+          id,
+          parseTagId(Number(recipeRemoveMatch[2])),
+        )
+        if (outcome.kind === 'removed') send(204)
+        else {
+          send(404, {
+            error:
+              outcome.kind === 'absent'
+                ? 'TAG_NOT_ASSIGNED'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
+        return
+      }
+
       if (path === '/api/recipes') {
         if (method === 'GET') {
           send(200, await recipes.findAll())
@@ -291,9 +371,15 @@ export function createRecipeServer(
         send(503, { error: 'CIQUAL_READ_FAILED' })
       } else if (error instanceof TagValidationError) {
         send(400, { error: 'INVALID_TAG', issues: error.issues })
-      } else if (error instanceof TagReadError) {
+      } else if (
+        error instanceof TagReadError ||
+        error instanceof RecipeTagReadError
+      ) {
         send(503, { error: 'TAG_READ_FAILED' })
-      } else if (error instanceof TagWriteError) {
+      } else if (
+        error instanceof TagWriteError ||
+        error instanceof RecipeTagWriteError
+      ) {
         send(503, { error: 'TAG_WRITE_FAILED' })
       } else if (error instanceof RecipeValidationError) {
         send(400, { error: 'INVALID_RECIPE', issues: error.issues })
@@ -315,6 +401,7 @@ export async function startServer(databaseUrl: string, port = 3001) {
     createPrismaRecipeRepository(persistence.client),
     createPrismaCiqualRepository(persistence.client),
     createPrismaTagRepository(persistence.client),
+    createPrismaRecipeTagRepository(persistence.client),
   )
   try {
     await persistence.connect()

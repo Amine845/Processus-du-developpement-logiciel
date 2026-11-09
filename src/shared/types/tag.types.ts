@@ -26,3 +26,8 @@ export interface IngredientSummaryDTO {
 export interface AssignTagRequestDTO {
   tagId: number
 }
+
+/** Vocabulaire éditorial des recettes, indépendant des tags d'ingrédients. */
+export interface RecipeTagSummaryDTO extends TagDTO {
+  recipeCount: number
+}

@@ -15,6 +15,7 @@ const summary = {
   title: true,
   description: true,
   servings: true,
+  tags: activeTagsSelect,
 } as const
 
 const listSelect = {
@@ -68,7 +69,13 @@ async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
     canonicalName: ingredient.canonicalName,
     tags: sortTags(ingredient.tags.map(({ tag }) => tag)),
   }))
-  return { ...recipe, ingredients, ingredientTags: unionTags(ingredients) }
+  const { tags, ...fields } = recipe
+  return {
+    ...fields,
+    recipeTags: sortTags(tags.map(({ tag }) => tag)),
+    ingredients,
+    ingredientTags: unionTags(ingredients),
+  }
 }
 
 function children(input: RecipeInput) {
@@ -116,7 +123,8 @@ export function createPrismaRecipeRepository(
           select: listSelect,
           orderBy: { id: 'asc' },
         })
-        return recipes.map(({ ingredients, ...recipe }) => ({
+        return recipes.map(({ ingredients, tags, ...recipe }) => ({
+          recipeTags: sortTags(tags.map(({ tag }) => tag)),
           ...recipe,
           ingredientTags: unionTags(
             ingredients.map(({ ingredient }) => ({

@@ -14,6 +14,7 @@ model Recipe {
   servings    Int
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
+  tags        RecipeTagLink[]
 }
 
 model Ingredient {
@@ -125,4 +126,22 @@ model CiqualSyncState {
   checkedAt  DateTime?
   releaseKey String?
   lastError  String?
+}
+
+// Vocabulaire éditorial propre aux recettes, indépendant des tags d'ingrédients.
+model RecipeTag {
+  id Int @id @default(autoincrement())
+  key String @unique
+  label String @unique
+  active Boolean @default(true)
+  recipes RecipeTagLink[]
+}
+
+model RecipeTagLink {
+  recipeId Int
+  tagId Int
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tag RecipeTag @relation(fields: [tagId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  @@id([recipeId, tagId])
+  @@index([tagId])
 }

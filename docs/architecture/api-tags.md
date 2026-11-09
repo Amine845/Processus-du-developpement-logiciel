@@ -9,10 +9,10 @@ Ces tags sont **descriptifs**. Ils ne sont pas :
 
 - la classification aliments/plats du référentiel CIQUAL, sans lien avec ces tables ;
 - des allergènes ni des régimes : aucun tag « sans allergène » n'est déduit des nutriments ;
-- des tags de recette (« Gourmand », « Rapide ») : ils demanderont un modèle distinct.
+- des tags de recette (« Gourmand », « Rapide ») : leur modèle distinct est décrit dans [api-recipe-tags.md](api-recipe-tags.md).
 
 Hors périmètre (suivi dans #73) : taxonomie exhaustive, administration avancée, tags
-culinaires de recette, certification des allergènes et régimes.
+culinaires exhaustifs, certification des allergènes et régimes.
 
 ## 2. Modèle
 

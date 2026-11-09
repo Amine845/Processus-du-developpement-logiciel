@@ -90,6 +90,8 @@ try {
     'Recipe',
     'RecipeIngredient',
     'RecipeStep',
+    'RecipeTag',
+    'RecipeTagLink',
     'Tag',
   ])
   const recipe = await db.recipe.create({
