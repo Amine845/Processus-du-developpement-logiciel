@@ -1,3 +1,4 @@
+import type { EquipmentDTO } from '../../shared/types/equipment.types.js'
 import { resolveIngredient } from './ingredient-identity.js'
 import { Prisma, type PrismaClient } from '@prisma/client'
 import {
@@ -9,12 +10,32 @@ import {
   type RecipeInput,
   type RecipeRepository,
 } from '../domain/recipe-repository.js'
+import type { TagRef } from '../domain/tag-repository.js'
+import { activeTagsSelect, sortTags } from './prisma-tag-repository.js'
 
+const activeEquipmentSelect = {
+  where: { equipment: { active: true } },
+  select: { equipment: { select: { id: true, key: true, label: true } } },
+} as const
+function sortEquipment(items: EquipmentDTO[]): EquipmentDTO[] {
+  return [...items].sort((a, b) =>
+    a.key < b.key ? -1 : a.key > b.key ? 1 : a.id - b.id,
+  )
+}
 const summary = {
   id: true,
   title: true,
   description: true,
   servings: true,
+  tags: activeTagsSelect,
+  equipment: activeEquipmentSelect,
+} as const
+
+const listSelect = {
+  ...summary,
+  ingredients: {
+    select: { ingredient: { select: { tags: activeTagsSelect } } },
+  },
 } as const
 
 const detailSelect = {
@@ -29,6 +50,7 @@ const detailSelect = {
       ingredient: {
         select: {
           canonicalName: true,
+          tags: activeTagsSelect,
           ciqualCode: true,
           ciqualFood: { select: { name: true } },
         },
@@ -49,19 +71,32 @@ function assertId(id: number) {
   }
 }
 
+/** Union dédupliquée des tags des lignes, triée par clé. */
+function unionTags(lines: { tags: TagRef[] }[]): TagRef[] {
+  const byId = new Map<number, TagRef>()
+  for (const line of lines) for (const tag of line.tags) byId.set(tag.id, tag)
+  return sortTags([...byId.values()])
+}
+
 async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
   const recipe = await db.recipe.findUnique({
     where: { id },
     select: detailSelect,
   })
   if (!recipe) return null
+  const ingredients = recipe.ingredients.map(({ ingredient, ...line }) => ({
+    ...line,
+    canonicalName: ingredient.ciqualFood?.name ?? ingredient.canonicalName,
+    ciqualCode: ingredient.ciqualCode,
+    tags: sortTags(ingredient.tags.map(({ tag }) => tag)),
+  }))
+  const { tags, equipment, ...fields } = recipe
   return {
-    ...recipe,
-    ingredients: recipe.ingredients.map(({ ingredient, ...line }) => ({
-      ...line,
-      canonicalName: ingredient.ciqualFood?.name ?? ingredient.canonicalName,
-      ciqualCode: ingredient.ciqualCode,
-    })),
+    ...fields,
+    equipment: sortEquipment(equipment.map((link) => link.equipment)),
+    recipeTags: sortTags(tags.map(({ tag }) => tag)),
+    ingredients,
+    ingredientTags: unionTags(ingredients),
   }
 }
 
@@ -129,10 +164,20 @@ export function createPrismaRecipeRepository(
   return {
     async findAll() {
       try {
-        return await client.recipe.findMany({
-          select: summary,
+        const recipes = await client.recipe.findMany({
+          select: listSelect,
           orderBy: { id: 'asc' },
         })
+        return recipes.map(({ ingredients, tags, equipment, ...recipe }) => ({
+          equipment: sortEquipment(equipment.map((link) => link.equipment)),
+          recipeTags: sortTags(tags.map(({ tag }) => tag)),
+          ...recipe,
+          ingredientTags: unionTags(
+            ingredients.map(({ ingredient }) => ({
+              tags: ingredient.tags.map(({ tag }) => tag),
+            })),
+          ),
+        }))
       } catch {
         throw new RecipeReadError()
       }

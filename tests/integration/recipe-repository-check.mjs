@@ -105,8 +105,24 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
     },
   })
   const summaries = [
-    { id: 10, title: 'Z soupe', servings: 3, description: 'Description' },
-    { id: 20, title: 'A soupe', servings: 2, description: null },
+    {
+      id: 10,
+      title: 'Z soupe',
+      servings: 3,
+      description: 'Description',
+      equipment: [],
+      recipeTags: [],
+      ingredientTags: [],
+    },
+    {
+      id: 20,
+      title: 'A soupe',
+      servings: 2,
+      description: null,
+      equipment: [],
+      recipeTags: [],
+      ingredientTags: [],
+    },
   ]
   assert.deepEqual(await repository.findAll(), summaries)
   assert.deepEqual(await repository.findAll(), summaries)
@@ -120,6 +136,7 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
         position: 1,
         quantity: 200,
         unit: 'g',
+        tags: [],
       },
       {
         ciqualCode: null,
@@ -128,6 +145,7 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
         position: 3,
         quantity: 0.5,
         unit: 'l',
+        tags: [],
       },
     ],
     steps: [

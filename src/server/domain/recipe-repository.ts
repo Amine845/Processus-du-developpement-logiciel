@@ -1,8 +1,16 @@
+import type { EquipmentDTO } from '../../shared/types/equipment.types.js'
+import type { TagRef } from './tag-repository.js'
+
 export interface RecipeSummary {
   id: number
   title: string
   description: string | null
   servings: number
+  /** Lecture seule : union des tags actifs des ingrédients, triée par clé. */
+  /** Matériel requis, lecture seule ; attribution via les routes dédiées. */
+  equipment?: EquipmentDTO[]
+  recipeTags?: TagRef[]
+  ingredientTags: TagRef[]
 }
 
 export interface RecipeDetail extends RecipeSummary {
@@ -13,6 +21,7 @@ export interface RecipeDetail extends RecipeSummary {
     quantity: number
     unit: string
     position: number
+    tags: TagRef[]
   }[]
   steps: { position: number; instruction: string }[]
 }

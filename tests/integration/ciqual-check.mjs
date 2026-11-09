@@ -78,6 +78,12 @@ test('isolated migration, imports, rejection, rollback and conservation', async 
       'prisma/migrations/20261102140000_ciqual_sync',
     )
     rmSync(updateMigration, { recursive: true })
+    // Les migrations postérieures (tags) sont réintroduites en dernier, dans l'ordre chronologique.
+    const tagsMigration = join(
+      temp,
+      'prisma/migrations/20261108090000_ingredient_tags',
+    )
+    rmSync(tagsMigration, { recursive: true })
     const classificationMigration = join(
       temp,
       'prisma/migrations/20261105120000_ciqual_categories',
@@ -121,6 +127,11 @@ test('isolated migration, imports, rejection, rollback and conservation', async 
     cpSync(
       join(root, 'src/server/prisma/migrations/20261102140000_ciqual_sync'),
       updateMigration,
+      { recursive: true },
+    )
+    cpSync(
+      join(root, 'src/server/prisma/migrations/20261108090000_ingredient_tags'),
+      tagsMigration,
       { recursive: true },
     )
     cpSync(
