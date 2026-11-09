@@ -1,4 +1,8 @@
 import type { PrismaClient } from '@prisma/client'
+import {
+  syncTagVocabulary,
+  type TagSyncReport,
+} from '../infrastructure/tag-vocabulary-sync.js'
 
 // Les titres et noms canoniques servent de clés naturelles pour la démonstration.
 // Ces recettes sont réservées au seed : une relance restaure leurs valeurs.
@@ -54,9 +58,16 @@ export const demoRecipes = [
   },
 ]
 
-/** Atomique, relançable, sans suppression globale des données utilisateur. */
-export async function seedDatabase(prisma: PrismaClient) {
-  await prisma.$transaction(async (tx) => {
+/**
+ * Atomique, relançable, sans suppression globale des données utilisateur.
+ * Les tags (vocabulaire et associations de démonstration) sont synchronisés dans
+ * la même transaction : ils n'ajoutent que des lignes et ne retirent jamais
+ * une association créée par l'utilisateur.
+ */
+export async function seedDatabase(
+  prisma: PrismaClient,
+): Promise<TagSyncReport> {
+  return prisma.$transaction(async (tx) => {
     for (const example of demoRecipes) {
       const { ingredients, steps, ...data } = example
       const recipe = await tx.recipe.upsert({
@@ -98,5 +109,6 @@ export async function seedDatabase(prisma: PrismaClient) {
         where: { recipeId: recipe.id, position: { gt: steps.length } },
       })
     }
+    return syncTagVocabulary(tx)
   })
 }

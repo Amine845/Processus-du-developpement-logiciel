@@ -86,9 +86,11 @@ try {
     'CiqualNutrient',
     'CiqualSyncState',
     'Ingredient',
+    'IngredientTag',
     'Recipe',
     'RecipeIngredient',
     'RecipeStep',
+    'Tag',
   ])
   const recipe = await db.recipe.create({
     data: { title: 'Soupe', servings: 2 },
@@ -196,6 +198,13 @@ try {
   // Verify update actions and actual relation metadata, not just schema declarations.
   for (const [table, targets] of [
     ['RecipeStep', [['Recipe', 'CASCADE']]],
+    [
+      'IngredientTag',
+      [
+        ['Ingredient', 'CASCADE'],
+        ['Tag', 'RESTRICT'],
+      ],
+    ],
     [
       'RecipeIngredient',
       [

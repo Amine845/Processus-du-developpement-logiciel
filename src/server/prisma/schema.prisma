@@ -22,6 +22,31 @@ model Ingredient {
   ciqualCode    String?
   ciqualFood    CiqualFood?        @relation(fields: [ciqualCode], references: [code], onDelete: Restrict, onUpdate: Cascade)
   recipes       RecipeIngredient[]
+  tags          IngredientTag[]
+}
+
+// Vocabulaire contrôlé de tags descriptifs d'ingrédients (céréale, légume...).
+// Sans lien avec la classification CIQUAL ni avec les allergènes.
+// `key` est le libellé normalisé (minuscules, sans accents, mots reliés par « - ») ;
+// un tag retiré du vocabulaire est désactivé, jamais supprimé en silence.
+model Tag {
+  id          Int             @id @default(autoincrement())
+  key         String          @unique
+  label       String          @unique
+  active      Boolean         @default(true)
+  ingredients IngredientTag[]
+}
+
+// La clé primaire composite interdit les doublons d'association.
+// Supprimer un ingrédient retire ses associations ; un tag encore associé ne peut pas être supprimé.
+model IngredientTag {
+  ingredientId Int
+  tagId        Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tag          Tag        @relation(fields: [tagId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([ingredientId, tagId])
+  @@index([tagId])
 }
 
 model RecipeIngredient {

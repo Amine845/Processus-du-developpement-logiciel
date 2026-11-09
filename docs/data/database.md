@@ -63,6 +63,9 @@ Ne jamais préfixer `DATABASE_URL` par `VITE_` ni importer Prisma depuis `src/cl
 | Positions de lignes et d'étapes | Entiers de 1 à 2147483647, uniques par recette, trous autorisés                                                      |
 | `RecipeStep.instruction`        | Texte non blanc                                                                                                      |
 | Clés étrangères                 | Recette et ingrédient référencés obligatoirement existants                                                           |
+| `Tag.key`                       | 1 à 40 caractères parmi `a-z`, `0-9` et `-`, sans tiret en début ni en fin ; unique                                  |
+| `Tag.label`                     | Texte non blanc de 40 caractères au plus ; unique                                                                    |
+| `IngredientTag`                 | Clé primaire `(ingredientId, tagId)` : aucune association en double                                                  |
 
 Les `NOT NULL`, `CHECK`, clés étrangères et index uniques sont dans la migration
 SQL versionnée. Prisma décrit types, relations et unicité, mais **ne représente
@@ -82,6 +85,11 @@ connexions ; tout outil SQLite externe doit activer `PRAGMA foreign_keys = ON`
 **sur chaque connexion**. Les tests vérifient l'activation et les règles effectives.
 L'archivage réversible prévu par le domaine reste une fonctionnalité ultérieure :
 ces règles SQL n'exposent pas une suppression définitive dans l'interface.
+
+Les tags d'ingrédients (`Tag`, `IngredientTag`) forment une relation plusieurs-à-plusieurs :
+supprimer un ingrédient retire ses associations (`CASCADE`), tandis qu'un tag encore
+associé ne peut pas être supprimé (`RESTRICT`). Ils sont indépendants des tables CIQUAL, qu'une
+mise à jour ne touche donc jamais. Voir [`api-tags.md`](../architecture/api-tags.md).
 
 Une recette peut être créée sans lignes ni étapes pour permettre sa construction
 progressive. Le même ingrédient peut figurer à plusieurs positions. Lire les
@@ -170,7 +178,8 @@ npm run db:seed
 ```
 
 Le jeu contient 3 recettes (gâteau, crêpes, omelette), 6 ingrédients partagés,
-11 lignes d'ingrédients et 11 étapes ordonnées. Le seed est transactionnel :
+11 lignes d'ingrédients, 11 étapes ordonnées, le vocabulaire de tags d'ingrédients
+et 7 associations de démonstration (voir `docs/architecture/api-tags.md`). Le seed est transactionnel :
 une erreur annule tout le peuplement. La connexion est fermée même en cas d'erreur
 et la commande renvoie alors un code non nul.
 

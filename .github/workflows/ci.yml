@@ -50,6 +50,9 @@ jobs:
       - name: Tester les mises à jour CIQUAL hors réseau
         run: npm run test:ciqual:sync
 
+      - name: Tester les tags d'ingrédients sur une base temporaire
+        run: npm run test:tags
+
       - name: Tests unitaires
         run: npm run test
 

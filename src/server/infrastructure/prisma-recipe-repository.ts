@@ -7,12 +7,21 @@ import {
   type RecipeInput,
   type RecipeRepository,
 } from '../domain/recipe-repository.js'
+import type { TagRef } from '../domain/tag-repository.js'
+import { activeTagsSelect, sortTags } from './prisma-tag-repository.js'
 
 const summary = {
   id: true,
   title: true,
   description: true,
   servings: true,
+} as const
+
+const listSelect = {
+  ...summary,
+  ingredients: {
+    select: { ingredient: { select: { tags: activeTagsSelect } } },
+  },
 } as const
 
 const detailSelect = {
@@ -24,7 +33,7 @@ const detailSelect = {
       quantity: true,
       unit: true,
       position: true,
-      ingredient: { select: { canonicalName: true } },
+      ingredient: { select: { canonicalName: true, tags: activeTagsSelect } },
     },
   },
   steps: {
@@ -41,19 +50,25 @@ function assertId(id: number) {
   }
 }
 
+/** Union dédupliquée des tags des lignes, triée par clé. */
+function unionTags(lines: { tags: TagRef[] }[]): TagRef[] {
+  const byId = new Map<number, TagRef>()
+  for (const line of lines) for (const tag of line.tags) byId.set(tag.id, tag)
+  return sortTags([...byId.values()])
+}
+
 async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
   const recipe = await db.recipe.findUnique({
     where: { id },
     select: detailSelect,
   })
   if (!recipe) return null
-  return {
-    ...recipe,
-    ingredients: recipe.ingredients.map(({ ingredient, ...line }) => ({
-      ...line,
-      canonicalName: ingredient.canonicalName,
-    })),
-  }
+  const ingredients = recipe.ingredients.map(({ ingredient, ...line }) => ({
+    ...line,
+    canonicalName: ingredient.canonicalName,
+    tags: sortTags(ingredient.tags.map(({ tag }) => tag)),
+  }))
+  return { ...recipe, ingredients, ingredientTags: unionTags(ingredients) }
 }
 
 function children(input: RecipeInput) {
@@ -97,10 +112,18 @@ export function createPrismaRecipeRepository(
   return {
     async findAll() {
       try {
-        return await client.recipe.findMany({
-          select: summary,
+        const recipes = await client.recipe.findMany({
+          select: listSelect,
           orderBy: { id: 'asc' },
         })
+        return recipes.map(({ ingredients, ...recipe }) => ({
+          ...recipe,
+          ingredientTags: unionTags(
+            ingredients.map(({ ingredient }) => ({
+              tags: ingredient.tags.map(({ tag }) => tag),
+            })),
+          ),
+        }))
       } catch {
         throw new RecipeReadError()
       }

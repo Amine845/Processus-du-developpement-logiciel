@@ -8,6 +8,17 @@ import { RecipeValidationError } from './application/recipe-input.js'
 import { createPersistence } from './infrastructure/prisma.js'
 import { createPrismaRecipeRepository } from './infrastructure/prisma-recipe-repository.js'
 import { createPrismaCiqualRepository } from './infrastructure/prisma-ciqual-repository.js'
+import { createPrismaTagRepository } from './infrastructure/prisma-tag-repository.js'
+import {
+  TagReadError,
+  TagWriteError,
+  type IngredientTagRepository,
+} from './domain/tag-repository.js'
+import {
+  TagValidationError,
+  createIngredientTags,
+  parseTagId,
+} from './application/ingredient-tags.js'
 import {
   CiqualReadError,
   type CiqualRepository,
@@ -72,13 +83,18 @@ function readJsonBody(request: IncomingMessage): Promise<unknown> {
   })
 }
 
-/** Le référentiel CIQUAL est facultatif : sans lui, /api/ciqual répond 404. */
+/**
+ * Les référentiels CIQUAL et de tags sont facultatifs :
+ * sans eux, /api/ciqual, /api/tags et /api/ingredients répondent 404.
+ */
 export function createRecipeServer(
   repository: RecipeRepository,
   ciqualRepository?: CiqualRepository,
+  tagRepository?: IngredientTagRepository,
 ) {
   const recipes = createRecipes(repository)
   const ciqual = ciqualRepository ? createCiqual(ciqualRepository) : undefined
+  const tags = tagRepository ? createIngredientTags(tagRepository) : undefined
   return createServer(async (request, response) => {
     const method = request.method ?? 'GET'
     const send = (
@@ -124,6 +140,97 @@ export function createRecipeServer(
         }
         const food = await ciqual.findByCode(foodMatch[1])
         send(food ? 200 : 404, food ?? { error: 'CIQUAL_FOOD_NOT_FOUND' })
+        return
+      }
+
+      if (tags && path === '/api/tags') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await tags.listTags())
+        return
+      }
+
+      if (tags && path === '/api/ingredients') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await tags.listIngredients())
+        return
+      }
+
+      const ingredientMatch = /^\/api\/ingredients\/(\d+)$/.exec(path)
+      if (tags && ingredientMatch) {
+        const id = Number(ingredientMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_INGREDIENT_ID' })
+          return
+        }
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        const ingredient = await tags.findIngredient(id)
+        send(
+          ingredient ? 200 : 404,
+          ingredient ?? { error: 'INGREDIENT_NOT_FOUND' },
+        )
+        return
+      }
+
+      const assignMatch = /^\/api\/ingredients\/(\d+)\/tags$/.exec(path)
+      if (tags && assignMatch) {
+        const id = Number(assignMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_INGREDIENT_ID' })
+          return
+        }
+        if (method !== 'POST') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'POST' })
+          return
+        }
+        const outcome = await tags.assign(id, await readJsonBody(request))
+        if (outcome.kind === 'created' || outcome.kind === 'exists') {
+          send(outcome.kind === 'created' ? 201 : 200, outcome.ingredient)
+        } else if (outcome.kind === 'tag_inactive') {
+          send(409, { error: 'TAG_INACTIVE' })
+        } else {
+          send(404, {
+            error:
+              outcome.kind === 'tag_not_found'
+                ? 'TAG_NOT_FOUND'
+                : 'INGREDIENT_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      const removeMatch = /^\/api\/ingredients\/(\d+)\/tags\/(\d+)$/.exec(path)
+      if (tags && removeMatch) {
+        const id = Number(removeMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_INGREDIENT_ID' })
+          return
+        }
+        if (method !== 'DELETE') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'DELETE' })
+          return
+        }
+        const outcome = await tags.remove(
+          id,
+          parseTagId(Number(removeMatch[2])),
+        )
+        if (outcome.kind === 'removed') send(204)
+        else {
+          send(404, {
+            error:
+              outcome.kind === 'absent'
+                ? 'TAG_NOT_ASSIGNED'
+                : 'INGREDIENT_NOT_FOUND',
+          })
+        }
         return
       }
 
@@ -182,6 +289,12 @@ export function createRecipeServer(
         })
       } else if (error instanceof CiqualReadError) {
         send(503, { error: 'CIQUAL_READ_FAILED' })
+      } else if (error instanceof TagValidationError) {
+        send(400, { error: 'INVALID_TAG', issues: error.issues })
+      } else if (error instanceof TagReadError) {
+        send(503, { error: 'TAG_READ_FAILED' })
+      } else if (error instanceof TagWriteError) {
+        send(503, { error: 'TAG_WRITE_FAILED' })
       } else if (error instanceof RecipeValidationError) {
         send(400, { error: 'INVALID_RECIPE', issues: error.issues })
       } else if (error instanceof RecipeConflictError) {
@@ -201,6 +314,7 @@ export async function startServer(databaseUrl: string, port = 3001) {
   const server = createRecipeServer(
     createPrismaRecipeRepository(persistence.client),
     createPrismaCiqualRepository(persistence.client),
+    createPrismaTagRepository(persistence.client),
   )
   try {
     await persistence.connect()
