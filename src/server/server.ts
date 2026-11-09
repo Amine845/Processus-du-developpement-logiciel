@@ -1,15 +1,46 @@
+import { InvalidImageError, type PhotoStorage } from './domain/photo-storage.js'
+import { createPhotoStorage } from './infrastructure/photo-storage.js'
+import { createPrismaRecipeEquipmentRepository } from './infrastructure/prisma-recipe-equipment-repository.js'
+import {
+  RecipeEquipmentReadError,
+  RecipeEquipmentWriteError,
+  type RecipeEquipmentRepository,
+} from './domain/recipe-equipment-repository.js'
+import {
+  EquipmentValidationError,
+  parseEquipmentId,
+  parseAssignEquipmentBody,
+} from './application/recipe-equipment.js'
+import { createPrismaRecipeTagRepository } from './infrastructure/prisma-recipe-tag-repository.js'
+import {
+  RecipeTagReadError,
+  RecipeTagWriteError,
+  type RecipeTagRepository,
+} from './domain/recipe-tag-repository.js'
 import { createServer, type IncomingMessage } from 'node:http'
 import {
   RecipeConflictError,
+  RecipeAssociationError,
+  RecipeCatalogError,
   type RecipeRepository,
 } from './domain/recipe-repository.js'
 import { createRecipes } from './application/recipes.js'
 import { RecipeValidationError } from './application/recipe-input.js'
-import { InvalidImageError, type PhotoStorage } from './domain/photo-storage.js'
-import { createPhotoStorage } from './infrastructure/photo-storage.js'
 import { createPersistence } from './infrastructure/prisma.js'
 import { createPrismaRecipeRepository } from './infrastructure/prisma-recipe-repository.js'
 import { createPrismaCiqualRepository } from './infrastructure/prisma-ciqual-repository.js'
+import { createPrismaTagRepository } from './infrastructure/prisma-tag-repository.js'
+import {
+  TagReadError,
+  TagWriteError,
+  type IngredientTagRepository,
+} from './domain/tag-repository.js'
+import {
+  TagValidationError,
+  createIngredientTags,
+  parseTagId,
+  parseAssignBody,
+} from './application/ingredient-tags.js'
 import {
   CiqualReadError,
   type CiqualRepository,
@@ -27,12 +58,11 @@ const isValidId = (id: number) =>
   Number.isInteger(id) && id >= 1 && id <= 2147483647
 
 class HttpError extends Error {
-  readonly status: number
-  readonly code: string
-  constructor(status: number, code: string) {
+  constructor(
+    readonly status: number,
+    readonly code: string,
+  ) {
     super(code)
-    this.status = status
-    this.code = code
   }
 }
 
@@ -84,16 +114,41 @@ async function readJsonBody(request: IncomingMessage): Promise<unknown> {
   }
 }
 
-/** Le référentiel CIQUAL est facultatif : sans lui, /api/ciqual répond 404. */
+/**
+ * Les référentiels CIQUAL et de tags sont facultatifs :
+ * sans eux, /api/ciqual, /api/tags et /api/ingredients répondent 404.
+ */
 export function createRecipeServer(
   repository: RecipeRepository,
   ciqualRepository?: CiqualRepository,
   photos?: PhotoStorage,
+  tagRepository?: IngredientTagRepository,
+  recipeTagRepository?: RecipeTagRepository,
+  equipmentRepository?: RecipeEquipmentRepository,
 ) {
   const recipes = createRecipes(repository, photos)
   const ciqual = ciqualRepository ? createCiqual(ciqualRepository) : undefined
+  const tags = tagRepository ? createIngredientTags(tagRepository) : undefined
   return createServer(async (request, response) => {
     const method = request.method ?? 'GET'
+    // Vite development and the packaged Electron file renderer.
+    const origin = request.headers.origin
+    if (
+      origin &&
+      (origin === 'null' ||
+        /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))
+    ) {
+      response.setHeader('Access-Control-Allow-Origin', origin)
+      response.setHeader('Vary', 'Origin')
+      if (method === 'OPTIONS') {
+        response.writeHead(204, {
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        })
+        response.end()
+        return
+      }
+    }
     const send = (
       status: number,
       body?: unknown,
@@ -113,6 +168,8 @@ export function createRecipeServer(
     try {
       const url = new URL(request.url ?? '/', 'http://localhost')
       const path = url.pathname
+      if (path.startsWith('/api/ciqual/') || path.startsWith('/api/recipes'))
+        response.setHeader('Cache-Control', 'no-store')
 
       if (ciqual && path === '/api/ciqual/foods') {
         if (method !== 'GET') {
@@ -124,6 +181,11 @@ export function createRecipeServer(
           await ciqual.search(
             url.searchParams.get('q'),
             url.searchParams.get('limit'),
+            url.searchParams.has('category')
+              ? url.searchParams.getAll('category').length === 1
+                ? url.searchParams.get('category')
+                : []
+              : undefined,
           ),
         )
         return
@@ -137,6 +199,242 @@ export function createRecipeServer(
         }
         const food = await ciqual.findByCode(foodMatch[1])
         send(food ? 200 : 404, food ?? { error: 'CIQUAL_FOOD_NOT_FOUND' })
+        return
+      }
+
+      if (tags && path === '/api/tags') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await tags.listTags())
+        return
+      }
+
+      if (tags && path === '/api/ingredients') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await tags.listIngredients())
+        return
+      }
+
+      const ingredientMatch = /^\/api\/ingredients\/(\d+)$/.exec(path)
+      if (tags && ingredientMatch) {
+        const id = Number(ingredientMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_INGREDIENT_ID' })
+          return
+        }
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        const ingredient = await tags.findIngredient(id)
+        send(
+          ingredient ? 200 : 404,
+          ingredient ?? { error: 'INGREDIENT_NOT_FOUND' },
+        )
+        return
+      }
+
+      const assignMatch = /^\/api\/ingredients\/(\d+)\/tags$/.exec(path)
+      if (tags && assignMatch) {
+        const id = Number(assignMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_INGREDIENT_ID' })
+          return
+        }
+        if (method !== 'POST') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'POST' })
+          return
+        }
+        const outcome = await tags.assign(id, await readJsonBody(request))
+        if (outcome.kind === 'created' || outcome.kind === 'exists') {
+          send(outcome.kind === 'created' ? 201 : 200, outcome.ingredient)
+        } else if (outcome.kind === 'tag_inactive') {
+          send(409, { error: 'TAG_INACTIVE' })
+        } else {
+          send(404, {
+            error:
+              outcome.kind === 'tag_not_found'
+                ? 'TAG_NOT_FOUND'
+                : 'INGREDIENT_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      const removeMatch = /^\/api\/ingredients\/(\d+)\/tags\/(\d+)$/.exec(path)
+      if (tags && removeMatch) {
+        const id = Number(removeMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_INGREDIENT_ID' })
+          return
+        }
+        if (method !== 'DELETE') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'DELETE' })
+          return
+        }
+        const outcome = await tags.remove(
+          id,
+          parseTagId(Number(removeMatch[2])),
+        )
+        if (outcome.kind === 'removed') send(204)
+        else {
+          send(404, {
+            error:
+              outcome.kind === 'absent'
+                ? 'TAG_NOT_ASSIGNED'
+                : 'INGREDIENT_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      if (recipeTagRepository && path === '/api/recipe-tags') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await recipeTagRepository.listTags())
+        return
+      }
+
+      const recipeAssignMatch = /^\/api\/recipes\/(\d+)\/tags$/.exec(path)
+      if (recipeTagRepository && recipeAssignMatch) {
+        const id = Number(recipeAssignMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'POST') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'POST' })
+          return
+        }
+        const outcome = await recipeTagRepository.assign(
+          id,
+          parseAssignBody(await readJsonBody(request)),
+        )
+        if (outcome.kind === 'created' || outcome.kind === 'exists') {
+          const recipe = await repository.findById(id)
+          send(
+            recipe ? (outcome.kind === 'created' ? 201 : 200) : 404,
+            recipe ?? { error: 'RECIPE_NOT_FOUND' },
+          )
+        } else if (outcome.kind === 'tag_inactive') {
+          send(409, { error: 'TAG_INACTIVE' })
+        } else {
+          send(404, {
+            error:
+              outcome.kind === 'tag_not_found'
+                ? 'TAG_NOT_FOUND'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      const recipeRemoveMatch = /^\/api\/recipes\/(\d+)\/tags\/(\d+)$/.exec(
+        path,
+      )
+      if (recipeTagRepository && recipeRemoveMatch) {
+        const id = Number(recipeRemoveMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'DELETE') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'DELETE' })
+          return
+        }
+        const outcome = await recipeTagRepository.remove(
+          id,
+          parseTagId(Number(recipeRemoveMatch[2])),
+        )
+        if (outcome.kind === 'removed') send(204)
+        else {
+          send(404, {
+            error:
+              outcome.kind === 'absent'
+                ? 'TAG_NOT_ASSIGNED'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      if (equipmentRepository && path === '/api/equipment') {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        send(200, await equipmentRepository.listEquipment())
+        return
+      }
+
+      const equipmentAssignMatch = /^\/api\/recipes\/(\d+)\/equipment$/.exec(
+        path,
+      )
+      if (equipmentRepository && equipmentAssignMatch) {
+        const id = Number(equipmentAssignMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'POST') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'POST' })
+          return
+        }
+        const outcome = await equipmentRepository.assign(
+          id,
+          parseAssignEquipmentBody(await readJsonBody(request)),
+        )
+        if (outcome.kind === 'created' || outcome.kind === 'exists') {
+          const recipe = await repository.findById(id)
+          send(
+            recipe ? (outcome.kind === 'created' ? 201 : 200) : 404,
+            recipe ?? { error: 'RECIPE_NOT_FOUND' },
+          )
+        } else if (outcome.kind === 'equipment_inactive') {
+          send(409, { error: 'EQUIPMENT_INACTIVE' })
+        } else {
+          send(404, {
+            error:
+              outcome.kind === 'equipment_not_found'
+                ? 'EQUIPMENT_NOT_FOUND'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
+        return
+      }
+
+      const equipmentRemoveMatch =
+        /^\/api\/recipes\/(\d+)\/equipment\/(\d+)$/.exec(path)
+      if (equipmentRepository && equipmentRemoveMatch) {
+        const id = Number(equipmentRemoveMatch[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'DELETE') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'DELETE' })
+          return
+        }
+        const outcome = await equipmentRepository.remove(
+          id,
+          parseEquipmentId(Number(equipmentRemoveMatch[2])),
+        )
+        if (outcome.kind === 'removed') send(204)
+        else {
+          send(404, {
+            error:
+              outcome.kind === 'absent'
+                ? 'EQUIPMENT_NOT_ASSIGNED'
+                : 'RECIPE_NOT_FOUND',
+          })
+        }
         return
       }
 
@@ -237,14 +535,38 @@ export function createRecipeServer(
         })
       } else if (error instanceof CiqualReadError) {
         send(503, { error: 'CIQUAL_READ_FAILED' })
-      } else if (error instanceof RecipeValidationError) {
-        send(400, { error: 'INVALID_RECIPE', issues: error.issues })
-      } else if (error instanceof RecipeConflictError) {
-        send(409, { error: 'RECIPE_TITLE_CONFLICT' })
+      } else if (error instanceof EquipmentValidationError) {
+        send(400, { error: 'INVALID_EQUIPMENT', issues: error.issues })
+      } else if (error instanceof RecipeEquipmentReadError) {
+        send(503, { error: 'EQUIPMENT_READ_FAILED' })
+      } else if (error instanceof RecipeEquipmentWriteError) {
+        send(503, { error: 'EQUIPMENT_WRITE_FAILED' })
+      } else if (error instanceof TagValidationError) {
+        send(400, { error: 'INVALID_TAG', issues: error.issues })
+      } else if (
+        error instanceof TagReadError ||
+        error instanceof RecipeTagReadError
+      ) {
+        send(503, { error: 'TAG_READ_FAILED' })
+      } else if (
+        error instanceof TagWriteError ||
+        error instanceof RecipeTagWriteError
+      ) {
+        send(503, { error: 'TAG_WRITE_FAILED' })
       } else if (error instanceof InvalidImageError) {
         send(400, { error: 'INVALID_IMAGE' })
+      } else if (error instanceof RecipeValidationError) {
+        send(400, { error: 'INVALID_RECIPE', issues: error.issues })
+      } else if (error instanceof RecipeCatalogError) {
+        send(error.code.startsWith('INACTIVE_') ? 409 : 400, {
+          error: error.code,
+          catalogId: error.catalogId,
+        })
+      } else if (error instanceof RecipeAssociationError) {
+        send(400, { error: error.code, ciqualCode: error.ciqualCode })
+      } else if (error instanceof RecipeConflictError) {
+        send(409, { error: 'RECIPE_TITLE_CONFLICT' })
       } else {
-        console.error(`[${method} ${request.url}] erreur non gérée :`, error)
         send(503, {
           error:
             method === 'GET' ? 'RECIPE_READ_FAILED' : 'RECIPE_WRITE_FAILED',
@@ -264,6 +586,9 @@ export async function startServer(
     createPrismaRecipeRepository(persistence.client),
     createPrismaCiqualRepository(persistence.client),
     createPhotoStorage(photosDir),
+    createPrismaTagRepository(persistence.client),
+    createPrismaRecipeTagRepository(persistence.client),
+    createPrismaRecipeEquipmentRepository(persistence.client),
   )
   try {
     await persistence.connect()

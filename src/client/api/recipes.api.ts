@@ -1,10 +1,15 @@
+import type { RecipeTagSummaryDTO } from '../../shared/types/tag.types'
+import type { EquipmentSummaryDTO } from '../../shared/types/equipment.types'
 import type {
   RecipeDTO,
   RecipeInputDTO,
   RecipeSummaryDTO,
 } from '../../shared/types/recipe.types'
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? '/api/recipes'
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3001')
+  .replace(/\/api\/recipes\/?$/, '')
+  .replace(/\/$/, '')
+const BASE_URL = `${API_ORIGIN}/api/recipes`
 const API_ROOT = BASE_URL.replace(/\/recipes\/?$/, '')
 
 export class ApiError extends Error {
@@ -13,7 +18,26 @@ export class ApiError extends Error {
   readonly issues: string[]
 
   constructor(status: number, code: string, issues: string[] = []) {
-    super(code)
+    const messages: Record<string, string> = {
+      NETWORK_ERROR:
+        'Serveur inaccessible. Votre saisie est conservée ; réessayez.',
+      INVALID_CIQUAL_CODE:
+        'Un code CIQUAL est inconnu. Sélectionnez à nouveau cet aliment.',
+      INACTIVE_CIQUAL_CODE:
+        'Un aliment CIQUAL a été retiré. Sélectionnez un autre aliment.',
+      RECIPE_TITLE_CONFLICT: 'Ce titre est déjà utilisé.',
+      INVALID_RECIPE_TAG:
+        'Un tag sélectionné est inconnu. Rechargez les choix et réessayez.',
+      INACTIVE_RECIPE_TAG:
+        'Un tag sélectionné a été désactivé. Rechargez les choix et réessayez.',
+      INVALID_EQUIPMENT:
+        'Un équipement sélectionné est inconnu. Rechargez les choix et réessayez.',
+      INACTIVE_EQUIPMENT:
+        'Un équipement sélectionné a été désactivé. Rechargez les choix et réessayez.',
+      INVALID_RECIPE:
+        'La recette contient une valeur invalide. Vérifiez les ingrédients et les étapes.',
+    }
+    super(messages[code] ?? code)
     this.name = 'ApiError'
     this.status = status
     this.code = code
@@ -21,10 +45,14 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(
+  path: string,
+  init?: RequestInit,
+  base = BASE_URL,
+): Promise<T> {
   let res: Response
   try {
-    res = await fetch(`${BASE_URL}${path}`, init)
+    res = await fetch(`${base}${path}`, init)
   } catch {
     throw new ApiError(0, 'NETWORK_ERROR')
   }
@@ -45,6 +73,10 @@ export const photoUrl = (photoId: string | null | undefined) =>
   photoId ? `${API_ROOT}/photos/${photoId}.webp` : undefined
 
 export const recipesApi = {
+  getTags: () =>
+    request<RecipeTagSummaryDTO[]>('/recipe-tags', undefined, API_ROOT),
+  getEquipment: () =>
+    request<EquipmentSummaryDTO[]>('/equipment', undefined, API_ROOT),
   getAll: () => request<RecipeSummaryDTO[]>(''),
   getById: (id: number) => request<RecipeDTO>(`/${id}`),
   create: (input: RecipeInputDTO) =>

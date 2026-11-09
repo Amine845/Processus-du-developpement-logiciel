@@ -1,571 +1,422 @@
-// src/client/pages/RecipeCreatePage.tsx
-import { Trash2, Plus, Save } from 'lucide-react'
+import type { TagDTO } from '../../shared/types/tag.types'
+import type { EquipmentDTO } from '../../shared/types/equipment.types'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { recipesApi } from '../../client/api/recipes.api'
-import React, { useState, useEffect } from 'react'
+import IngredientAutocomplete from '../features/ingredients/IngredientAutocomplete'
+import {
+  recipePayload,
+  type IngredientDraft,
+} from '../features/recipes/recipe-form'
+import { RECIPE_UNITS, type RecipeUnit } from '../../shared/types/recipe.types'
+import { recipesApi } from '../api/recipes.api'
+import './recipe-editor.css'
 
-interface RecipeIngredientDraft {
-  localId: string
-  name: string
-  quantity: number | ''
-  unit: string
-}
-
-interface RecipeDraft {
-  title: string
-  description: string
-  equipment: string[]
-  portions: number
-  ingredients: RecipeIngredientDraft[]
-  macros: {
-    calories: number | ''
-    proteins: number | ''
-    carbs: number | ''
-    fats: number | ''
-  }
-}
-
-const KNOWN_INGREDIENTS = [
-  'Chocolat noir',
-  'Œufs',
-  'Farine de blé',
-  'Beurre',
-  'Sucre',
-  'Lait demi-écrémé',
-]
-
-const EQUIPMENTS = ['Four', 'Plaques', 'Air Fryer', 'Mixer', 'Micro-ondes']
-const UNITS = [
-  { value: 'g', label: 'g' },
-  { value: 'kg', label: 'kg' },
-  { value: 'ml', label: 'ml' },
-  { value: 'l', label: 'l' },
-  { value: 'piece', label: 'unité(s)' },
-] as const
-
-export const RecipeCreatePage: React.FC = () => {
+export default function RecipeCreatePage() {
   const navigate = useNavigate()
+  const nextId = useRef(2)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [servings, setServings] = useState('1')
+  const [ingredients, setIngredients] = useState<IngredientDraft[]>([
+    { id: 1, selection: null, quantity: '', unit: 'g' },
+  ])
+  const [steps, setSteps] = useState([{ id: 1, instruction: '' }])
 
-  const [draft, setDraft] = useState<RecipeDraft>({
-    title: '',
-    description: '',
-    equipment: [],
-    portions: 2,
-    ingredients: [
-      { localId: crypto.randomUUID(), name: '', quantity: '', unit: 'g' },
-    ],
-    macros: { calories: '', proteins: '', carbs: '', fats: '' },
-  })
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-
-  const [photo, setPhoto] = useState<File | null>(null)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [createdId, setCreatedId] = useState<number | null>(null)
-
-  // libère l'URL d'aperçu au changement / démontage
+  const [tagIds, setTagIds] = useState<number[]>([])
+  const [equipmentIds, setEquipmentIds] = useState<number[]>([])
+  const [catalogs, setCatalogs] = useState<{
+    tags: TagDTO[]
+    equipment: EquipmentDTO[]
+  } | null>(null)
+  const [catalogError, setCatalogError] = useState(false)
+  const [catalogAttempt, setCatalogAttempt] = useState(0)
   useEffect(() => {
-    return () => {
-      if (photoPreview) URL.revokeObjectURL(photoPreview)
-    }
-  }, [photoPreview])
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null
-    if (file && file.size > 10 * 1024 * 1024) {
-      setErrorMsg('Photo trop lourde (10 Mo max)')
-      e.target.value = ''
-      return
-    }
-    setErrorMsg(null)
-    setPhoto(file)
-    setPhotoPreview(file ? URL.createObjectURL(file) : null)
-  }
-
-  // --- GESTION DES CHAMPS SIMPLES ---
-  const handleBasicChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target
-    setDraft((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleMacroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setDraft((prev) => ({
-      ...prev,
-      macros: { ...prev.macros, [name]: value ? Number(value) : '' },
-    }))
-  }
-
-  const toggleEquipment = (eq: string) => {
-    setDraft((prev) => ({
-      ...prev,
-      equipment: prev.equipment.includes(eq)
-        ? prev.equipment.filter((item) => item !== eq)
-        : [...prev.equipment, eq],
-    }))
-  }
-
-  // --- GESTION DYNAMIQUE DES INGRÉDIENTS ---
-  const addIngredient = () => {
-    setDraft((prev) => ({
-      ...prev,
-      ingredients: [
-        ...prev.ingredients,
-        { localId: crypto.randomUUID(), name: '', quantity: '', unit: 'g' },
-      ],
-    }))
-  }
-
-  const removeIngredient = (idToRemove: string) => {
-    setDraft((prev) => ({
-      ...prev,
-      ingredients: prev.ingredients.filter((ing) => ing.localId !== idToRemove),
-    }))
-  }
-
-  const handleIngredientChange = (
-    id: string,
-    field: keyof RecipeIngredientDraft,
-    value: string | number,
-  ) => {
-    setDraft((prev) => ({
-      ...prev,
-      ingredients: prev.ingredients.map((ing) =>
-        ing.localId === id ? { ...ing, [field]: value } : ing,
-      ),
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setErrorMsg(null)
-
-    try {
-      // Un payload propre et strictement aligné avec recipe-input.ts
-      const payload = {
-        title: draft.title.trim(),
-        description: draft.description.trim() || null,
-        servings: Number(draft.portions),
-
-        // Le back-end attend un tableau d'objets avec "instruction"
-        steps: [
-          {
-            instruction:
-              draft.description.trim() || 'Préparation de la recette',
-          },
-        ],
-
-        // Le back-end n'extrait que canonicalName, quantity et unit
-        ingredients: draft.ingredients
-          .filter((ing) => ing.name.trim() !== '')
-          .map((ing) => ({
-            canonicalName: ing.name.trim(),
-            quantity: Number(ing.quantity) || 1,
-            unit: ing.unit,
-          })),
-      }
-
-      let id = createdId
-      if (id === null) {
-        const created = await recipesApi.create(payload as any)
-        id = created.id
-        setCreatedId(id)
-      }
-
-      if (photo) {
-        try {
-          await recipesApi.uploadPhoto(id, photo)
-        } catch {
-          setErrorMsg(
-            "Recette créée, mais l'envoi de la photo a échoué. Réessaie ou continue sans photo.",
-          )
-          setIsSubmitting(false)
-          return
+    let active = true
+    Promise.all([recipesApi.getTags(), recipesApi.getEquipment()]).then(
+      ([tags, equipment]) => {
+        if (active) {
+          setCatalogs({ tags, equipment })
+          setCatalogError(false)
         }
-      }
-      navigate('/recipes')
-    } catch (err: any) {
-      console.error('Erreur API détaillée :', err)
-
-      let details = ''
-      if (Array.isArray(err.issues) && err.issues.length > 0) {
-        details = err.issues
-          .map((issue: any) =>
-            typeof issue === 'string'
-              ? issue
-              : `${issue.path?.join('.') ?? 'champ'}: ${issue.message}`,
-          )
-          .join(' | ')
-      }
-
-      const mainMessage = err.code || err.message || 'Erreur serveur'
-      setErrorMsg(details ? `${mainMessage} -> ${details}` : mainMessage)
-    } finally {
-      setIsSubmitting(false)
+      },
+      () => {
+        if (active) setCatalogError(true)
+      },
+    )
+    return () => {
+      active = false
     }
+  }, [catalogAttempt])
+  const toggleId = (ids: number[], id: number) =>
+    ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
+  const submitting = useRef(false)
+
+  function changeLine(id: number, patch: Partial<IngredientDraft>) {
+    setIngredients((lines) =>
+      lines.map((line) => (line.id === id ? { ...line, ...patch } : line)),
+    )
+  }
+
+  function moveStep(index: number, offset: number) {
+    setSteps((current) => {
+      const result = [...current]
+      ;[result[index], result[index + offset]] = [
+        result[index + offset],
+        result[index],
+      ]
+      return result
+    })
   }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <h2
-        style={{
-          fontSize: 'var(--text-xl)',
-          marginBottom: 'var(--spacing-md)',
-        }}
-      >
-        Créer une recette
-      </h2>
+    <form
+      className="recipe-editor"
+      onSubmit={async (event) => {
+        event.preventDefault()
+        if (submitting.current) return
+        setError('')
+        try {
+          const payload = recipePayload({
+            title,
+            description,
+            servings,
+            ingredients,
+            steps,
+            tagIds,
+            equipmentIds,
+          })
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
-      >
-        {/* 1. INFORMATIONS DE BASE */}
-        <section
-          style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
-        >
-          <label>
-            <span
-              style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 600,
-              }}
-            >
-              Titre
-            </span>
-            <input
-              required
-              type="text"
-              name="title"
-              value={draft.title}
-              onChange={handleBasicChange}
-              style={{ width: '100%', padding: '8px' }}
-            />
-          </label>
-          <label>
-            <span
-              style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 600,
-              }}
-            >
-              Description
-            </span>
-            <textarea
-              required
-              name="description"
-              value={draft.description}
-              onChange={handleBasicChange}
-              rows={3}
-              style={{ width: '100%', padding: '8px' }}
-            />
-          </label>
-          <label>
-            <span
-              style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 600,
-              }}
-            >
-              Portions
-            </span>
-            <input
-              required
-              type="number"
-              min="1"
-              name="portions"
-              value={draft.portions}
-              onChange={handleBasicChange}
-              style={{ padding: '8px', width: '80px' }}
-            />
-          </label>
-        </section>
+          submitting.current = true
+          setSaving(true)
+          const recipe = await recipesApi.create(payload)
+          navigate(`/recipes/${recipe.id}`)
+        } catch (cause) {
+          setError(
+            cause instanceof Error
+              ? cause.message
+              : 'Impossible d’enregistrer la recette.',
+          )
+        } finally {
+          submitting.current = false
+          setSaving(false)
+        }
+      }}
+    >
+      <h2>Nouvelle recette</h2>
+      <fieldset disabled={saving}>
+        <label>
+          Titre
+          <input
+            value={title}
+            maxLength={200}
+            required
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </label>
+        <label>
+          Description (facultative)
+          <textarea
+            value={description}
+            maxLength={2000}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </label>
+        <label>
+          Portions
+          <input
+            type="number"
+            min="1"
+            max="1000"
+            step="1"
+            required
+            value={servings}
+            onChange={(e) => setServings(e.target.value)}
+          />
+        </label>
 
-        {/* Photo */}
-        <section>
-          <label>
-            <span
-              style={{
-                display: 'block',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 600,
-                marginBottom: '8px',
-              }}
-            >
-              Photo (facultative)
-            </span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handlePhotoChange}
-            />
-          </label>
-          {photoPreview && (
-            <img
-              src={photoPreview}
-              alt="Aperçu"
-              style={{ marginTop: 8, maxWidth: '100%', borderRadius: 8 }}
-            />
-          )}
-        </section>
-
-        {/* 2. MATÉRIEL REQUIS */}
-        <section>
-          <span
-            style={{
-              display: 'block',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 600,
-              marginBottom: '8px',
-            }}
-          >
-            Matériel requis
-          </span>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {EQUIPMENTS.map((eq) => (
-              <label
-                key={eq}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  background: 'var(--color-surface)',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  border: '1px solid var(--color-border)',
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={draft.equipment.includes(eq)}
-                  onChange={() => toggleEquipment(eq)}
-                />
-                <span style={{ fontSize: 'var(--text-sm)' }}>{eq}</span>
-              </label>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. INGRÉDIENTS */}
-        <section>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '8px',
-            }}
-          >
-            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>
-              Ingrédients
-            </span>
+        {catalogError ? (
+          <p role="alert">
+            Impossible de charger les tags et équipements.{' '}
             <button
               type="button"
-              onClick={addIngredient}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                color: 'var(--color-accent)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+              onClick={() => setCatalogAttempt((value) => value + 1)}
             >
-              <Plus size={16} /> Ajouter
+              Réessayer le chargement
             </button>
-          </div>
-
-          <datalist id="known-ingredients">
-            {KNOWN_INGREDIENTS.map((ing) => (
-              <option key={ing} value={ing} />
-            ))}
-          </datalist>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {draft.ingredients.map((ing) => (
-              <div
-                key={ing.localId}
-                style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
-              >
-                <input
-                  required
-                  type="text"
-                  list="known-ingredients"
-                  placeholder="Nom de l'ingrédient"
-                  value={ing.name}
-                  onChange={(e) =>
-                    handleIngredientChange(ing.localId, 'name', e.target.value)
-                  }
-                  style={{ flex: 1, padding: '8px' }}
-                />
-                <input
-                  required
-                  type="number"
-                  min="0.1"
-                  step="any"
-                  placeholder="Qté"
-                  value={ing.quantity}
-                  onChange={(e) =>
-                    handleIngredientChange(
-                      ing.localId,
-                      'quantity',
-                      e.target.value ? Number(e.target.value) : '',
-                    )
-                  }
-                  style={{ width: '60px', padding: '8px' }}
-                />
-                <select
-                  value={ing.unit}
-                  onChange={(e) =>
-                    handleIngredientChange(ing.localId, 'unit', e.target.value)
-                  }
-                  style={{ padding: '8px' }}
-                >
-                  {UNITS.map((u) => (
-                    <option key={u.value} value={u.value}>
-                      {u.label}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => removeIngredient(ing.localId)}
+          </p>
+        ) : catalogs === null ? (
+          <p role="status">Chargement des tags et équipements…</p>
+        ) : null}
+        {/* SELECTION TAGS BDD */}
+        <div style={{ marginBottom: '20px' }}>
+          <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
+            Tags de la recette
+          </h3>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {catalogs && catalogs.tags.length === 0 && (
+              <p>Aucun tag disponible.</p>
+            )}
+            {(catalogs?.tags ?? []).map((tag) => {
+              const active = tagIds.includes(tag.id)
+              return (
+                <label
+                  className="recipe-choice"
+                  key={tag.id}
                   style={{
-                    color: 'red',
-                    background: 'none',
-                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '6px 16px',
+                    borderRadius: '999px',
+                    border: '1px solid',
+                    borderColor: active
+                      ? 'var(--color-accent)'
+                      : 'var(--color-border)',
+                    background: active
+                      ? 'var(--color-accent)'
+                      : 'var(--color-surface)',
+                    color: active ? 'white' : 'inherit',
                     cursor: 'pointer',
-                    padding: '4px',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: active ? 600 : 400,
+                    transition: 'all 0.2s ease',
                   }}
                 >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            ))}
+                  <input
+                    type="checkbox"
+                    style={{
+                      position: 'absolute',
+                      opacity: 0,
+                      width: 1,
+                      height: 1,
+                      minHeight: 0,
+                      padding: 0,
+                    }}
+                    checked={active}
+                    onChange={() => setTagIds((ids) => toggleId(ids, tag.id))}
+                  />
+                  <span>{tag.label}</span>
+                </label>
+              )
+            })}
           </div>
-        </section>
+        </div>
 
-        {/* 4. MACROS */}
-        <section>
-          <span
-            style={{
-              display: 'block',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 600,
-              marginBottom: '8px',
-            }}
-          >
-            Macros (par portion)
-          </span>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '8px',
-            }}
-          >
-            <label>
-              <span style={{ fontSize: 'var(--text-xs)' }}>Kcal</span>
-              <input
-                type="number"
-                name="calories"
-                value={draft.macros.calories}
-                onChange={handleMacroChange}
-                style={{ width: '100%', padding: '6px' }}
-              />
-            </label>
-            <label>
-              <span style={{ fontSize: 'var(--text-xs)' }}>Protéines (g)</span>
-              <input
-                type="number"
-                name="proteins"
-                value={draft.macros.proteins}
-                onChange={handleMacroChange}
-                style={{ width: '100%', padding: '6px' }}
-              />
-            </label>
-            <label>
-              <span style={{ fontSize: 'var(--text-xs)' }}>Glucides (g)</span>
-              <input
-                type="number"
-                name="carbs"
-                value={draft.macros.carbs}
-                onChange={handleMacroChange}
-                style={{ width: '100%', padding: '6px' }}
-              />
-            </label>
-            <label>
-              <span style={{ fontSize: 'var(--text-xs)' }}>Lipides (g)</span>
-              <input
-                type="number"
-                name="fats"
-                value={draft.macros.fats}
-                onChange={handleMacroChange}
-                style={{ width: '100%', padding: '6px' }}
-              />
-            </label>
+        {/* SELECTION EQUIPEMENT BDD */}
+        <div style={{ marginBottom: '24px' }}>
+          <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
+            Matériel requis
+          </h3>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {catalogs && catalogs.equipment.length === 0 && (
+              <p>Aucun équipement disponible.</p>
+            )}
+            {(catalogs?.equipment ?? []).map((eq) => {
+              const active = equipmentIds.includes(eq.id)
+              return (
+                <label
+                  className="recipe-choice"
+                  key={eq.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid',
+                    borderColor: active
+                      ? 'var(--color-text)'
+                      : 'var(--color-border)',
+                    background: active
+                      ? 'var(--color-text)'
+                      : 'var(--color-surface)',
+                    color: active ? 'var(--color-surface)' : 'inherit',
+                    cursor: 'pointer',
+                    fontSize: 'var(--text-sm)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    style={{
+                      position: 'absolute',
+                      opacity: 0,
+                      width: 1,
+                      height: 1,
+                      minHeight: 0,
+                      padding: 0,
+                    }}
+                    checked={active}
+                    onChange={() =>
+                      setEquipmentIds((ids) => toggleId(ids, eq.id))
+                    }
+                  />
+                  <span>{eq.label}</span>
+                </label>
+              )
+            })}
           </div>
-        </section>
+        </div>
 
-        {/* AFFICHAGE ERREUR & BOUTON DE SOUMISSION */}
-        {errorMsg && (
-          <div
-            style={{
-              color: 'red',
-              fontSize: 'var(--text-sm)',
-              textAlign: 'center',
-              marginTop: '16px',
-              wordBreak: 'break-word',
-            }}
-          >
-            {errorMsg}
-          </div>
-        )}
-
-        {createdId !== null && (
-          <button
-            type="button"
-            onClick={() => navigate('/recipes')}
-            style={{ alignSelf: 'center' }}
-          >
-            Continuer sans photo
-          </button>
-        )}
-
+        <h3>Ingrédients</h3>
+        {ingredients.map((line, index) => (
+          <section className="recipe-editor__line" key={line.id}>
+            <IngredientAutocomplete
+              label={`Ingrédient ${index + 1}`}
+              value={line.selection}
+              onChange={(selection) => changeLine(line.id, { selection })}
+              disabled={saving}
+            />
+            <label>
+              Quantité {index + 1}
+              <input
+                aria-label={`Quantité ${index + 1}`}
+                type="number"
+                step="any"
+                min="0"
+                required
+                value={line.quantity}
+                onChange={(e) =>
+                  changeLine(line.id, { quantity: e.target.value })
+                }
+              />
+            </label>
+            <label>
+              Unité {index + 1}
+              <select
+                value={line.unit}
+                onChange={(e) =>
+                  changeLine(line.id, { unit: e.target.value as RecipeUnit })
+                }
+              >
+                {RECIPE_UNITS.map((unit) => (
+                  <option key={unit} value={unit}>
+                    {unit === 'piece' ? 'pièce' : unit}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              onClick={() =>
+                setIngredients((lines) => lines.filter((l) => l.id !== line.id))
+              }
+            >
+              Retirer l’ingrédient {index + 1}
+            </button>
+          </section>
+        ))}
         <button
-          type="submit"
-          disabled={isSubmitting}
+          type="button"
+          disabled={ingredients.length >= 100}
+          onClick={() =>
+            setIngredients((lines) => [
+              ...lines,
+              {
+                id: nextId.current++,
+                selection: null,
+                quantity: '',
+                unit: 'g',
+              },
+            ])
+          }
+        >
+          Ajouter un ingrédient
+        </button>
+
+        <h3>Préparation</h3>
+        {steps.map((step, index) => (
+          <section className="recipe-editor__line" key={step.id}>
+            <label>
+              Étape {index + 1}
+              <textarea
+                required
+                maxLength={2000}
+                value={step.instruction}
+                onChange={(e) =>
+                  setSteps((current) =>
+                    current.map((s) =>
+                      s.id === step.id
+                        ? { ...s, instruction: e.target.value }
+                        : s,
+                    ),
+                  )
+                }
+              />
+            </label>
+            <div className="recipe-editor__actions">
+              <button
+                type="button"
+                disabled={index === 0}
+                onClick={() => moveStep(index, -1)}
+              >
+                Monter l’étape {index + 1}
+              </button>
+              <button
+                type="button"
+                disabled={index === steps.length - 1}
+                onClick={() => moveStep(index, 1)}
+              >
+                Descendre l’étape {index + 1}
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setSteps((current) => current.filter((s) => s.id !== step.id))
+                }
+              >
+                Retirer l’étape {index + 1}
+              </button>
+            </div>
+          </section>
+        ))}
+        <button
+          type="button"
+          disabled={steps.length >= 200}
+          onClick={() =>
+            setSteps((current) => [
+              ...current,
+              { id: nextId.current++, instruction: '' },
+            ])
+          }
+        >
+          Ajouter une étape
+        </button>
+
+        <p
           style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '8px',
-            background: isSubmitting
-              ? 'var(--color-text-muted)'
-              : 'var(--color-accent)',
-            color: 'white',
-            padding: '12px',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            fontWeight: 600,
+            color: 'var(--color-text-muted)',
+            fontSize: 'var(--text-sm)',
             marginTop: '16px',
           }}
         >
-          <Save size={20} />
-          {isSubmitting
-            ? 'Enregistrement en cours...'
-            : 'Enregistrer la recette'}
+          Les valeurs CIQUAL affichées sont des références pour 100 g, pas les
+          macros calculées de la recette. Le calcul nutritionnel sera fourni par
+          S3-T03. Un ingrédient manuel ne possède aucune valeur nutritionnelle
+          associée.
+        </p>
+        <button
+          type="submit"
+          style={{
+            marginTop: '16px',
+            background: 'var(--color-accent)',
+            color: 'white',
+            border: 'none',
+            padding: '12px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+          }}
+        >
+          {saving ? 'Enregistrement…' : 'Enregistrer la recette'}
         </button>
-      </form>
-    </div>
+      </fieldset>
+      {error && (
+        <p role="alert" style={{ color: 'red', marginTop: '16px' }}>
+          {error}
+        </p>
+      )}
+    </form>
   )
 }
+
+export { RecipeCreatePage }

@@ -108,3 +108,49 @@ Supprime une recette ainsi que ses dépendances (ingrédients et étapes associ�
 - `204 No Content` : suppression réussie, aucun corps de réponse.
 - `400 Bad Request` : format de l'identifiant invalide.
 - `500 Internal Server Error` : erreur lors de la suppression en base.
+
+## Sélection CIQUAL (S3-T02)
+
+Les lignes d'entrée acceptent `ciqualCode?: string | null`. Omission/null signifie
+manuel, sans association automatique par le nom. POST/PUT valident l'existence et
+l'activité du code dans leur transaction ; le libellé officiel prime sur celui du
+client. Un code inactif déjà dans la recette peut être conservé par PUT. GET détail
+renvoie le code et `ingredientId` séparément. PUT remplace intégralement la recette ;
+renvoyer les codes pour garder les associations.
+
+Les écritures exigent au moins un ingrédient et une étape ; quantité finie > 0 ;
+unités g/kg/ml/l/piece uniquement. Erreurs de code : 400 `INVALID_CIQUAL_CODE` ou
+`INACTIVE_CIQUAL_CODE`. Voir [le contrat, la migration et les tests](../issues/S3-T02-ciqual-recipes.md).
+
+## Enregistrement des tags et équipements
+
+Le formulaire charge les catalogues actifs depuis `/api/recipe-tags` et
+`/api/equipment`, affiche des cases à cocher et transmet `tagIds` et `equipmentIds`.
+Ces champs optionnels acceptent chacun au plus 100 identifiants entiers positifs
+(32 bits) ; les doublons sont éliminés. Les associations sont enregistrées dans la
+transaction de création ou de modification de la recette : aucun succès partiel.
+
+Extrait du corps de POST/PUT :
+
+```json
+{
+  "tagIds": [1, 2],
+  "equipmentIds": [3]
+}
+```
+
+- POST : omission ou `[]` signifie aucune association.
+- PUT : omission conserve les associations ; `[]` les retire ; un tableau les remplace.
+- 400 `INVALID_RECIPE_TAG` / `INVALID_EQUIPMENT` : référence inconnue.
+- 409 `INACTIVE_RECIPE_TAG` / `INACTIVE_EQUIPMENT` : nouvelle association à une
+  entrée désactivée. Une association inactive déjà présente peut être conservée.
+- 400 `INVALID_RECIPE` : tableaux ou identifiants mal formés.
+
+Les routes d'attribution/retrait existantes restent disponibles. Les tags des
+ingrédients restent distincts des tags éditoriaux de la recette. Aucune nouvelle
+migration n'est nécessaire. Si les catalogues sont vides :
+
+```bash
+npm run recipe-tags:sync
+npm run equipment:sync
+```

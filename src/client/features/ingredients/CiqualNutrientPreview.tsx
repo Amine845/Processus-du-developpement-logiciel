@@ -1,3 +1,4 @@
+import { CIQUAL_CATEGORY_LABELS } from '../../../shared/types/ciqual.types'
 import { useEffect, useState } from 'react'
 import type { CiqualFoodDetailDTO } from '../../../shared/types/ciqual.types'
 import { ciqualApi } from '../../api/ciqual.api'
@@ -72,6 +73,10 @@ export default function CiqualNutrientPreview({ code }: { code: string }) {
         {detail.code}, version {detail.version}.
         {!detail.active &&
           ' Cet aliment ne figure plus dans la publication courante.'}
+      </p>
+      <p>
+        {CIQUAL_CATEGORY_LABELS[detail.category]} ·{' '}
+        {detail.subgroupName || detail.groupName || 'Groupe non renseigné'}
       </p>
       <dl className="ciqual-preview__list">
         {core.map((n) => (

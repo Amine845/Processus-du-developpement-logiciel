@@ -105,8 +105,26 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
     },
   })
   const summaries = [
-    { id: 10, title: 'Z soupe', servings: 3, description: 'Description' },
-    { id: 20, title: 'A soupe', servings: 2, description: null },
+    {
+      id: 10,
+      title: 'Z soupe',
+      servings: 3,
+      description: 'Description',
+      photoId: null,
+      equipment: [],
+      recipeTags: [],
+      ingredientTags: [],
+    },
+    {
+      id: 20,
+      title: 'A soupe',
+      servings: 2,
+      description: null,
+      photoId: null,
+      equipment: [],
+      recipeTags: [],
+      ingredientTags: [],
+    },
   ]
   assert.deepEqual(await repository.findAll(), summaries)
   assert.deepEqual(await repository.findAll(), summaries)
@@ -114,18 +132,22 @@ test('empty list, deterministic list, exact detail, ordered steps and absent id'
     ...summaries[0],
     ingredients: [
       {
+        ciqualCode: null,
         ingredientId: 9,
         canonicalName: 'Carotte',
         position: 1,
         quantity: 200,
         unit: 'g',
+        tags: [],
       },
       {
+        ciqualCode: null,
         ingredientId: 8,
         canonicalName: 'Eau',
         position: 3,
         quantity: 0.5,
         unit: 'l',
+        tags: [],
       },
     ],
     steps: [
@@ -322,8 +344,8 @@ test('injected write failures return sanitized HTTP responses', async () => {
   const body = JSON.stringify({
     title: 'T',
     servings: 1,
-    ingredients: [],
-    steps: [],
+    ingredients: [{ canonicalName: 'Manuel', quantity: 1, unit: 'g' }],
+    steps: [{ instruction: 'Servir' }],
   })
   try {
     for (const [method, path] of [
@@ -343,5 +365,226 @@ test('injected write failures return sanitized HTTP responses', async () => {
     await new Promise((resolve, reject) =>
       server.close((error) => (error ? reject(error) : resolve())),
     )
+  }
+})
+
+test('merged photo API preserves tags, equipment and recipe metadata; deletion cleans files', async () => {
+  const { default: sharp } = await import('sharp')
+  const { createPhotoStorage } =
+    await import('../../dist-server/server/infrastructure/photo-storage.js')
+  const { createPrismaRecipeTagRepository } =
+    await import('../../dist-server/server/infrastructure/prisma-recipe-tag-repository.js')
+  const { createPrismaRecipeEquipmentRepository } =
+    await import('../../dist-server/server/infrastructure/prisma-recipe-equipment-repository.js')
+  const db = persistence.client
+  const photos = createPhotoStorage(join(temp, 'photos'))
+  const server = createRecipeServer(
+    repository,
+    undefined,
+    photos,
+    undefined,
+    createPrismaRecipeTagRepository(db),
+    createPrismaRecipeEquipmentRepository(db),
+  )
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+  const base = `http://127.0.0.1:${server.address().port}`
+  const recipe = await repository.create({
+    title: 'Photo merge integration',
+    description: 'Test',
+    servings: 2,
+    ingredients: [{ canonicalName: 'Carotte', quantity: 100, unit: 'g' }],
+    steps: [{ instruction: 'Cuire.' }],
+  })
+  const tag = await db.recipeTag.create({
+    data: { key: 'merge-photo', label: 'Merge photo' },
+  })
+  const equipment = await db.equipment.create({
+    data: { key: 'merge-four', label: 'Merge four' },
+  })
+  const assign = (path, body) =>
+    fetch(`${base}/api/recipes/${recipe.id}/${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  try {
+    assert.equal((await assign('tags', { tagId: tag.id })).status, 201)
+    assert.equal(
+      (await assign('equipment', { equipmentId: equipment.id })).status,
+      201,
+    )
+    const png = await sharp({
+      create: { width: 2, height: 2, channels: 3, background: '#ff8800' },
+    })
+      .png()
+      .toBuffer()
+    const upload = await fetch(`${base}/api/recipes/${recipe.id}/photo`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'image/png' },
+      body: png,
+    })
+    assert.equal(upload.status, 200)
+    const { photoId } = await upload.json()
+    assert.match(photoId, /^[a-f0-9]{32}$/)
+    const detail = await (
+      await fetch(`${base}/api/recipes/${recipe.id}`)
+    ).json()
+    assert.equal(detail.photoId, photoId)
+    assert.equal(detail.recipeTags[0].id, tag.id)
+    assert.equal(detail.equipment[0].id, equipment.id)
+    assert.equal(detail.ingredients[0].canonicalName, 'Carotte')
+    assert.deepEqual(detail.steps, [{ position: 1, instruction: 'Cuire.' }])
+    const image = await fetch(`${base}/api/photos/${photoId}.webp`)
+    assert.equal(image.status, 200)
+    assert.equal(image.headers.get('content-type'), 'image/webp')
+    assert.equal(
+      (await sharp(Buffer.from(await image.arrayBuffer())).metadata()).format,
+      'webp',
+    )
+    assert.equal(
+      (await fetch(`${base}/api/recipes/${recipe.id}`, { method: 'DELETE' }))
+        .status,
+      204,
+    )
+    assert.equal(await photos.read(photoId), null)
+    assert.equal(
+      await db.recipeTagLink.count({ where: { recipeId: recipe.id } }),
+      0,
+    )
+    assert.equal(
+      await db.recipeEquipment.count({ where: { recipeId: recipe.id } }),
+      0,
+    )
+  } finally {
+    server.closeAllConnections()
+    await new Promise((resolve) => server.close(resolve))
+    await repository.deleteById(recipe.id)
+    await db.recipeTag.delete({ where: { id: tag.id } })
+    await db.equipment.delete({ where: { id: equipment.id } })
+  }
+})
+
+test('POST saves recipe tags and equipment atomically; PUT replaces, preserves omissions and rolls back invalid IDs', async () => {
+  const db = persistence.client
+  const tag = await db.recipeTag.create({
+    data: { key: 'atomic-gourmand', label: 'Atomic gourmand' },
+  })
+  const inactive = await db.recipeTag.create({
+    data: { key: 'atomic-inactive', label: 'Atomic inactive', active: false },
+  })
+  const equipment = await db.equipment.create({
+    data: { key: 'atomic-four', label: 'Atomic four' },
+  })
+  const inactiveEquipment = await db.equipment.create({
+    data: { key: 'atomic-inactive', label: 'Atomic inactive', active: false },
+  })
+  const server = createRecipeServer(repository)
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+  const base = `http://127.0.0.1:${server.address().port}/api/recipes`
+  const payload = {
+    title: 'Atomic catalog creation',
+    description: null,
+    servings: 2,
+    tagIds: [tag.id, tag.id],
+    equipmentIds: [equipment.id, equipment.id],
+    ingredients: [
+      { canonicalName: 'Atomic new ingredient', quantity: 1, unit: 'g' },
+    ],
+    steps: [{ instruction: 'Cuire.' }],
+  }
+  const call = (method, path, body) =>
+    fetch(`${base}${path}`, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  let recipeId
+  try {
+    // Invalid references reject the entire recipe, including newly resolved ingredients.
+    for (const [field, ids, status] of [
+      ['equipmentIds', [2147483647], 400],
+      ['tagIds', [2147483647], 400],
+      ['tagIds', [inactive.id], 409],
+      ['equipmentIds', [inactiveEquipment.id], 409],
+      ['tagIds', ['1'], 400],
+      ['equipmentIds', null, 400],
+      ['tagIds', [0], 400],
+      ['equipmentIds', Array(101).fill(equipment.id), 400],
+    ]) {
+      const response = await call('POST', '', { ...payload, [field]: ids })
+      assert.equal(response.status, status, await response.text())
+      assert.equal(
+        await db.recipe.count({ where: { title: payload.title } }),
+        0,
+      )
+      assert.equal(
+        await db.ingredient.count({
+          where: { canonicalName: 'Atomic new ingredient' },
+        }),
+        0,
+      )
+    }
+    const created = await call('POST', '', payload)
+    assert.equal(created.status, 201)
+    const recipe = await created.json()
+    recipeId = recipe.id
+    assert.equal(recipe.recipeTags.length, 1)
+    assert.equal(recipe.recipeTags[0].id, tag.id)
+    assert.equal(recipe.equipment.length, 1)
+    assert.equal(recipe.equipment[0].id, equipment.id)
+    assert.deepEqual(await repository.findById(recipe.id), recipe)
+    assert.equal(
+      (await repository.findAll()).find((row) => row.id === recipe.id)
+        .equipment[0].id,
+      equipment.id,
+    )
+    const {
+      tagIds: ignoredTags,
+      equipmentIds: ignoredEquipment,
+      ...withoutCatalogs
+    } = payload
+    void ignoredTags
+    void ignoredEquipment
+    const kept = await call('PUT', `/${recipe.id}`, withoutCatalogs)
+    assert.equal(kept.status, 200)
+    assert.equal((await kept.json()).recipeTags[0].id, tag.id)
+    const invalid = await call('PUT', `/${recipe.id}`, {
+      ...payload,
+      title: 'Should roll back',
+      equipmentIds: [2147483647],
+    })
+    assert.equal(invalid.status, 400)
+    assert.deepEqual(await repository.findById(recipe.id), recipe)
+    // Existing inactive associations can be retained, but new inactive ones are refused.
+    await db.recipeTag.update({
+      where: { id: tag.id },
+      data: { active: false },
+    })
+    await db.equipment.update({
+      where: { id: equipment.id },
+      data: { active: false },
+    })
+    assert.equal((await call('PUT', `/${recipe.id}`, payload)).status, 200)
+    assert.equal(await db.recipeTagLink.count({ where: { recipeId } }), 1)
+    assert.equal(await db.recipeEquipment.count({ where: { recipeId } }), 1)
+    const cleared = await call('PUT', `/${recipe.id}`, {
+      ...payload,
+      tagIds: [],
+      equipmentIds: [],
+    })
+    assert.equal(cleared.status, 200)
+    assert.deepEqual((await cleared.json()).recipeTags, [])
+    assert.equal(await db.recipeTagLink.count({ where: { recipeId } }), 0)
+    assert.equal(await db.recipeEquipment.count({ where: { recipeId } }), 0)
+  } finally {
+    server.closeAllConnections()
+    await new Promise((resolve) => server.close(resolve))
+    if (recipeId) await repository.deleteById(recipeId)
+    await db.recipeTag.deleteMany({
+      where: { id: { in: [tag.id, inactive.id] } },
+    })
+    await db.equipment.deleteMany({
+      where: { id: { in: [equipment.id, inactiveEquipment.id] } },
+    })
   }
 })

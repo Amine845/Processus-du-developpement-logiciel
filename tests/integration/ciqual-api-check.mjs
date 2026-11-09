@@ -109,6 +109,13 @@ test('résultat identifié : code, libellé, source, version et base', async () 
   const body = await (await get('/api/ciqual/foods?q=carotte')).json()
   assert.deepEqual(body.results, [
     {
+      category: 'unclassified',
+      groupCode: null,
+      groupName: null,
+      subgroupCode: null,
+      subgroupName: null,
+      detailGroupCode: null,
+      detailGroupName: null,
       code: '20009',
       name: 'Carotte, crue',
       source: manifest.source,

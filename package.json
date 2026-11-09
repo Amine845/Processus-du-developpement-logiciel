@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "npm run build:server && vitest run",
     "format:check": "prettier --check .",
     "db:validate": "node scripts/prisma.mjs validate",
     "db:generate": "node scripts/prisma.mjs generate",
@@ -29,7 +29,17 @@
     "ciqual:watch": "node scripts/ciqual-sync.mjs --watch",
     "ciqual:status": "node scripts/ciqual-sync.mjs --status",
     "test:ciqual:sync": "npm run db:generate && node --test tests/integration/ciqual-sync-check.mjs",
-    "test:ciqual:api": "npm run build:server && node --test tests/integration/ciqual-api-check.mjs"
+    "test:ciqual:api": "npm run build:server && node --test tests/integration/ciqual-api-check.mjs",
+    "equipment:sync": "npm run build:server && node scripts/equipment-sync.mjs",
+    "test:equipment": "npm run build:server && node --test tests/integration/recipe-equipment-check.mjs",
+    "recipe-tags:sync": "npm run build:server && node scripts/recipe-tags-sync.mjs",
+    "test:recipe-tags": "npm run build:server && node --test tests/integration/recipe-tags-check.mjs",
+    "tags:sync": "npm run build:server && node scripts/tags-sync.mjs",
+    "test:tags": "npm run build:server && node --test tests/integration/ingredient-tags-check.mjs",
+    "test:ciqual:classification": "npm run build:server && node --test tests/integration/ciqual-classification-check.mjs",
+    "ciqual:classify:report": "node scripts/ciqual-classification-report.mjs",
+    "test:recipe:ciqual": "npm run build:server && node --test tests/integration/recipe-ciqual-check.mjs",
+    "test:recipe:ui": "npm run build:server && vitest run tests/integration/recipe-selection-ui.test.jsx"
   },
   "prisma": {
     "seed": "npm run seed:run"
@@ -48,6 +58,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@testing-library/react": "^16.3.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^24.13.3",
@@ -60,6 +71,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",
     "globals": "^17.12.0",
+    "jsdom": "^26.1.0",
     "prettier": "^3.9.6",
     "prisma": "6.12.0",
     "tsx": "^4.23.15",

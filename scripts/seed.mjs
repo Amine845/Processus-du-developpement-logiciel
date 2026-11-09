@@ -13,9 +13,12 @@ try {
     throw new Error('Configurer une DATABASE_URL SQLite dans src/server/.env.')
   }
   prisma = new PrismaClient()
-  await seedDatabase(prisma)
+  const tags = await seedDatabase(prisma)
   console.log(
     'Seed terminé : 3 recettes, 6 ingrédients, 11 lignes et 11 étapes de démonstration.',
+  )
+  console.log(
+    `Tags : ${tags.created} créé(s), ${tags.associationsAdded} association(s) ajoutée(s).`,
   )
 } catch (error) {
   console.error('Échec du seed :', error)
