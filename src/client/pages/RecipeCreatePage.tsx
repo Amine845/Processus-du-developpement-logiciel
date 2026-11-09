@@ -16,11 +16,17 @@ interface RecipeDraft {
     title: string
     description: string
     equipment: string[]
+    tags: string[]
+    isVegetarian: boolean
+    isGlutenFree: boolean
+    isLactoseFree: boolean
     portions: number
     ingredients: RecipeIngredientDraft[]
 }
 
 const EQUIPMENTS = ['Four', 'Plaques', 'Air Fryer', 'Mixer', 'Micro-ondes']
+const TAGS = ['Gourmand', 'Rapide', 'Healthy', 'Pas cher', 'Dessert', 'Plat principal']
+
 const UNITS = [
     { value: 'g', label: 'g' },
     { value: 'kg', label: 'kg' },
@@ -32,13 +38,16 @@ const UNITS = [
 export const RecipeCreatePage: React.FC = () => {
     const navigate = useNavigate()
 
-    // Suggestions d'ingrédients alimentées dynamiquement par la recherche CIQUAL
     const [suggestions, setSuggestions] = useState<{ code: string; name: string }[]>([])
 
     const [draft, setDraft] = useState<RecipeDraft>({
         title: '',
         description: '',
         equipment: [],
+        tags: [],
+        isVegetarian: false,
+        isGlutenFree: false,
+        isLactoseFree: false,
         portions: 2,
         ingredients: [
             { localId: crypto.randomUUID(), name: '', quantity: '', unit: 'g' },
@@ -63,6 +72,20 @@ export const RecipeCreatePage: React.FC = () => {
                 ? prev.equipment.filter((item) => item !== eq)
                 : [...prev.equipment, eq],
         }))
+    }
+
+    const toggleTag = (tag: string) => {
+        setDraft((prev) => ({
+            ...prev,
+            tags: prev.tags.includes(tag)
+                ? prev.tags.filter((item) => item !== tag)
+                : [...prev.tags, tag],
+        }))
+    }
+
+    const handleDietChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, checked } = e.target
+        setDraft(prev => ({ ...prev, [name]: checked }))
     }
 
     // --- GESTION DYNAMIQUE ET RECHERCHE CIQUAL DES INGRÉDIENTS ---
@@ -95,7 +118,6 @@ export const RecipeCreatePage: React.FC = () => {
             ),
         }))
 
-        // Recherche dynamique CIQUAL si l'utilisateur tape un nom d'au moins 2 caractères
         if (field === 'name' && typeof value === 'string') {
             const searchTerm = value.trim()
             if (searchTerm.length >= 2) {
@@ -122,6 +144,12 @@ export const RecipeCreatePage: React.FC = () => {
                 title: draft.title.trim(),
                 description: draft.description.trim() || null,
                 servings: Number(draft.portions),
+                // Nouvelles propriétés pour le backend
+                equipment: draft.equipment,
+                tags: draft.tags,
+                isVegetarian: draft.isVegetarian,
+                isGlutenFree: draft.isGlutenFree,
+                isLactoseFree: draft.isLactoseFree,
                 steps: [
                     {
                         instruction:
@@ -180,15 +208,7 @@ export const RecipeCreatePage: React.FC = () => {
                     style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
                 >
                     <label>
-            <span
-                style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 600,
-                }}
-            >
-              Titre
-            </span>
+                        <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600 }}>Titre</span>
                         <input
                             required
                             type="text"
@@ -199,15 +219,7 @@ export const RecipeCreatePage: React.FC = () => {
                         />
                     </label>
                     <label>
-            <span
-                style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 600,
-                }}
-            >
-              Description
-            </span>
+                        <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600 }}>Description</span>
                         <textarea
                             required
                             name="description"
@@ -218,15 +230,7 @@ export const RecipeCreatePage: React.FC = () => {
                         />
                     </label>
                     <label>
-            <span
-                style={{
-                    display: 'block',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 600,
-                }}
-            >
-              Portions
-            </span>
+                        <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600 }}>Portions</span>
                         <input
                             required
                             type="number"
@@ -239,18 +243,37 @@ export const RecipeCreatePage: React.FC = () => {
                     </label>
                 </section>
 
-                {/* 2. MATÉRIEL REQUIS */}
+                {/* 2. TAGS */}
                 <section>
-          <span
-              style={{
-                  display: 'block',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 600,
-                  marginBottom: '8px',
-              }}
-          >
-            Matériel requis
-          </span>
+                    <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: '8px' }}>Tags</span>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {TAGS.map((tag) => (
+                            <label
+                                key={tag}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    background: 'var(--color-surface)',
+                                    padding: '4px 8px',
+                                    borderRadius: '4px',
+                                    border: '1px solid var(--color-border)',
+                                }}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={draft.tags.includes(tag)}
+                                    onChange={() => toggleTag(tag)}
+                                />
+                                <span style={{ fontSize: 'var(--text-sm)' }}>{tag}</span>
+                            </label>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 3. MATÉRIEL REQUIS */}
+                <section>
+                    <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: '8px' }}>Matériel requis</span>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         {EQUIPMENTS.map((eq) => (
                             <label
@@ -276,19 +299,44 @@ export const RecipeCreatePage: React.FC = () => {
                     </div>
                 </section>
 
-                {/* 3. INGRÉDIENTS (avec autocomplétion dynamique CIQUAL) */}
+                {/* 4. RÉGIMES ALIMENTAIRES */}
                 <section>
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginBottom: '8px',
-                        }}
-                    >
-            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>
-              Ingrédients
-            </span>
+                    <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: '8px' }}>Régimes alimentaires</span>
+                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <input
+                                type="checkbox"
+                                name="isVegetarian"
+                                checked={draft.isVegetarian}
+                                onChange={handleDietChange}
+                            />
+                            <span style={{ fontSize: 'var(--text-sm)' }}>Végétarien</span>
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <input
+                                type="checkbox"
+                                name="isGlutenFree"
+                                checked={draft.isGlutenFree}
+                                onChange={handleDietChange}
+                            />
+                            <span style={{ fontSize: 'var(--text-sm)' }}>Sans gluten</span>
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <input
+                                type="checkbox"
+                                name="isLactoseFree"
+                                checked={draft.isLactoseFree}
+                                onChange={handleDietChange}
+                            />
+                            <span style={{ fontSize: 'var(--text-sm)' }}>Sans lactose</span>
+                        </label>
+                    </div>
+                </section>
+
+                {/* 5. INGRÉDIENTS (avec autocomplétion dynamique CIQUAL) */}
+                <section>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>Ingrédients</span>
                         <button
                             type="button"
                             onClick={addIngredient}
@@ -314,19 +362,14 @@ export const RecipeCreatePage: React.FC = () => {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {draft.ingredients.map((ing) => (
-                            <div
-                                key={ing.localId}
-                                style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
-                            >
+                            <div key={ing.localId} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                 <input
                                     required
                                     type="text"
                                     list="ciqual-suggestions"
-                                    placeholder="Nom de l'ingrédient (ex: Chocolat, Poulet...)"
+                                    placeholder="Nom de l'ingrédient..."
                                     value={ing.name}
-                                    onChange={(e) =>
-                                        handleIngredientChange(ing.localId, 'name', e.target.value)
-                                    }
+                                    onChange={(e) => handleIngredientChange(ing.localId, 'name', e.target.value)}
                                     style={{ flex: 1, padding: '8px' }}
                                 />
                                 <input
@@ -347,9 +390,7 @@ export const RecipeCreatePage: React.FC = () => {
                                 />
                                 <select
                                     value={ing.unit}
-                                    onChange={(e) =>
-                                        handleIngredientChange(ing.localId, 'unit', e.target.value)
-                                    }
+                                    onChange={(e) => handleIngredientChange(ing.localId, 'unit', e.target.value)}
                                     style={{ padding: '8px' }}
                                 >
                                     {UNITS.map((u) => (
@@ -361,13 +402,7 @@ export const RecipeCreatePage: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => removeIngredient(ing.localId)}
-                                    style={{
-                                        color: 'red',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        padding: '4px',
-                                    }}
+                                    style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
                                 >
                                     <Trash2 size={18} />
                                 </button>
@@ -376,17 +411,8 @@ export const RecipeCreatePage: React.FC = () => {
                     </div>
                 </section>
 
-                {/* AFFICHAGE ERREUR & BOUTON DE SOUMISSION */}
                 {errorMsg && (
-                    <div
-                        style={{
-                            color: 'red',
-                            fontSize: 'var(--text-sm)',
-                            textAlign: 'center',
-                            marginTop: '16px',
-                            wordBreak: 'break-word',
-                        }}
-                    >
+                    <div style={{ color: 'red', fontSize: 'var(--text-sm)', textAlign: 'center', marginTop: '16px', wordBreak: 'break-word' }}>
                         {errorMsg}
                     </div>
                 )}
@@ -399,9 +425,7 @@ export const RecipeCreatePage: React.FC = () => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         gap: '8px',
-                        background: isSubmitting
-                            ? 'var(--color-text-muted)'
-                            : 'var(--color-accent)',
+                        background: isSubmitting ? 'var(--color-text-muted)' : 'var(--color-accent)',
                         color: 'white',
                         padding: '12px',
                         border: 'none',
@@ -412,9 +436,7 @@ export const RecipeCreatePage: React.FC = () => {
                     }}
                 >
                     <Save size={20} />
-                    {isSubmitting
-                        ? 'Enregistrement en cours...'
-                        : 'Enregistrer la recette'}
+                    {isSubmitting ? 'Enregistrement en cours...' : 'Enregistrer la recette'}
                 </button>
             </form>
         </div>
