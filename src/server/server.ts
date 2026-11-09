@@ -21,7 +21,6 @@ import {
   CIQUAL_SEARCH_MIN_LENGTH,
 } from '../shared/types/ciqual.types.js'
 
-
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024
 const MAX_BODY_BYTES = 100 * 1024
 const isValidId = (id: number) =>

@@ -72,7 +72,13 @@ export const RecipeDetailPage: React.FC = () => {
         <img
           src={photoUrl(recipe.photoId)}
           alt=""
-          style={{ width: '100%', maxHeight: 320, objectFit: 'cover', borderRadius: 12, marginBottom: 16 }}
+          style={{
+            width: '100%',
+            maxHeight: 320,
+            objectFit: 'cover',
+            borderRadius: 12,
+            marginBottom: 16,
+          }}
         />
       )}
       <h2>{recipe.title}</h2>

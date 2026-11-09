@@ -43,7 +43,6 @@ const UNITS = [
   { value: 'piece', label: 'unité(s)' },
 ] as const
 
-
 export const RecipeCreatePage: React.FC = () => {
   const navigate = useNavigate()
 
@@ -57,8 +56,6 @@ export const RecipeCreatePage: React.FC = () => {
     ],
     macros: { calories: '', proteins: '', carbs: '', fats: '' },
   })
-
-
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -294,7 +291,14 @@ export const RecipeCreatePage: React.FC = () => {
         {/* Photo */}
         <section>
           <label>
-            <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: '8px' }}>
+            <span
+              style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 600,
+                marginBottom: '8px',
+              }}
+            >
               Photo (facultative)
             </span>
             <input
