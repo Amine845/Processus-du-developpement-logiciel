@@ -37,8 +37,10 @@ des tags des ingrédients : ces deux champs ne sont pas fusionnés. Les compteur
 `recipeCount` de `/api/recipe-tags` comptent les associations directes ; ceux de
 `/api/tags` gardent leur sens initial (recettes contenant des ingrédients tagués).
 
-POST/PUT de recette ignorent les champs de tags : utiliser les routes dédiées.
-Modifier le contenu d'une recette conserve ses associations. Supprimer une recette
+POST/PUT de recette acceptent `tagIds?: number[]` pour enregistrer les associations
+dans la même transaction que la recette. Les objets de lecture `recipeTags` ne
+remplacent pas ces identifiants. Un PUT sans `tagIds` conserve les associations ;
+un tableau vide les efface, un tableau fourni les remplace. Supprimer une recette
 supprime ses associations par cascade, sans supprimer les tags ni les ingrédients.
 Un tag associé ne peut pas être supprimé (RESTRICT).
 
@@ -51,7 +53,7 @@ Un tag désactivé est invisible en lecture et ne peut plus être attribué ;
 son association reste retirable. Réintroduire son libellé dans le vocabulaire
 le réactive. La synchronisation est atomique et relançable.
 
-Comme dans la branche d'origine, aucun écran d'administration des tags n'est ajouté.
+Le formulaire de création propose les tags actifs du catalogue.
 
 ## Vérification
 

@@ -21,6 +21,7 @@ import { createServer, type IncomingMessage } from 'node:http'
 import {
   RecipeConflictError,
   RecipeAssociationError,
+  RecipeCatalogError,
   type RecipeRepository,
 } from './domain/recipe-repository.js'
 import { createRecipes } from './application/recipes.js'
@@ -556,6 +557,11 @@ export function createRecipeServer(
         send(400, { error: 'INVALID_IMAGE' })
       } else if (error instanceof RecipeValidationError) {
         send(400, { error: 'INVALID_RECIPE', issues: error.issues })
+      } else if (error instanceof RecipeCatalogError) {
+        send(error.code.startsWith('INACTIVE_') ? 409 : 400, {
+          error: error.code,
+          catalogId: error.catalogId,
+        })
       } else if (error instanceof RecipeAssociationError) {
         send(400, { error: error.code, ciqualCode: error.ciqualCode })
       } else if (error instanceof RecipeConflictError) {

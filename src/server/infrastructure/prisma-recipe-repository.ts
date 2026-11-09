@@ -2,6 +2,7 @@ import type { EquipmentDTO } from '../../shared/types/equipment.types.js'
 import { resolveIngredient } from './ingredient-identity.js'
 import { Prisma, type PrismaClient } from '@prisma/client'
 import {
+  RecipeCatalogError,
   RecipeConflictError,
   RecipeAssociationError,
   RecipeReadError,
@@ -145,9 +146,79 @@ async function children(
   }
 }
 
+/** Validate and write associations inside the recipe transaction. */
+async function catalogLinks(
+  tx: Prisma.TransactionClient,
+  input: RecipeInput,
+  recipeId?: number,
+) {
+  const tagIds =
+    input.tagIds === undefined ? undefined : [...new Set(input.tagIds)]
+  const equipmentIds =
+    input.equipmentIds === undefined
+      ? undefined
+      : [...new Set(input.equipmentIds)]
+  if (tagIds !== undefined) {
+    const rows = await tx.recipeTag.findMany({ where: { id: { in: tagIds } } })
+    const retained = new Set(
+      recipeId === undefined
+        ? []
+        : (await tx.recipeTagLink.findMany({ where: { recipeId } })).map(
+            (link) => link.tagId,
+          ),
+    )
+    for (const id of tagIds) {
+      const row = rows.find((item) => item.id === id)
+      if (!row) throw new RecipeCatalogError('INVALID_RECIPE_TAG', id)
+      if (!row.active && !retained.has(id))
+        throw new RecipeCatalogError('INACTIVE_RECIPE_TAG', id)
+    }
+  }
+  if (equipmentIds !== undefined) {
+    const rows = await tx.equipment.findMany({
+      where: { id: { in: equipmentIds } },
+    })
+    const retained = new Set(
+      recipeId === undefined
+        ? []
+        : (await tx.recipeEquipment.findMany({ where: { recipeId } })).map(
+            (link) => link.equipmentId,
+          ),
+    )
+    for (const id of equipmentIds) {
+      const row = rows.find((item) => item.id === id)
+      if (!row) throw new RecipeCatalogError('INVALID_EQUIPMENT', id)
+      if (!row.active && !retained.has(id))
+        throw new RecipeCatalogError('INACTIVE_EQUIPMENT', id)
+    }
+  }
+  if (recipeId !== undefined) {
+    if (tagIds !== undefined)
+      await tx.recipeTagLink.deleteMany({ where: { recipeId } })
+    if (equipmentIds !== undefined)
+      await tx.recipeEquipment.deleteMany({ where: { recipeId } })
+  }
+  return {
+    ...(tagIds === undefined
+      ? {}
+      : { tags: { create: tagIds.map((tagId) => ({ tagId })) } }),
+    ...(equipmentIds === undefined
+      ? {}
+      : {
+          equipment: {
+            create: equipmentIds.map((equipmentId) => ({ equipmentId })),
+          },
+        }),
+  }
+}
+
 /** Never let Prisma details escape; only a title clash is a known outcome. */
 function toWriteError(error: unknown): Error {
-  if (error instanceof RecipeAssociationError) return error
+  if (
+    error instanceof RecipeAssociationError ||
+    error instanceof RecipeCatalogError
+  )
+    return error
   if (
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === 'P2002' &&
@@ -197,12 +268,14 @@ export function createPrismaRecipeRepository(
       try {
         return await client.$transaction(async (tx) => {
           const nested = await children(tx, input)
+          const catalogs = await catalogLinks(tx, input)
           const { id } = await tx.recipe.create({
             data: {
               title: input.title,
               description: input.description,
               servings: input.servings,
               ...nested,
+              ...catalogs,
             },
             select: { id: true },
           })
@@ -235,6 +308,7 @@ export function createPrismaRecipeRepository(
             ),
           )
           const nested = await children(tx, input, retained)
+          const catalogs = await catalogLinks(tx, input, id)
           await tx.recipeIngredient.deleteMany({ where: { recipeId: id } })
           await tx.recipeStep.deleteMany({ where: { recipeId: id } })
           await tx.recipe.update({
@@ -244,6 +318,7 @@ export function createPrismaRecipeRepository(
               description: input.description,
               servings: input.servings,
               ...nested,
+              ...catalogs,
             },
           })
           return readDetail(tx, id)

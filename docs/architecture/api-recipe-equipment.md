@@ -36,8 +36,10 @@ trié par clé, ou `[]`. Cela représente le matériel requis par la recette,
 pas celui possédé par un utilisateur. Ni quantité ni matériel de remplacement
 ne sont déduits. Les tags existants gardent leur fonctionnement.
 
-POST/PUT de recette ignorent `equipment` : utiliser les routes dédiées. Un PUT
-conserve les associations. Supprimer la recette supprime ses liens par cascade,
+POST/PUT de recette acceptent `equipmentIds?: number[]`, enregistré dans la même
+transaction que la recette. Le champ de lecture `equipment` ne remplace pas ces
+identifiants. Un PUT sans `equipmentIds` conserve les associations ; `[]` les efface
+et un tableau fourni les remplace. Supprimer la recette supprime ses liens par cascade,
 sans supprimer le catalogue ni les ingrédients. Un équipement associé ne peut
 pas être supprimé (`RESTRICT`).
 

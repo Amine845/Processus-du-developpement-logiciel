@@ -29,6 +29,9 @@ export interface RecipeDetail extends RecipeSummary {
 
 /** Validated input: positions are derived from array order by the repository. */
 export interface RecipeInput {
+  /** Omission on update preserves associations; [] explicitly clears them. */
+  tagIds?: number[]
+  equipmentIds?: number[]
   title: string
   description: string | null
   servings: number
@@ -86,5 +89,19 @@ export class RecipeAssociationError extends Error {
   ) {
     super(code)
     this.name = 'RecipeAssociationError'
+  }
+}
+
+export class RecipeCatalogError extends Error {
+  constructor(
+    readonly code:
+      | 'INVALID_RECIPE_TAG'
+      | 'INACTIVE_RECIPE_TAG'
+      | 'INVALID_EQUIPMENT'
+      | 'INACTIVE_EQUIPMENT',
+    readonly catalogId: number,
+  ) {
+    super(code)
+    this.name = 'RecipeCatalogError'
   }
 }

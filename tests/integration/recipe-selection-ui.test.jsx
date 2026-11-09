@@ -28,6 +28,12 @@ const {
 const {
   createPrismaCiqualRepository,
 } = require('../../dist-server/server/infrastructure/prisma-ciqual-repository.js')
+const {
+  createPrismaRecipeTagRepository,
+} = require('../../dist-server/server/infrastructure/prisma-recipe-tag-repository.js')
+const {
+  createPrismaRecipeEquipmentRepository,
+} = require('../../dist-server/server/infrastructure/prisma-recipe-equipment-repository.js')
 const temp = mkdtempSync(join(tmpdir(), 'recipe-ui-'))
 const url = `file:${join(temp, 'test.db').replaceAll('\\', '/')}`
 const db = new PrismaClient({ datasources: { db: { url } } })
@@ -91,9 +97,15 @@ beforeAll(async () => {
       },
     },
   })
+  await db.recipeTag.create({ data: { key: 'gourmand', label: 'Gourmand' } })
+  await db.equipment.create({ data: { key: 'four', label: 'Four' } })
   server = createRecipeServer(
     createPrismaRecipeRepository(db),
     createPrismaCiqualRepository(db),
+    undefined,
+    undefined,
+    createPrismaRecipeTagRepository(db),
+    createPrismaRecipeEquipmentRepository(db),
   )
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
   base = `http://127.0.0.1:${server.address().port}`
@@ -125,6 +137,8 @@ afterAll(async () => {
 
 it('real selection → HTTP POST → detail GET → unmount/reload, distinct description and ordered steps', async () => {
   mount()
+  fireEvent.click(await screen.findByRole('checkbox', { name: 'Gourmand' }))
+  fireEvent.click(await screen.findByRole('checkbox', { name: 'Four' }))
   fireEvent.change(screen.getByLabelText('Titre'), {
     target: { value: 'Recette UI' },
   })
@@ -157,6 +171,12 @@ it('real selection → HTTP POST → detail GET → unmount/reload, distinct des
     },
   })
   expect(saved.description).toBeNull()
+  expect(await db.recipeTagLink.count({ where: { recipeId: saved.id } })).toBe(
+    1,
+  )
+  expect(
+    await db.recipeEquipment.count({ where: { recipeId: saved.id } }),
+  ).toBe(1)
   expect(saved.ingredients[0].ingredient.ciqualCode).toBe('22000')
   expect(saved.steps.map((s) => s.instruction)).toEqual(['Battre', 'Cuire'])
   cleanup()
@@ -166,6 +186,8 @@ it('real selection → HTTP POST → detail GET → unmount/reload, distinct des
     name: 'Valeurs nutritionnelles de Oeuf cru',
   })
   expect(screen.getAllByText(/code 22000/).length).toBeGreaterThan(0)
+  expect(screen.getByText('Gourmand')).toBeTruthy()
+  expect(screen.getByText('Four')).toBeTruthy()
 })
 
 it('changing selected text invalidates the code; manual is explicit and network failure preserves the draft', async () => {

@@ -45,3 +45,11 @@
 .recipe-editor [role='alert'] {
   color: #9b2020;
 }
+
+.recipe-choice {
+  position: relative;
+}
+.recipe-choice:focus-within {
+  outline: 2px solid var(--color-accent, #f97316);
+  outline-offset: 2px;
+}

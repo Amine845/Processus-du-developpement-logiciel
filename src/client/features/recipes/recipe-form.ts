@@ -12,6 +12,8 @@ export interface IngredientDraft {
   unit: RecipeUnit
 }
 export interface RecipeDraft {
+  tagIds?: number[]
+  equipmentIds?: number[]
   title: string
   description: string
   servings: string
@@ -55,6 +57,12 @@ export function recipePayload(draft: RecipeDraft): RecipeInputDTO {
       'Ajoutez au moins une étape et renseignez chaque instruction.',
     )
   return {
+    ...(draft.tagIds === undefined
+      ? {}
+      : { tagIds: [...new Set(draft.tagIds)] }),
+    ...(draft.equipmentIds === undefined
+      ? {}
+      : { equipmentIds: [...new Set(draft.equipmentIds)] }),
     title,
     description: draft.description.trim() || null,
     servings,

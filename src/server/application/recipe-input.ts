@@ -118,8 +118,33 @@ export function parseRecipeInput(body: unknown): RecipeInput {
     })
   }
 
+  const parseIds = (field: 'tagIds' | 'equipmentIds'): number[] | undefined => {
+    const value = body[field]
+    if (value === undefined) return undefined
+    if (
+      !Array.isArray(value) ||
+      value.length > 100 ||
+      value.some(
+        (id: unknown) =>
+          typeof id !== 'number' ||
+          !Number.isInteger(id) ||
+          id < 1 ||
+          id > 2147483647,
+      )
+    ) {
+      issues.push(
+        `${field}: array of at most 100 positive integer IDs required`,
+      )
+      return undefined
+    }
+    return [...new Set(value as number[])]
+  }
+  const tagIds = parseIds('tagIds')
+  const equipmentIds = parseIds('equipmentIds')
   if (issues.length > 0) throw new RecipeValidationError(issues)
   return {
+    ...(tagIds === undefined ? {} : { tagIds }),
+    ...(equipmentIds === undefined ? {} : { equipmentIds }),
     title,
     description,
     servings: servings as number,

@@ -36,19 +36,14 @@ export interface RecipeDTO extends RecipeSummaryDTO {
   steps: StepDTO[]
 }
 
-export type CreateRecipeDTO = Omit<
-  RecipeDTO,
-  | 'id'
-  | 'photoId'
-  | 'equipment'
-  | 'recipeTags'
-  | 'ingredientTags'
-  | 'ingredients'
-> & { ingredients: Omit<IngredientDTO, 'tags'>[] }
-export type UpdateRecipeDTO = Partial<CreateRecipeDTO>
+export type CreateRecipeDTO = RecipeInputDTO
+export type UpdateRecipeDTO = RecipeInputDTO
 
 /** Write contract: array order determines persisted positions; IDs are never CIQUAL codes. */
 export interface RecipeInputDTO {
+  /** Omission on update preserves associations; [] explicitly clears them. */
+  tagIds?: number[]
+  equipmentIds?: number[]
   title: string
   description?: string | null
   servings: number
