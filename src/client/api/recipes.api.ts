@@ -5,6 +5,7 @@ import type {
 } from '../../shared/types/recipe.types'
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '/api/recipes'
+const API_ROOT = BASE_URL.replace(/\/recipes\/?$/, '')
 
 export class ApiError extends Error {
   readonly status: number
@@ -40,6 +41,9 @@ const json = (method: string, body: RecipeInputDTO): RequestInit => ({
   body: JSON.stringify(body),
 })
 
+export const photoUrl = (photoId: string | null | undefined) =>
+  photoId ? `${API_ROOT}/photos/${photoId}.webp` : undefined
+
 export const recipesApi = {
   getAll: () => request<RecipeSummaryDTO[]>(''),
   getById: (id: number) => request<RecipeDTO>(`/${id}`),
@@ -48,4 +52,10 @@ export const recipesApi = {
   update: (id: number, input: RecipeInputDTO) =>
     request<RecipeDTO>(`/${id}`, json('PUT', input)),
   delete: (id: number) => request<void>(`/${id}`, { method: 'DELETE' }),
+  uploadPhoto: (id: number, file: File) =>
+    request<{ photoId: string }>(`/${id}/photo`, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file,
+    }),
 }

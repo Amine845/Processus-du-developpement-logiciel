@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { recipesApi, ApiError } from '../api/recipes.api'
+import { recipesApi, ApiError, photoUrl } from '../api/recipes.api'
 import { ConfirmDialog } from '../components/common/ConfirmDialog'
 import type { RecipeDTO } from '../../shared/types/recipe.types'
 
@@ -68,7 +68,13 @@ export const RecipeDetailPage: React.FC = () => {
           Supprimer la recette
         </button>
       </div>
-
+      {recipe.photoId && (
+        <img
+          src={photoUrl(recipe.photoId)}
+          alt=""
+          style={{ width: '100%', maxHeight: 320, objectFit: 'cover', borderRadius: 12, marginBottom: 16 }}
+        />
+      )}
       <h2>{recipe.title}</h2>
       <p>{recipe.description}</p>
 
