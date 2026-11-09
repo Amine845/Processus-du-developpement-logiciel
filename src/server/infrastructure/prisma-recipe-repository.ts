@@ -50,7 +50,7 @@ const detailSelect = {
       ingredient: {
         select: {
           canonicalName: true,
-            tags: activeTagsSelect,
+          tags: activeTagsSelect,
           ciqualCode: true,
           ciqualFood: { select: { name: true } },
         },
@@ -96,7 +96,7 @@ async function readDetail(db: Db, id: number): Promise<RecipeDetail | null> {
     recipeTags: sortTags(tags.map(({ tag }) => tag)),
     ingredients,
     ingredientTags: unionTags(ingredients),
-      ...recipe
+    ...recipe,
   }
 }
 

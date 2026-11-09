@@ -84,16 +84,16 @@ test('isolated migration, imports, rejection, rollback and conservation', async 
       'prisma/migrations/20261108090000_ingredient_tags',
     )
     rmSync(tagsMigration, { recursive: true })
-      const classificationMigration = join(
-          temp,
-          'prisma/migrations/20261105120000_ciqual_categories',
-      )
-      rmSync(classificationMigration, { recursive: true })
-      const identityMigration = join(
-          temp,
-          'prisma/migrations/20261105140000_ingredient_identity',
-      )
-      rmSync(identityMigration, { recursive: true })
+    const classificationMigration = join(
+      temp,
+      'prisma/migrations/20261105120000_ciqual_categories',
+    )
+    rmSync(classificationMigration, { recursive: true })
+    const identityMigration = join(
+      temp,
+      'prisma/migrations/20261105140000_ingredient_identity',
+    )
+    rmSync(identityMigration, { recursive: true })
     const deploy = () => {
       const r = spawnSync(
         process.execPath,
@@ -129,11 +129,11 @@ test('isolated migration, imports, rejection, rollback and conservation', async 
       updateMigration,
       { recursive: true },
     )
-      cpSync(
-          join(root, 'src/server/prisma/migrations/20261108090000_ingredient_tags'),
-          tagsMigration,
-          { recursive: true },
-      )
+    cpSync(
+      join(root, 'src/server/prisma/migrations/20261108090000_ingredient_tags'),
+      tagsMigration,
+      { recursive: true },
+    )
     cpSync(
       join(
         root,

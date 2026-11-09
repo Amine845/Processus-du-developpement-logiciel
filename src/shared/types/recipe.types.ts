@@ -45,21 +45,21 @@ export type UpdateRecipeDTO = Partial<CreateRecipeDTO>
 
 /** Write contract: array order determines persisted positions; IDs are never CIQUAL codes. */
 export interface RecipeInputDTO {
-    title: string
-    description?: string | null
-    servings: number
-    ingredients: {
-        canonicalName: string
-        ciqualCode?: string | null
-        quantity: number
-        unit: RecipeUnit
-    }[]
-    steps: { instruction: string }[]
+  title: string
+  description?: string | null
+  servings: number
+  ingredients: {
+    canonicalName: string
+    ciqualCode?: string | null
+    quantity: number
+    unit: RecipeUnit
+  }[]
+  steps: { instruction: string }[]
 }
 export const RECIPE_UNITS: readonly RecipeUnit[] = [
-    'g',
-    'kg',
-    'ml',
-    'l',
-    'piece',
+  'g',
+  'kg',
+  'ml',
+  'l',
+  'piece',
 ]
