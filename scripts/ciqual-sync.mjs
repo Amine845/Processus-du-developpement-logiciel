@@ -1,3 +1,4 @@
+import { classificationVersion } from './ciqual-classification.mjs'
 import { createHash } from 'node:crypto'
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -110,7 +111,12 @@ export async function syncCiqual(
   } = {},
 ) {
   const state = await db.ciqualSyncState.findUnique({ where: { id: 1 } })
-  if (!force && state?.checkedAt && now - state.checkedAt < week)
+  if (
+    !force &&
+    state?.classificationVersion === classificationVersion &&
+    state?.checkedAt &&
+    now - state.checkedAt < week
+  )
     return { status: 'not_due' }
   let rowsRead = 0
   try {
@@ -126,7 +132,10 @@ export async function syncCiqual(
       if (newMajor < major || (newMajor === major && newMinor < minor))
         throw new Error('Upstream version downgrade rejected')
     }
-    if (state?.releaseKey === release.key) {
+    if (
+      state?.releaseKey === release.key &&
+      state?.classificationVersion === classificationVersion
+    ) {
       await db.ciqualSyncState.update({
         where: { id: 1 },
         data: { checkedAt: now, lastError: null },
@@ -152,7 +161,7 @@ export async function syncCiqual(
       version: `CIQUAL-${release.file.filename.match(/Ciqual (\d{4})/)[1]}-V${release.version}-${release.file.filename}`,
       downloadedAt: now.toISOString(),
       sourceSha256: sha256(bytes),
-      format: 'ciqual-full-xlsx-v1',
+      format: 'ciqual-full-xlsx-v2-groups',
       attribution: `Anses. Table de composition nutritionnelle des aliments Ciqual. ${release.file.filename}. https://doi.org/10.57745/RDMHWY`,
       license: 'Etalab-2.0',
     }
@@ -200,6 +209,22 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
           {
             state: await db.ciqualSyncState.findUnique({ where: { id: 1 } }),
             activeFoods: await db.ciqualFood.count({ where: { active: true } }),
+            categories: await db.ciqualFood.groupBy({
+              by: ['category', 'active'],
+              _count: true,
+            }),
+            unclassified: await db.ciqualFood.findMany({
+              where: { category: 'unclassified' },
+              select: {
+                code: true,
+                name: true,
+                active: true,
+                groupCode: true,
+                subgroupCode: true,
+                detailGroupCode: true,
+              },
+              orderBy: { code: 'asc' },
+            }),
           },
           null,
           2,

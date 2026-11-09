@@ -1,4 +1,6 @@
 import {
+  CIQUAL_CATEGORIES,
+  type CiqualCategoryFilter,
   CIQUAL_SEARCH_DEFAULT_LIMIT,
   CIQUAL_SEARCH_MAX_LENGTH,
   CIQUAL_SEARCH_MAX_LIMIT,
@@ -13,7 +15,11 @@ import type {
 import { CIQUAL_NUTRIENT_LABELS } from './ciqual-nutrient-labels.js'
 
 export type CiqualQueryErrorCode =
-  'QUERY_TOO_SHORT' | 'QUERY_TOO_LONG' | 'INVALID_LIMIT' | 'INVALID_CODE'
+  | 'QUERY_TOO_SHORT'
+  | 'QUERY_TOO_LONG'
+  | 'INVALID_LIMIT'
+  | 'INVALID_CODE'
+  | 'INVALID_CATEGORY'
 
 export class CiqualQueryError extends Error {
   constructor(readonly code: CiqualQueryErrorCode) {
@@ -103,6 +109,7 @@ export function createCiqual(repository: CiqualRepository) {
     async search(
       rawQuery: unknown,
       rawLimit?: unknown,
+      rawCategory?: unknown,
     ): Promise<CiqualSearchResponseDTO> {
       const query = typeof rawQuery === 'string' ? cleanQuery(rawQuery) : ''
       if ([...query].length < CIQUAL_SEARCH_MIN_LENGTH) {
@@ -111,14 +118,28 @@ export function createCiqual(repository: CiqualRepository) {
       if ([...query].length > CIQUAL_SEARCH_MAX_LENGTH) {
         throw new CiqualQueryError('QUERY_TOO_LONG')
       }
+      const category =
+        rawCategory === undefined || rawCategory === null ? 'all' : rawCategory
+      if (
+        typeof category !== 'string' ||
+        ![...CIQUAL_CATEGORIES, 'all'].includes(category)
+      ) {
+        throw new CiqualQueryError('INVALID_CATEGORY')
+      }
       const limit = parseLimit(rawLimit)
 
-      const matches = rankFoods(await repository.listSearchableFoods(), query)
+      const matches = rankFoods(
+        await repository.listSearchableFoods(category as CiqualCategoryFilter),
+        query,
+      )
       const page = matches.slice(0, limit)
       const details = new Map(
-        (await repository.findSummaries(page.map((food) => food.code))).map(
-          (summary) => [summary.code, summary],
-        ),
+        (
+          await repository.findSummaries(
+            page.map((food) => food.code),
+            category as CiqualCategoryFilter,
+          )
+        ).map((summary) => [summary.code, summary]),
       )
       return {
         query,
@@ -140,6 +161,13 @@ export function createCiqual(repository: CiqualRepository) {
       const food = await repository.findByCode(rawCode)
       if (!food) return null
       return {
+        category: food.category,
+        groupCode: food.groupCode,
+        groupName: food.groupName,
+        subgroupCode: food.subgroupCode,
+        subgroupName: food.subgroupName,
+        detailGroupCode: food.detailGroupCode,
+        detailGroupName: food.detailGroupName,
         code: food.code,
         name: food.name,
         source: food.source,

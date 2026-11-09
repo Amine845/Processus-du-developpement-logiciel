@@ -8,6 +8,13 @@ const response = (n: number): CiqualSearchResponseDTO => ({
   limit: 10,
   truncated: false,
   results: Array.from({ length: n }, (_, i) => ({
+    category: 'unclassified' as const,
+    groupCode: null,
+    groupName: null,
+    subgroupCode: null,
+    subgroupName: null,
+    detailGroupCode: null,
+    detailGroupName: null,
     code: String(i + 1),
     name: `Riz ${i}`,
     source: 'src',
@@ -49,5 +56,20 @@ describe('deriveSearchView', () => {
 describe('cleanQuery', () => {
   it('réduit les espaces', () => {
     expect(cleanQuery('  pomme   de\tterre ')).toBe('pomme de terre')
+  })
+})
+
+describe('category changes', () => {
+  it('hides results from another category for the same query', () => {
+    const old = {
+      query: 'riz',
+      category: 'food' as const,
+      response: response(1),
+    }
+    expect(deriveSearchView('riz', old, 2, 'prepared_dish')).toEqual({
+      kind: 'loading',
+    })
+    expect(deriveSearchView('riz', old, 2, 'all')).toEqual({ kind: 'loading' })
+    expect(deriveSearchView('riz', old, 2, 'food').kind).toBe('results')
   })
 })

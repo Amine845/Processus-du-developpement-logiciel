@@ -1,3 +1,8 @@
+import {
+  classify,
+  classificationReport,
+  classificationVersion,
+} from './ciqual-classification.mjs'
 import { readFileSync } from 'node:fs'
 import { parseValue, sha256 } from './ciqual.mjs'
 export const definitions = JSON.parse(
@@ -39,12 +44,17 @@ export function validateFull(foods) {
         throw new Error(`Invalid quantity at row ${i + 1}, ${d.key}`)
       return { key: d.key, unit: d.unit, ...n }
     })
-    return { ...f, nutrients, rawData: JSON.stringify(f) }
+    return {
+      ...f,
+      nutrients,
+      classification: classify(f),
+      rawData: JSON.stringify(f),
+    }
   })
 }
 export async function applyFull(db, foods, metadata, releaseKey) {
   const parsed = validateFull(foods)
-  const payload = JSON.stringify({ metadata, foods })
+  const payload = JSON.stringify({ metadata, classificationVersion, foods })
   return db.$transaction(
     async (tx) => {
       const state = await tx.ciqualSyncState.findUnique({ where: { id: 1 } })
@@ -94,6 +104,7 @@ export async function applyFull(db, foods, metadata, releaseKey) {
       for (const f of parsed) {
         const old = previous.get(f.code)
         const data = {
+          ...f.classification,
           name: f.name,
           version: metadata.version,
           importId: audit.id,
@@ -103,7 +114,11 @@ export async function applyFull(db, foods, metadata, releaseKey) {
         if (old?.rawData === f.rawData && old.active) {
           await tx.ciqualFood.update({
             where: { code: f.code },
-            data: { version: data.version, importId: audit.id },
+            data: {
+              ...f.classification,
+              version: data.version,
+              importId: audit.id,
+            },
           })
           unchanged++
         } else {
@@ -132,10 +147,21 @@ export async function applyFull(db, foods, metadata, releaseKey) {
         })
       await tx.ciqualSyncState.upsert({
         where: { id: 1 },
-        create: { id: 1, checkedAt: new Date(), releaseKey },
-        update: { checkedAt: new Date(), releaseKey, lastError: null },
+        create: {
+          id: 1,
+          checkedAt: new Date(),
+          releaseKey,
+          classificationVersion,
+        },
+        update: {
+          checkedAt: new Date(),
+          releaseKey,
+          classificationVersion,
+          lastError: null,
+        },
       })
       return {
+        classification: classificationReport(foods),
         rowsRead: foods.length,
         rowsAccepted: foods.length,
         rowsRejected: 0,

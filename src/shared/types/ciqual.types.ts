@@ -1,3 +1,25 @@
+export const CIQUAL_CATEGORIES = [
+  'food',
+  'prepared_dish',
+  'unclassified',
+] as const
+export type CiqualCategory = (typeof CIQUAL_CATEGORIES)[number]
+export type CiqualCategoryFilter = CiqualCategory | 'all'
+export const CIQUAL_CATEGORY_LABELS: Record<CiqualCategory, string> = {
+  food: 'Aliments et ingrédients',
+  prepared_dish: 'Plats composés',
+  unclassified: 'À classer',
+}
+export interface CiqualClassificationDTO {
+  category: CiqualCategory
+  groupCode: string | null
+  groupName: string | null
+  subgroupCode: string | null
+  subgroupName: string | null
+  detailGroupCode: string | null
+  detailGroupName: string | null
+}
+
 /** Contrat de l'API de recherche CIQUAL, partagé par le serveur et le client. */
 
 /** Constantes du contrat : source unique pour le serveur, le client et la doc. */
@@ -14,7 +36,7 @@ export const CIQUAL_SEARCH_MAX_LIMIT = 50
  */
 export type CiqualNutrientStatus = 'exact' | 'less_than' | 'trace' | 'missing'
 
-export interface CiqualFoodSummaryDTO {
+export interface CiqualFoodSummaryDTO extends CiqualClassificationDTO {
   /** Code CIQUAL officiel (texte) ; identité stable de l'aliment dans le référentiel local. */
   code: string
   /** Libellé officiel, non normalisé. */

@@ -1,0 +1,127 @@
+{
+  "source": "https://doi.org/10.57745/RDMHWY",
+  "sourceSha256": "5555c572fa3735991298d832d0427788fa69a11b4fd20a5d580d58942369fbb0",
+  "filename": "Table Ciqual 2025_FR_2025_11_03.xlsx",
+  "foods": [
+    {
+      "code": "24999",
+      "name": "Dessert (aliment moyen)",
+      "groups": {
+        "alim_grp_code": "00",
+        "alim_ssgrp_code": "0000",
+        "alim_ssssgrp_code": "000000",
+        "alim_grp_nom_fr": "",
+        "alim_ssgrp_nom_fr": "",
+        "alim_ssssgrp_nom_fr": ""
+      }
+    },
+    {
+      "code": "25608",
+      "name": "Taboulé ou salade de semoule aux légumes,\npréemballé",
+      "groups": {
+        "alim_grp_code": "01",
+        "alim_ssgrp_code": "0101",
+        "alim_ssssgrp_code": "000000",
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "salades composées\net crudités",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    {
+      "code": "25029",
+      "name": "Couscous au mouton",
+      "groups": {
+        "alim_grp_code": "01",
+        "alim_ssgrp_code": "0103",
+        "alim_ssssgrp_code": "010302",
+        "alim_grp_nom_fr": "entrées et plats\ncomposés",
+        "alim_ssgrp_nom_fr": "plats composés",
+        "alim_ssssgrp_nom_fr": "plats de viande et\nféculents"
+      }
+    },
+    {
+      "code": "9610",
+      "name": "Semoule de blé dur, crue",
+      "groups": {
+        "alim_grp_code": "03",
+        "alim_ssgrp_code": "0301",
+        "alim_ssssgrp_code": "030102",
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "pâtes, riz et\ncéréales",
+        "alim_ssssgrp_nom_fr": "pâtes, riz et céréales\ncrus"
+      }
+    },
+    {
+      "code": "9681",
+      "name": "Graine de couscous (semoule de blé dur précuite), à\ncuire",
+      "groups": {
+        "alim_grp_code": "03",
+        "alim_ssgrp_code": "0301",
+        "alim_ssssgrp_code": "030102",
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "pâtes, riz et\ncéréales",
+        "alim_ssssgrp_nom_fr": "pâtes, riz et céréales\ncrus"
+      }
+    },
+    {
+      "code": "9440",
+      "name": "Farine de blé tendre ou froment T45 (pour pâtisserie)",
+      "groups": {
+        "alim_grp_code": "03",
+        "alim_ssgrp_code": "0304",
+        "alim_ssssgrp_code": "000000",
+        "alim_grp_nom_fr": "produits\ncéréaliers",
+        "alim_ssgrp_nom_fr": "farines",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    },
+    {
+      "code": "22000",
+      "name": "Oeuf cru",
+      "groups": {
+        "alim_grp_code": "04",
+        "alim_ssgrp_code": "0410",
+        "alim_ssssgrp_code": "041002",
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "oeufs",
+        "alim_ssssgrp_nom_fr": "oeufs crus"
+      }
+    },
+    {
+      "code": "22003",
+      "name": "Oeuf, jaune (jaune d'oeuf), en poudre",
+      "groups": {
+        "alim_grp_code": "04",
+        "alim_ssgrp_code": "0410",
+        "alim_ssssgrp_code": "041003",
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "oeufs",
+        "alim_ssssgrp_nom_fr": "omelettes et autres\novoproduits"
+      }
+    },
+    {
+      "code": "22506",
+      "name": "Omelette au fromage, faite maison",
+      "groups": {
+        "alim_grp_code": "04",
+        "alim_ssgrp_code": "0410",
+        "alim_ssssgrp_code": "041003",
+        "alim_grp_nom_fr": "viandes, oeufs,\npoissons",
+        "alim_ssgrp_nom_fr": "oeufs",
+        "alim_ssssgrp_nom_fr": "omelettes et autres\novoproduits"
+      }
+    },
+    {
+      "code": "16400",
+      "name": "Beurre à 80% MG minimum, doux",
+      "groups": {
+        "alim_grp_code": "09",
+        "alim_ssgrp_code": "0901",
+        "alim_ssssgrp_code": "000000",
+        "alim_grp_nom_fr": "matières grasses",
+        "alim_ssgrp_nom_fr": "beurres",
+        "alim_ssssgrp_nom_fr": "-"
+      }
+    }
+  ]
+}

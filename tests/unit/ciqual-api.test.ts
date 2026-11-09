@@ -27,6 +27,13 @@ const FOODS = [
 ]
 
 const summary = (code: string, name: string): CiqualFoodSummary => ({
+  category: 'unclassified' as const,
+  groupCode: null,
+  groupName: null,
+  subgroupCode: null,
+  subgroupName: null,
+  detailGroupCode: null,
+  detailGroupName: null,
   code,
   name,
   source: 'https://doi.org/10.57745/RDMHWY',

@@ -1,5 +1,11 @@
 # Changelog
 
+## CIQUAL — catégories aliments et plats composés
+
+- Conservation des groupes officiels, mapping versionné et migration additive.
+- Filtre API et sélection par catégorie ; ingrédients par défaut dans le formulaire.
+- Backfill, rapports, exceptions par code et tests de conservation des recettes.
+
 Les changements significatifs du projet sont consignés dans ce fichier.
 
 Le format s'inspire de Keep a Changelog et le projet utilise le versionnement sémantique lorsque des versions sont publiées.
@@ -36,3 +42,10 @@ Le format s'inspire de Keep a Changelog et le projet utilise le versionnement s�
 - Ajouter les entrées dans `Unreleased` pendant le développement.
 - Lors d'une release, déplacer les entrées vers une section versionnée et datée.
 - Utiliser les catégories `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` et `Security` selon le besoin.
+
+## S3-T02 — Identité CIQUAL dans les recettes
+
+- Formulaire réel avec autocomplétion, choix manuel explicite et étapes ordonnées.
+- Codes CIQUAL persistés et validés dans les transactions POST/PUT, relus en détail.
+- Identités distinctes par code et mode manuel, migration sans réassociation historique.
+- Tests React vers API/SQLite, rechargement, collisions et rollback ; contrats documentés.
