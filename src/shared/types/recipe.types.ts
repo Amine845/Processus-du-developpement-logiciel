@@ -5,6 +5,7 @@ export interface RecipeSummaryDTO {
   title: string
   description: string | null
   servings: number
+  photoId: string | null
 }
 
 export interface RecipeDTO extends RecipeSummaryDTO {

@@ -13,6 +13,7 @@ const summary = {
   title: true,
   description: true,
   servings: true,
+  photoId: true,
 } as const
 
 const detailSelect = {
@@ -168,6 +169,35 @@ export function createPrismaRecipeRepository(
       try {
         const { count } = await client.recipe.deleteMany({ where: { id } })
         return count > 0
+      } catch {
+        throw new RecipeWriteError()
+      }
+    },
+    async getPhotoId(id) {
+      assertId(id)
+      try {
+        const row = await client.recipe.findUnique({
+          where: { id },
+          select: { photoId: true },
+        })
+        return row?.photoId ?? null
+      } catch {
+        throw new RecipeReadError()
+      }
+    },
+
+    async setPhoto(id, photoId) {
+      assertId(id)
+      try {
+        return await client.$transaction(async (tx) => {
+          const current = await tx.recipe.findUnique({
+            where: { id },
+            select: { photoId: true },
+          })
+          if (!current) return undefined
+          await tx.recipe.update({ where: { id }, data: { photoId } })
+          return current.photoId
+        })
       } catch {
         throw new RecipeWriteError()
       }

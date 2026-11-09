@@ -5,6 +5,8 @@ import {
 } from './domain/recipe-repository.js'
 import { createRecipes } from './application/recipes.js'
 import { RecipeValidationError } from './application/recipe-input.js'
+import { InvalidImageError, type PhotoStorage } from './domain/photo-storage.js'
+import { createPhotoStorage } from './infrastructure/photo-storage.js'
 import { createPersistence } from './infrastructure/prisma.js'
 import { createPrismaRecipeRepository } from './infrastructure/prisma-recipe-repository.js'
 import { createPrismaCiqualRepository } from './infrastructure/prisma-ciqual-repository.js'
@@ -19,6 +21,7 @@ import {
   CIQUAL_SEARCH_MIN_LENGTH,
 } from '../shared/types/ciqual.types.js'
 
+const MAX_PHOTO_BYTES = 10 * 1024 * 1024
 const MAX_BODY_BYTES = 100 * 1024
 const isValidId = (id: number) =>
   Number.isInteger(id) && id >= 1 && id <= 2147483647
@@ -33,13 +36,14 @@ class HttpError extends Error {
   }
 }
 
-function readJsonBody(request: IncomingMessage): Promise<unknown> {
-  if (
-    !/^application\/json\s*(;|$)/i.test(request.headers['content-type'] ?? '')
-  ) {
+function readBody(
+  request: IncomingMessage,
+  { maxBytes, contentType }: { maxBytes: number; contentType: RegExp },
+): Promise<Buffer> {
+  if (!contentType.test(request.headers['content-type'] ?? '')) {
     return Promise.reject(new HttpError(415, 'UNSUPPORTED_MEDIA_TYPE'))
   }
-  if (Number(request.headers['content-length']) > MAX_BODY_BYTES) {
+  if (Number(request.headers['content-length']) > maxBytes) {
     return Promise.reject(new HttpError(413, 'PAYLOAD_TOO_LARGE'))
   }
   return new Promise((resolve, reject) => {
@@ -56,29 +60,37 @@ function readJsonBody(request: IncomingMessage): Promise<unknown> {
     request.on('data', (chunk: Buffer) => {
       if (settled) return
       size += chunk.length
-      if (size > MAX_BODY_BYTES)
-        return fail(new HttpError(413, 'PAYLOAD_TOO_LARGE'))
+      if (size > maxBytes) return fail(new HttpError(413, 'PAYLOAD_TOO_LARGE'))
       chunks.push(chunk)
     })
     request.on('end', () => {
       if (settled) return
       settled = true
-      try {
-        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')))
-      } catch {
-        reject(new HttpError(400, 'INVALID_JSON'))
-      }
+      resolve(Buffer.concat(chunks))
     })
     request.on('error', () => fail(new HttpError(400, 'INVALID_BODY')))
   })
+}
+
+async function readJsonBody(request: IncomingMessage): Promise<unknown> {
+  const body = await readBody(request, {
+    maxBytes: MAX_BODY_BYTES,
+    contentType: /^application\/json\s*(;|$)/i,
+  })
+  try {
+    return JSON.parse(body.toString('utf8'))
+  } catch {
+    throw new HttpError(400, 'INVALID_JSON')
+  }
 }
 
 /** Le référentiel CIQUAL est facultatif : sans lui, /api/ciqual répond 404. */
 export function createRecipeServer(
   repository: RecipeRepository,
   ciqualRepository?: CiqualRepository,
+  photos?: PhotoStorage,
 ) {
-  const recipes = createRecipes(repository)
+  const recipes = createRecipes(repository, photos)
   const ciqual = ciqualRepository ? createCiqual(ciqualRepository) : undefined
   return createServer(async (request, response) => {
     const method = request.method ?? 'GET'
@@ -125,6 +137,48 @@ export function createRecipeServer(
         }
         const food = await ciqual.findByCode(foodMatch[1])
         send(food ? 200 : 404, food ?? { error: 'CIQUAL_FOOD_NOT_FOUND' })
+        return
+      }
+
+      const photoGet = /^\/api\/photos\/([0-9a-f]{32})\.webp$/.exec(path)
+      if (photos && photoGet) {
+        if (method !== 'GET') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'GET' })
+          return
+        }
+        const data = await photos.read(photoGet[1])
+        if (!data) {
+          send(404, { error: 'PHOTO_NOT_FOUND' })
+          return
+        }
+        response.writeHead(200, {
+          'Content-Type': 'image/webp',
+          'Content-Length': data.length,
+          'Cache-Control': 'public, max-age=31536000, immutable',
+          'X-Content-Type-Options': 'nosniff',
+        })
+        response.end(data)
+        return
+      }
+
+      const photoPut = /^\/api\/recipes\/(\d+)\/photo$/.exec(path)
+      if (photos && photoPut) {
+        const id = Number(photoPut[1])
+        if (!isValidId(id)) {
+          send(400, { error: 'INVALID_RECIPE_ID' })
+          return
+        }
+        if (method !== 'PUT') {
+          send(405, { error: 'METHOD_NOT_ALLOWED' }, { Allow: 'PUT' })
+          return
+        }
+        const raw = await readBody(request, {
+          maxBytes: MAX_PHOTO_BYTES,
+          contentType: /^image\/(jpeg|png|webp)\s*(;|$)/i,
+        })
+        const photoId = await recipes.setPhoto(id, raw)
+        if (photoId === undefined) send(404, { error: 'RECIPE_NOT_FOUND' })
+        else send(200, { photoId })
         return
       }
 
@@ -187,6 +241,8 @@ export function createRecipeServer(
         send(400, { error: 'INVALID_RECIPE', issues: error.issues })
       } else if (error instanceof RecipeConflictError) {
         send(409, { error: 'RECIPE_TITLE_CONFLICT' })
+      } else if (error instanceof InvalidImageError) {
+        send(400, { error: 'INVALID_IMAGE' })
       } else {
         console.error(`[${method} ${request.url}] erreur non gérée :`, error)
         send(503, {
@@ -198,11 +254,16 @@ export function createRecipeServer(
   })
 }
 
-export async function startServer(databaseUrl: string, port = 3001) {
+export async function startServer(
+  databaseUrl: string,
+  port = 3001,
+  photosDir = process.env.PHOTOS_DIR ?? 'uploads/recipes',
+) {
   const persistence = createPersistence(databaseUrl)
   const server = createRecipeServer(
     createPrismaRecipeRepository(persistence.client),
     createPrismaCiqualRepository(persistence.client),
+    createPhotoStorage(photosDir),
   )
   try {
     await persistence.connect()
